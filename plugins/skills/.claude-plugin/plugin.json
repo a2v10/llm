@@ -1,0 +1,11 @@
+{
+	"name": "a2v10",
+	"description": "What the plugin ships",
+	"version": "1.0.0",
+	"author": {
+		"name": "Oleksandr Kukhtin"
+	},
+	"license": "MIT",
+	"repository": "https://github.com/a2v10/llm",
+	"keywords": [ "a2v10" ]
+}

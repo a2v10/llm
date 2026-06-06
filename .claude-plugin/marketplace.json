@@ -1,0 +1,19 @@
+{
+	"name": "a2v10-dev",
+	"owner": {
+		"name": "Oleksandr Kukhtin"
+	},
+	"description": "Short description of what this marketplace ships",
+	"plugins": [
+		{
+			"name": "a2v10",
+			"source": "./plugins/a2v10",
+			"description": "What the plugin ships",
+			"license": "MIT",
+			"homepage": "https://github.com/a2v10/llm",
+			"repository": "https://github.com/a2v10/llm",
+			"keywords": [ "a2v10" ],
+			"category": "productivity"
+		}
+	]
+}
