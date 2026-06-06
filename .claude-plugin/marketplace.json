@@ -3,12 +3,12 @@
 	"owner": {
 		"name": "Oleksandr Kukhtin"
 	},
-	"description": "Short description of what this marketplace ships",
+	"description": "Claude Code plugins for the A2v10 Platform",
 	"plugins": [
 		{
 			"name": "a2v10",
-			"source": "./plugins/a2v10",
-			"description": "What the plugin ships",
+			"source": "./plugins/a2v10-plugin",
+			"description": "A2v10 Platform development",
 			"license": "MIT",
 			"homepage": "https://github.com/a2v10/llm",
 			"repository": "https://github.com/a2v10/llm",
