@@ -1,0 +1,30 @@
+{
+	"$schema": "../../@schemas/model-json-schema.json#",
+	"description": "catalog.simple",
+	"schema": "cat",
+	"model": "Sample",
+	"actions": {
+		"index": {
+			"index": true,
+			"template": "index.template",
+			"view": "index.view"
+		}
+	},
+	"dialogs": {
+		"edit": {
+			"template": "edit.template",
+			"view": "edit.dialog"
+		},
+		"browse": {
+			"index": true,
+			"template": "index.template",
+			"view": "browse.dialog"
+		}
+	},
+	"commands": {
+		"fetch": {
+			"type": "sql",
+			"procedure": "Sample.Fetch"
+		}
+	}
+}

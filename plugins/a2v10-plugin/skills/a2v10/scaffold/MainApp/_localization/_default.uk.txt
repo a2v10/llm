@@ -1,0 +1,21 @@
+; Fields
+@Id=#
+@Name=Назва
+@Memo=Примітка
+@Number=Номер
+@Code=Код
+
+; Commands
+@Create=Створити
+@SaveAndClose=Зберегти і закрити
+@Cancel=Скасувати
+@Select=Вибрати
+@AddRow=Додати рядок
+@Search=Пошук
+
+; Errors
+@Error.Required=Обов'язкове поле
+@Error.Delete.Used=Неможливо видалити елемент, він використовується в системі
+
+; Confirm
+@Confirm.Delete.Element=Ви впевнені, що бажаєте видалити елемент?

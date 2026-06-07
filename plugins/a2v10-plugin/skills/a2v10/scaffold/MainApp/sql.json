@@ -1,0 +1,14 @@
+﻿[
+	{
+		"$schema": "@schemas/sql-json-schema.json#",
+		"outputFile": "_sqlscripts/main.sql",
+		"inputFiles": [
+			"@sql/a2v10_platform_simple.sql",
+			"_sql/_schemas.sql",
+			"/**/schema.sql",
+			"/**/keys.sql",
+			"/**/logic.sql",
+			"/**/init.sql"
+		]
+	}
+]

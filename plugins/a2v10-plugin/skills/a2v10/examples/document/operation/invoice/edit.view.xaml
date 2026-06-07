@@ -1,0 +1,65 @@
+<!-- Edit Invoice — Page -->
+<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
+	  Title="{Bind Document.Id, Format='@[Invoice] [{0}]'}"
+	  Components="{Components '../_components/_common'}">
+	<Page.Toolbar>
+		<Component Name="Document.Toolbar"/>
+	</Page.Toolbar>
+	<Grid Rows="Auto,Auto,Auto,1*,Auto" Height="100%" Margin="0, 0, 0, 1rem">
+
+		<Component Name="Document.Header" Scope="{Bind Document}" Grid.Row="1"/>
+
+		<Panel Header="@[GeneralInfo]" Grid.Row="2">
+			<Grid Columns="23rem,23rem,1*">
+				<SelectorSimple Label="@[Agent]" Value="{Bind Document.Agent}"/>
+			</Grid>			
+		</Panel>
+
+		<TabBar Value="{Bind Root.$$Tab}" Grid.Row="3">
+			<TabButton Content="Запаси" ActiveValue="" Badge="{BindNumber Document.Rows.length}"/>
+		</TabBar>
+
+		<Switch Expression="{Bind Root.$$Tab}" Grid.Row="4">
+			<Case Value="">
+				<Grid Rows="Auto,1*" AlignItems="Top" Overflow="Hidden" Height="100%">
+					<Toolbar>
+						<Button Icon="Plus" Content="@[AddRow]" 
+							Command="{BindCmd Append, Argument={Bind Document.Rows}}"/>
+					</Toolbar>
+					<Table ItemsSource="{Bind Document.Rows}" GridLines="Both" Width="100%" StickyHeaders="True"
+							Columns="Fit,Auto,8rem,8rem,8rem,Fit" Height="100%">
+						<Table.Header>
+							<TableRow>
+								<TableCell Content="@[RowNo]"/>
+								<TableCell Content="@[Item]"/>
+								<TableCell Content="@[Qty]"/>
+								<TableCell Content="@[Price]"/>
+								<TableCell Content="@[Sum]"/>
+								<TableCell/>
+							</TableRow>
+						</Table.Header>
+						<TableRow>
+							<TableCell Content="{Bind RowNo}" Wrap="NoWrap" Align="Right"/>
+							<SelectorSimple Value="{Bind Item}" Url="/catalog/item"/>
+							<TextBox Value="{BindNumber Qty}" Align="Right"/>
+							<TextBox Value="{BindSum Price}" Align="Right"/>
+							<TextBox Value="{BindSum Sum}" Align="Right"/>
+							<TableCell>
+								<Hyperlink Content="✕" Command="{BindCmd Remove, Argument={Bind}, Confirm='@[Confirm.Delete.Element]'}"/>
+							</TableCell>
+						</TableRow>
+					</Table>
+				</Grid>
+			</Case>
+		</Switch>
+		<!-- Рядки -->
+
+		<Component Name="Document.Footer" Scope="{Bind Document}" Grid.Row="5"/>
+	</Grid>
+
+	<Page.Taskpad>
+		<Taskpad>
+			
+		</Taskpad>
+	</Page.Taskpad>
+</Page>

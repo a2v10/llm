@@ -1,0 +1,19 @@
+{
+"$schema": "../../../@schemas/model-json-schema.json#",
+"description": "document.operation",
+"schema": "doc",
+	"model": "Document",
+	"actions": {
+		"index": {
+			"index": true,
+			"template": "../index.template",
+			"view": "index.view",
+			"parameters": { "Operation": "invoice" }
+		},
+		"edit": {
+			"template": "edit.template",
+			"view": "edit.view",
+			"parameters": { "Operation": "invoice" }
+		}
+	}
+}

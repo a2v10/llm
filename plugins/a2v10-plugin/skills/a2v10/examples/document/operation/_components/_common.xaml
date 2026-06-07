@@ -1,0 +1,28 @@
+<ComponentDictionary xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Toolbar x:Key="Document.Toolbar">
+		<Button Icon="SaveCloseOutline" Content="@[SaveAndClose]" Command="{BindCmd SaveAndClose}" />
+		<Button Icon="SaveOutline" Command="{BindCmd Save}"/>
+		<Button Icon="Print" />
+		<Separator />
+		<Button Icon="Apply" Content="@[Apply]" Command="{BindCmdExec apply, ValidRequired=True, SaveRequired=True}"/>
+		<Separator />
+		<Button Icon="Reload" Command="{BindCmd Reload}"/>
+		<ToolbarAligner />
+		<Button Command="{BindCmd Close}"/>
+	</Toolbar>
+	<Grid x:Key="Document.Header" AutoFlow="Column" Width="Fit" AlignItems="Baseline"
+		  Padding=".5rem,0,0,0">
+		<Header Content="{Bind Operation.Name}" Wrap="NoWrap" Margin="0,5rem,0,0"/>
+		<Span Content="@[Number]"/>
+		<TextBox Value="{Bind No}" Width="10rem" Placeholder="@[Auto]" Align="Right"/>
+		<Span Content="@[Date]" Margin="0,0,0,3rem"/>
+		<DatePicker Value="{Bind Date}" Width="10rem"/>
+	</Grid>
+	<Grid x:Key="Document.Footer" Columns="Auto,1*,Auto,Auto" AlignItems="Baseline">
+		<Span Content="@[Memo]"/>
+		<TextBox Value="{Bind Memo}" Rows="3" Multiline="True"/>
+		<Span Content="@[Document.Total]" Margin="0,0,0,5rem"/>
+		<TextBox Value="{BindSum Sum}" Width="12rem" Wrap="NoWrap" Align="Right" Disabled="True"/>
+	</Grid>
+</ComponentDictionary>
