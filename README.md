@@ -1,73 +1,89 @@
-# A2v10 Claude Code Skill
+# A2v10 Skill for Claude
 
-A Claude Code skill for developing on the **A2v10 Platform** — a generic runtime for 
-building business applications. 
+A skill for developing on the **A2v10 Platform** — a generic runtime for building
+business applications. Once active, Claude loads it automatically when your request
+matches (A2v10, `model.json`, `view.vxaml`, SQL stored procedures, and so on).
+
+It can be added to Claude in **two ways**, depending on how you use Claude:
+
+| How you use Claude | Method |
+|---|---|
+| **Claude Code** — the CLI you run in a terminal | [Method 1 — plugin marketplace](#method-1--install-as-a-claude-code-plugin) |
+| **Claude app** (desktop or web) — *Customize → Skills* | [Method 2 — upload the skill](#method-2--upload-the-skill-in-the-claude-app) |
+
+> ℹ️ "Claude Code" is the **command-line tool** you run from a terminal — *not* the
+> "Code" tab in the Claude desktop app. If you work in the desktop or web app, use
+> **Method 2**.
+
+## Method 1 — Install as a Claude Code plugin
 
 This repository is a Claude Code plugin marketplace shipping the `a2v10` plugin.
 
-## ⚠️ What is "Claude Code"?
+### Prerequisite: the Claude Code CLI
 
-**Claude Code is a command-line tool (CLI) — it is _not_ the "Code" tab inside the Claude Desktop app.**
+If you don't already have Claude Code:
 
-This is the most common point of confusion. The "Code" tab in Claude Desktop is a different feature and has **no** `/plugin` command — none of the commands below will work there.
-
-Everything in this README runs in the **Claude Code CLI**: a separate program you install and run from a terminal (PowerShell, Windows Terminal, macOS Terminal, bash, etc.).
-
-### Install the Claude Code CLI
-
-1. Install [Node.js](https://nodejs.org/) (LTS version) if you don't have it.
-2. Install Claude Code globally:
+1. Install [Node.js](https://nodejs.org/) (LTS version).
+2. Install Claude Code:
 
    ```
    npm install -g @anthropic-ai/claude-code
    ```
 
-3. Open a terminal **in your project folder** and start it:
+3. Start it in your project folder:
 
    ```
    claude
    ```
 
-4. Log in when prompted (with your Claude account or API key).
+4. Log in when prompted. Type `/help` to confirm you're at the Claude Code prompt —
+   the `/plugin` commands below only work there.
 
-You'll know you're in the right place when you see the Claude Code prompt in your terminal and can type `/help` to list available commands. The `/plugin` commands below only work **inside this prompt**.
+> Other platforms and full instructions: <https://docs.claude.com/en/docs/claude-code/overview>
 
-> Full install instructions and other platforms: <https://docs.claude.com/en/docs/claude-code/overview>
+### Install
 
-## Installation
-
-Inside the **Claude Code CLI prompt** (not Claude Desktop), run:
+At the Claude Code prompt:
 
 ```
 /plugin marketplace add a2v10/llm
 /plugin install a2v10@a2v10-dev
 ```
 
-The skill is model-invoked: once installed, Claude loads it automatically when your request matches.
+### Update
 
-## Updating
-
-The plugin is split into two parts that update independently:
-
-1. **Refresh the marketplace metadata** — pulls the latest catalog (new plugins, version bumps, descriptions):
-
-   ```
-   /plugin marketplace update a2v10-dev
-   ```
-
-2. **Update the installed plugin** — fetches the new version of the `a2v10` plugin itself:
-
-   ```
-   /plugin update a2v10@a2v10-dev
-   ```
-
-You can verify the installed version at any time:
+The marketplace catalog and the installed plugin update independently:
 
 ```
-/plugin
+/plugin marketplace update a2v10-dev   # refresh the catalog (versions, metadata)
+/plugin update a2v10@a2v10-dev         # update the installed plugin
 ```
 
-Then open **Manage plugins** and check the version shown for `a2v10` against the latest published version. Restart Claude Code (or reload the window) if an updated skill doesn't take effect immediately.
+Run `/plugin` → **Manage plugins** to check the installed version. Restart Claude Code
+(or reload the window) if an update doesn't take effect immediately.
+
+## Method 2 — Upload the skill in the Claude app
+
+Use this if you work in the Claude **desktop or web app**. No CLI required.
+Custom Skills are available on Pro, Max, Team, and Enterprise plans with code
+execution enabled.
+
+1. Download the latest **`a2v10-*.zip`** from the
+   [Releases page](https://github.com/a2v10/llm/releases/latest).
+2. In Claude, open **Customize → Skills**.
+3. Click **➕ → Create skill → Upload a skill**.
+4. Select the downloaded zip.
+
+The skill appears under **Personal skills** and is used automatically when relevant.
+
+### Update
+
+Uploaded skills do not auto-update. To move to a newer version, download the latest
+`a2v10-*.zip` from the [Releases page](https://github.com/a2v10/llm/releases/latest),
+then open the skill's **⋮** menu and choose **Replace** — pick the new zip. (Claude
+accepts the versioned file name as-is; no need to rename it.)
+
+Alternatively, use **Uninstall** from the same menu and upload the new zip from scratch.
 
 ## License
 
