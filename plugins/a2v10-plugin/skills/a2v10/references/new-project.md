@@ -12,7 +12,7 @@ entities, no `.md` files:
 - `WebApp/` — ASP.NET Core host
 - `MainApp/` — application source root (`model.json`, xaml, sql, ts)
 - `setup-db.ps1` — database bootstrap
-- `^AppName^.sln` — Visual Studio solution (both projects)
+- `AppName.slnx` — Visual Studio solution (both projects)
 
 Copy the whole `scaffold/` tree into the new project's directory, then replace
 every placeholder across the copied files:
@@ -27,20 +27,15 @@ They appear in `WebApp/appsettings.json`, `setup-db.ps1`, and elsewhere — repl
 > replace it. `<Name>` stands for the resolved value (e.g. the chosen app name),
 > not a token to leave in place.
 
-**Solution file `^AppName^.sln` — GUIDs.** Three placeholders: `^Guid1^` (WebApp,
-recurs), `^Guid2^` (MainApp, recurs), `^Guid3^` (SolutionGuid, once). For each,
-generate a fresh GUID — `[guid]::NewGuid().ToString("B").ToUpper()` yields `{GUID}`
-uppercase and braced — and replace every `^GuidN^` with that whole value, braces
-included. Literal substitution, not regex (`^` and `{}` are regex metachars).
-Never hand-type a GUID. Leave the literal `{FAE04EC0-…}` project-type GUID untouched.
-
-Then **rename the file** `^AppName^.sln` → `<AppName>.sln` (the placeholder is in
-the filename too).
+**Solution file `AppName.slnx`.** The `.slnx` format is a plain XML list of the two
+projects — no GUIDs, no per-config sections, nothing to fill in. Ships as plain
+`AppName.slnx` (no carets — the skill loader forbids `^` in filenames); just
+**rename the file** `AppName.slnx` → `<AppName>.slnx`.
 
 The scaffold ships **no `CLAUDE.md`** — it comes later (§3), once there is meaning
 to record. Bring the shell up:
 
-1. `dotnet build <AppName>.sln` — compiles and generates `MainApp/_sqlscripts/main.sql`.
+1. `dotnet build <AppName>.slnx` — compiles and generates `MainApp/_sqlscripts/main.sql`.
 2. `./setup-db.ps1` — creates the database and applies that script.
 
 If step 2 prints `Failed. Check SQL Server connection`, `setup-db.ps1` could not
