@@ -1,7 +1,7 @@
 ------------------------------------------------
 -- doc.Operations — довідник видів операцій
 ------------------------------------------------
-if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = N'doc' and TABLE_NAME = N'Operations')
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'doc' and TABLE_NAME = 'Operations')
 create table doc.[Operations]
 (
 	Id nvarchar(20) not null
@@ -12,11 +12,11 @@ go
 ------------------------------------------------
 -- doc.Documents — шапка документів (всі операції)
 ------------------------------------------------
-if not exists(select * from INFORMATION_SCHEMA.SEQUENCES where SEQUENCE_SCHEMA = N'doc' and SEQUENCE_NAME = N'SQ_Documents')
+if not exists(select * from INFORMATION_SCHEMA.SEQUENCES where SEQUENCE_SCHEMA = 'doc' and SEQUENCE_NAME = 'SQ_Documents')
 	create sequence doc.SQ_Documents as bigint start with 100 increment by 1;
 go
 ------------------------------------------------
-if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = N'doc' and TABLE_NAME = N'Documents')
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'doc' and TABLE_NAME = 'Documents')
 create table doc.[Documents]
 (
 	Id bigint not null
@@ -37,11 +37,11 @@ go
 ------------------------------------------------
 -- doc.DocDetails — таблична частина документів
 ------------------------------------------------
-if not exists(select * from INFORMATION_SCHEMA.SEQUENCES where SEQUENCE_SCHEMA = N'doc' and SEQUENCE_NAME = N'SQ_DocDetails')
+if not exists(select * from INFORMATION_SCHEMA.SEQUENCES where SEQUENCE_SCHEMA = 'doc' and SEQUENCE_NAME = 'SQ_DocDetails')
 	create sequence doc.SQ_DocDetails as bigint start with 100 increment by 1;
 go
 ------------------------------------------------
-if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = N'doc' and TABLE_NAME = N'DocDetails')
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'doc' and TABLE_NAME = 'DocDetails')
 create table doc.[DocDetails]
 (
 	Id bigint not null
@@ -61,7 +61,7 @@ go
 ------------------------------------------------
 -- doc.OpLinks — правила зв'язків між операціями
 ------------------------------------------------
-if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = N'doc' and TABLE_NAME = N'OpLinks')
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'doc' and TABLE_NAME = 'OpLinks')
 create table doc.[OpLinks]
 (
 	Id int not null identity
@@ -75,7 +75,7 @@ go
 ------------------------------------------------
 -- doc.OpTrans — правила проведення по журналах
 ------------------------------------------------
-if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = N'doc' and TABLE_NAME = N'OpTrans')
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'doc' and TABLE_NAME = 'OpTrans')
 create table doc.[OpTrans]
 (
 	Operation nvarchar(20) not null, -- FK → doc.Operations
@@ -91,7 +91,7 @@ go
 ------------------------------------------------
 -- doc.DocLinks — фактичні зв'язки між документами
 ------------------------------------------------
-if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = N'doc' and TABLE_NAME = N'DocLinks')
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'doc' and TABLE_NAME = 'DocLinks')
 create table doc.[DocLinks]
 (
 	ParentId bigint not null, -- FK → doc.Documents

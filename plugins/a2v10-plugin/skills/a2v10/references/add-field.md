@@ -8,7 +8,8 @@ Step-by-step checklist for a focused change to a single endpoint.
 
 | Layer | File | What exactly |
 |---|---|---|
-| Migration | `migrations.sql` | DDL change — `ALTER TABLE ... ADD ...` (idempotent) |
+| Schema | `schema.sql` (owns the table) | additive DDL — `alter table ... add` (guarded) |
+| FK constraint | `keys.sql` | `foreign key` constraint — ref fields only |
 | SQL | `<endpoint>.sql` | `TableType`, `Load`, `Index`, `Update` / `Metadata` |
 | XAML edit | `edit.dialog.xaml` / `edit.view.xaml` | Field on the form |
 | XAML index | `index.view.xaml` | Column in DataGrid; filter (if filtered) |
@@ -26,8 +27,9 @@ Not every layer is required — depends on the field type.
 ### Primitive (nvarchar / int / money / date / bit)
 
 ```sql
--- migrations.sql
-if COL_LENGTH('cat.Banks', 'Foo') is null
+-- schema.sql (the file that owns cat.Banks)
+if not exists(select * from INFORMATION_SCHEMA.COLUMNS
+    where TABLE_SCHEMA='cat' and TABLE_NAME='Banks' and COLUMN_NAME='Foo')
     alter table cat.Banks add Foo nvarchar(255);
 go
 ```
@@ -41,10 +43,17 @@ d.ts: add `Foo: string` (or `number`) to the type.
 ### FK reference (ref)
 
 ```sql
--- migrations.sql
-if COL_LENGTH('cat.Banks', 'Country') is null
-    alter table cat.Banks add Country bigint
-        constraint FK_Banks_Country_Countries foreign key references cat.Countries(Id);
+-- schema.sql (the file that owns cat.Banks) — column only
+if not exists(select * from INFORMATION_SCHEMA.COLUMNS
+    where TABLE_SCHEMA='cat' and TABLE_NAME='Banks' and COLUMN_NAME='Country')
+    alter table cat.Banks add Country bigint;
+go
+
+-- keys.sql — FK constraint (runs after all tables exist)
+if not exists(select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
+    where CONSTRAINT_NAME='FK_Banks_Country_Countries')
+    alter table cat.Banks add
+        constraint FK_Banks_Country_Countries foreign key (Country) references cat.Countries(Id);
 go
 ```
 
@@ -84,7 +93,8 @@ Country: TRefItem   // { Id: number, Name: string }
 ### Enum / status (char + CHECK)
 
 ```sql
-if COL_LENGTH('cat.Banks', 'Status') is null
+if not exists(select * from INFORMATION_SCHEMA.COLUMNS
+    where TABLE_SCHEMA='cat' and TABLE_NAME='Banks' and COLUMN_NAME='Status')
     alter table cat.Banks add [Status] char(1) not null
         constraint DF_Banks_Status  default 'A'
         constraint CK_Banks_Status  check([Status] in ('A', 'I'));
@@ -98,7 +108,8 @@ d.ts: `Status: string`.
 ### Boolean (bit)
 
 ```sql
-if COL_LENGTH('cat.Banks', 'IsActive') is null
+if not exists(select * from INFORMATION_SCHEMA.COLUMNS
+    where TABLE_SCHEMA='cat' and TABLE_NAME='Banks' and COLUMN_NAME='IsActive')
     alter table cat.Banks add IsActive bit not null constraint DF_Banks_IsActive default 1;
 go
 ```
@@ -111,7 +122,8 @@ d.ts: `IsActive: boolean`.
 
 ## "Don't forget" checklist
 
-- [ ] DDL is idempotent: `COL_LENGTH` for ALTER, `if not exists` for new objects.
+- [ ] DDL is idempotent and additive: `if not exists(... INFORMATION_SCHEMA.COLUMNS ...)` guards the `add`; no `N''` in guards; never rename/drop (add new, tell the user).
+- [ ] FK field: column in `schema.sql`, `foreign key` constraint in `keys.sql`.
 - [ ] Multi-tenant: a new column in a table without `TenantId` (it is already in the table); but in a new procedure — `@TenantId` in parameters, WHERE, and MERGE INSERT.
 - [ ] `TableType` updated.
 - [ ] `Update` MERGE: field in `SET` **and** in `INSERT`.

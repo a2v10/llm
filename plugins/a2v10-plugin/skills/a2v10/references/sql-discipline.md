@@ -34,22 +34,24 @@ Guard catalog:
 | DDL              | Guard                                                                  |
 |------------------|------------------------------------------------------------------------|
 | `CREATE TABLE`   | `INFORMATION_SCHEMA.TABLES`                                            |
-| `ADD COLUMN`     | `COL_LENGTH('<schema>.<Table>', '<Column>') is null`                   |
+| `ADD COLUMN`     | `INFORMATION_SCHEMA.COLUMNS` (`TABLE_SCHEMA`+`TABLE_NAME`+`COLUMN_NAME`)|
 | `ADD CONSTRAINT` | `sys.objects WHERE type IN ('F','C','UQ','D')`                         |
 | `CREATE INDEX`   | `sys.indexes`                                                          |
 | `CREATE SEQUENCE`| `INFORMATION_SCHEMA.SEQUENCES`                                         |
 
 ```sql
 if not exists(select * from INFORMATION_SCHEMA.SEQUENCES
-    where SEQUENCE_SCHEMA = N'cat' and SEQUENCE_NAME = N'SQ_Samples')
+    where SEQUENCE_SCHEMA = 'cat' and SEQUENCE_NAME = 'SQ_Samples')
     create sequence cat.SQ_Samples as bigint start with 100 increment by 1;
 go
 
 if not exists(select * from INFORMATION_SCHEMA.TABLES
-    where TABLE_SCHEMA = N'cat' and TABLE_NAME = N'Samples')
+    where TABLE_SCHEMA = 'cat' and TABLE_NAME = 'Samples')
 create table cat.[Samples] ( ... );
 go
 ```
+
+> No `N''` prefix in guards: `INFORMATION_SCHEMA` columns are `sysname` (nvarchar) — the literal is widened automatically, `N` adds nothing.
 
 `TableType` and dependent procedures are recreated via `drop ... if exists` + `create`:
 
@@ -59,3 +61,13 @@ drop procedure if exists cat.[Sample.Update];
 drop type      if exists cat.[Sample.TableType];
 go
 ```
+
+## Schema evolution — no separate migrations
+
+There is **no** `migrations.sql`, no version table, no migration runner. Because every script is idempotent and re-runs on each deploy, the schema files *are* the migration: a `schema.sql` is an **idempotent recipe** that brings any DB (empty or old) to the current shape, not a one-time snapshot. The canonical current shape lives in the DB — read it with the `a2` CLI, not from the file.
+
+The schema grows **additively only**:
+
+- **New column** — append a guarded `alter table ... add` block to the `schema.sql` that owns the table. The `CREATE TABLE` (guarded) runs first in the same file, the `ALTER` after it; on an existing DB the `CREATE` is skipped and only the `ALTER` fires.
+- **New FK** — two files: the column goes in `schema.sql`, the `foreign key` constraint goes in `keys.sql` (always present, even if empty, so all tables exist before any FK is created).
+- **Rename / drop / type-narrow** — the skill does **not** do these (tracking them idempotently is not worth it). To rename, *add the new column, leave the old one untouched*, and tell the user: "added X; if you want, migrate the data from the old column and drop it manually." Same for removals — a human does them deliberately.

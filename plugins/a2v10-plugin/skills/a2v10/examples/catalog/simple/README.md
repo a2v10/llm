@@ -7,6 +7,7 @@ A simple flat catalog without FKs or detail tables. Fields: `Name`, `Memo`.
 | File                  | Purpose                                         |
 |-----------------------|-------------------------------------------------|
 | `schema.sql`          | Sequence + table                                |
+| `keys.sql`            | FK constraints (empty here — flat catalog)      |
 | `logic.sql`           | All stored procedures                           |
 | `model.json`          | Definition of actions, dialogs, commands        |
 | `index.d.ts`          | Type definitions for the list form              |

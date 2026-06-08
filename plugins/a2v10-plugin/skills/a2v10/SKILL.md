@@ -2,7 +2,7 @@
 name: a2v10
 description: >
   Work with the A2v10 platform: endpoints (model.json), XAML/HTML views, SQL
-  stored procedures, template.ts, localization, DB migrations.
+  stored procedures, template.ts, localization.
   USE when the request mentions A2v10, model.json, view.vxaml (or view.xaml), template.ts, an
   A2v10 endpoint, or files matching the A2v10 layout. Do NOT use for generic
   SQL, XAML, or TypeScript unrelated to A2v10.

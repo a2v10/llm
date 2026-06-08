@@ -1,0 +1,5 @@
+------------------------------------------------
+-- FK constraints. A flat catalog has none — the file is intentionally empty.
+-- It exists so every endpoint has a uniform place for FKs (sql.json runs
+-- keys.sql after all schema.sql, so referenced tables already exist).
+------------------------------------------------
