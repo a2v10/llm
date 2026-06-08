@@ -1,5 +1,9 @@
 name: Release skill
 
+# Self-contained: uses no external `uses:` actions, so it is unaffected by the
+# organization's "allowed actions" policy. git / gh / jq / zip are preinstalled
+# on the GitHub-hosted runner.
+
 on:
   push:
     branches: [master]
@@ -11,9 +15,14 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout (manual clone, no external actions)
+        run: |
+          git clone --depth 1 --branch "${GITHUB_REF_NAME}" \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" .
 
       - name: Read version from plugin.json
         id: meta
@@ -29,8 +38,6 @@ jobs:
 
       - name: Check if release already exists
         id: check
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if gh release view "${{ steps.meta.outputs.tag }}" >/dev/null 2>&1; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
@@ -47,10 +54,9 @@ jobs:
 
       - name: Create release
         if: steps.check.outputs.exists == 'false'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "${{ steps.meta.outputs.tag }}" \
-            "a2v10-${{ steps.meta.outputs.tag }}.zip" \
+            "$GITHUB_WORKSPACE/a2v10-${{ steps.meta.outputs.tag }}.zip" \
+            --target "${GITHUB_SHA}" \
             --title "a2v10 ${{ steps.meta.outputs.tag }}" \
             --notes "A2v10 skill ${{ steps.meta.outputs.tag }}. Download the zip and add it via **Claude → Customize → Skills → + → Create skill → Upload a skill**."
