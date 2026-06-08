@@ -1,0 +1,56 @@
+name: Release skill
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read version from plugin.json
+        id: meta
+        run: |
+          VERSION=$(jq -r '.version' plugins/a2v10-plugin/.claude-plugin/plugin.json)
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "::error::Could not read .version from plugin.json"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: $VERSION"
+
+      - name: Check if release already exists
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "${{ steps.meta.outputs.tag }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release ${{ steps.meta.outputs.tag }} already exists — skipping."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Package skill
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          cd plugins/a2v10-plugin/skills
+          zip -r "$GITHUB_WORKSPACE/a2v10-${{ steps.meta.outputs.tag }}.zip" a2v10
+
+      - name: Create release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.meta.outputs.tag }}" \
+            "a2v10-${{ steps.meta.outputs.tag }}.zip" \
+            --title "a2v10 ${{ steps.meta.outputs.tag }}" \
+            --notes "A2v10 skill ${{ steps.meta.outputs.tag }}. Download the zip and add it via **Claude → Customize → Skills → + → Create skill → Upload a skill**."
