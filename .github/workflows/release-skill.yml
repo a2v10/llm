@@ -52,11 +52,10 @@ jobs:
           SRC="plugins/a2v10-plugin/skills/a2v10"
           ZIP="$GITHUB_WORKSPACE/a2v10-${{ steps.meta.outputs.tag }}.zip"
           test -f "$SRC/SKILL.md" || { echo "::error::SKILL.md not found in $SRC"; exit 1; }
-          # Stage only the a2v10 folder in a clean dir so nothing else can leak in
-          rm -rf staging "$ZIP"
-          mkdir -p staging
-          cp -r "$SRC" staging/a2v10
-          ( cd staging && zip -r "$ZIP" a2v10 )
+          rm -f "$ZIP"
+          # SKILL.md must be at the TOP LEVEL of the zip — pack the folder
+          # contents, not the folder itself (no wrapping a2v10/ directory).
+          ( cd "$SRC" && zip -r "$ZIP" . )
           echo "=== archive contents ==="
           unzip -l "$ZIP"
 
