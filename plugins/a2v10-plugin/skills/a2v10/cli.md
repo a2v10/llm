@@ -1,53 +1,63 @@
-# CLI — принципи (LLM-first)
+# CLI — principles (LLM-first)
 
-## Наявність
+## Working directory
 
-Перед використанням переконайся, що CLI `a2` доступний. Якщо ні — встанови його сам або попроси користувача.
+Run `a2` from the **application root** — the project root, **not** `WebApp`, `MainApp`, or any module folder. The CLI resolves config, modules, and DB connection relative to the current directory; from the wrong folder it will not work.
 
-> TODO: зафіксувати точну команду встановлення та спосіб перевірки (напр. `a2 --version`).
+## Availability
 
-## Основний принцип: CLI для LLM, не для людини
+Before using it, make sure the `a2` CLI is available — check with `a2 --version`. If it is not, it's a .NET global tool ([A2v10.CLI](https://www.nuget.org/packages/A2v10.CLI) on NuGet), so install it (requires the .NET SDK):
 
-Кожен виклик ізольований. LLM отримує тільки те, що повернула команда. Якщо не повернула — не знає.
+```
+dotnet tool install --global A2v10.CLI
+```
 
-## Що з цього випливає
+Already installed but outdated → `dotnet tool update --global A2v10.CLI`.
 
-**Немає:**
-- `init` / `new` / scaffold — LLM читає references і пише файли напряму.
-- Інтерактивних промптів — "Are you sure?" зависне. Ніколи.
-- ANSI кольорів — шум для парсера.
-- `--json` як opt-in — JSON є завжди.
+The command set grows over time. If `a2` reports an **unknown command or flag** that this skill documents, the local tool is stale: run `dotnet tool update --global A2v10.CLI` once and retry. Do this before assuming a command doesn't exist.
 
-**Є:**
-- JSON вивід за замовчуванням, завжди.
-- Ідемпотентність — безпечно запустити двічі.
-- Verbose за замовчуванням — LLM потребує повноти, не стислості.
-- Повний опис що змінилося, не тільки success/fail.
-- Структуровані помилки з `available` / actionable guidance.
+## Core principle: a CLI for the LLM, not for a human
 
-## Формат відповіді
+Every call is isolated. The LLM gets only what the command returned. If it didn't return something — the LLM doesn't know it.
 
-Успіх:
+## What follows from this
+
+**There is no:**
+- `init` / `new` / scaffold — the LLM reads the references and writes files directly.
+- Interactive prompts — an "Are you sure?" would hang. Never.
+- ANSI colors — noise for the parser.
+- `--json` as opt-in — JSON is always on.
+
+**There is:**
+- JSON output by default, always.
+- Idempotency — safe to run twice.
+- Verbose by default — the LLM needs completeness, not brevity.
+- A full description of what changed, not just success/fail.
+- Structured errors with `available` / actionable guidance.
+
+## Response format
+
+Success:
 ```json
 { "success": true, "data": { ... } }
 ```
 
-Помилка:
+Error:
 ```json
 { "success": false, "error": { "message": "..." } }
 ```
 
-## Канонічний формат таблиці
+## Canonical table format
 
-`schema.[Table]` — використовується скрізь: як аргумент команд і у відповідях.
+`schema.[Table]` — used everywhere: as a command argument and in responses.
 
-Приклади: `cat.[Agents]`, `doc.[Invoice]`, `cat.[Agent.Addresses]`.
+Examples: `cat.[Agents]`, `doc.[Invoice]`, `cat.[Agent.Addresses]`.
 
-Дужки обов'язкові — назва таблиці може містити крапку.
+Brackets are mandatory — a table name may contain a dot.
 
-## Команда `a2 app config` — конфігурація проєкту
+## Command `a2 app config` — project configuration
 
-Повертає рішення рівня застосунку, які треба **записати в CLAUDE.md** під час онбордингу існуючого проєкту (SKILL.md §5 → `references/existing-project.md`), і перелік модулів.
+Returns application-level decisions that must be **written into CLAUDE.md** during onboarding of an existing project (SKILL.md §5 → `references/existing-project.md`), plus the list of modules.
 
 ```json
 {
@@ -65,32 +75,30 @@
 }
 ```
 
-- `multiTenant` — чи проєкт багатоорендний (впливає на параметри/WHERE процедур).
-- `modules` — перелік модулів застосунку (див. нижче).
+- `multiTenant` — whether the project is multi-tenant (affects procedure parameters / WHERE clauses).
+- `modules` — the list of application modules (see below).
 
-У `data` можуть бути й інші поля — **не твої**: вони обслуговують інші інструменти. Ігноруй їх, читай лише `multiTenant` і `modules`.
+`data` may contain other fields too — **not yours**: they serve other tools. Ignore them, read only `multiTenant` and `modules`.
 
-> TODO: підтвердити повний склад полів (idType, схеми, базова локалізація, …).
+### `modules` — modules and routing
 
-### `modules` — модулі й маршрутизація
+An endpoint URL may start with a module prefix: `/[$<module>]/<path>/<action>/<id>`. Each entry:
 
-URL endpoint-а може починатися з модульного префікса: `/[$<module>]/<path>/<action>/<id>`. Кожен запис:
+- **`prefix`** — the literal URL token of the module, **including the `$`** (`"$admin"`); `""` — the main application (no prefix).
+- **`root`** — the module's source folder, a path **from the project root, without a leading slash** (`"MainApp"`). `null` — the module has no local folder.
 
-- **`prefix`** — дослівний URL-токен модуля, **разом із `$`** (`"$admin"`); `""` — головний застосунок (без префікса).
-- **`root`** — папка-source модуля, шлях **від кореня проєкту, без провідного слеша** (`"MainApp"`). `null` — у модуля немає локальної папки.
+From these fields the LLM builds two formulas:
 
-LLM складає з цих полів дві формули:
+- **URL** = `prefix` + `/<path>/<action>/<id>` — always (works even for `root: null`).
+- **File** = `root` + `/<path>/...` → `…/model.json` — **only when `root` is not `null`**.
 
-- **URL** = `prefix` + `/<path>/<action>/<id>` — завжди (працює і для `root: null`).
-- **Файл** = `root` + `/<path>/...` → `…/model.json` — **тільки коли `root` не `null`**.
+`root: null` → the module's endpoints exist only as a built artifact: they can be invoked and linked (the `prefix` formula), but **there is nowhere to write them — the source location physically does not exist**. Do not create folders for them.
 
-`root: null` → endpoint-и модуля існують лише як зібраний артефакт: їх можна викликати й лінкувати (`prefix`-формула), але **писати нікуди — source-розташування фізично немає**. Не створюй для них папок.
-
-## Команди `a2 db`
+## Commands `a2 db`
 
 ### `a2 db tables [schema]`
 
-Список таблиць згрупованих за схемою. `schema` — необов'язковий фільтр.
+A list of tables grouped by schema. `schema` — an optional filter.
 
 ```json
 { "success": true, "data": ["cat.[Agents]", "cat.[Units]", "doc.[Invoice]"] }
@@ -98,7 +106,7 @@ LLM складає з цих полів дві формули:
 
 ### `a2 db table-columns cat.[Agents]`
 
-Структура таблиці. Конвенції: `Id` — завжди PK, FK-колонки nullable.
+Table structure. Conventions: `Id` — always PK, FK columns nullable.
 
 ```json
 {
@@ -113,11 +121,11 @@ LLM складає з цих полів дві формули:
 }
 ```
 
-`ref` — канонічний формат таблиці.
+`ref` — the canonical table format.
 
 ### `a2 db referenced-by cat.[Agents]`
 
-Таблиці і колонки, що посилаються на дану таблицю.
+Tables and columns that reference the given table.
 
 ```json
 {
@@ -129,21 +137,21 @@ LLM складає з цих полів дві формули:
 }
 ```
 
-## Команди `a2 endpoint` — сімейство `resolve-*`
+## Commands `a2 endpoint` — the `resolve-*` family
 
-По команді на секцію model.json. Кожна резолвить один елемент так, як його бачить рантайм: під які процедури й файли він зв'язаний і яку форму моделі віддає. Це answer key для звірки шарів — не вгадуй форму зі своїх маркерів, звір її з тим, що рантайм реально зібрав.
+One command per model.json section. Each resolves a single element the way the runtime sees it: which procedures and files it is bound to, and which model shape it returns. This is the answer key for cross-checking the layers — don't guess the shape from your own markers, verify it against what the runtime actually assembled.
 
-`route` адресує елемент (`/[$<module>]/<path>/<element>`), напр. `catalog/agent/edit`. **Без `id`** — типи беруться зі схеми result-set-ів (метадані колонок), не з даних; реальний запис не потрібен.
+`route` addresses the element (`/[$<module>]/<path>/<element>`), e.g. `catalog/agent/edit`. **No `id`** — types come from the schema of the result sets (column metadata), not from data; an actual record is not needed.
 
-`dataModel` дістається **викликом** `load/index`-процедури, тож якщо її нема — команда падає цілком (`success: false`, `error`), а не повертає частковий результат.
+`dataModel` is obtained by **invoking** the `load`/`index` procedure, so if it doesn't exist the command fails entirely (`success: false`, `error`) rather than returning a partial result.
 
-**Коли кликати — post-deploy, дискреційно.** Це верифікаційна половина петлі «написав → звір», не authoring-time: процедури мусять уже існувати (міграції застосовані) і `build` зроблений. До деплою команда падає **за дизайном** — це означає «ще не задеплоєно», не «зламано». Виклик не обов'язковий після кожної дрібниці; деплой може бути не в руках LLM — тоді просто нема чого звіряти.
+**When to call — post-deploy, discretionary.** This is the verification half of the "wrote → verify" loop, not authoring-time: the procedures must already exist (migrations applied) and `build` must have been done. Before deployment the command fails **by design** — that means "not deployed yet", not "broken". Calling it is not mandatory after every small change; the deploy may not be in the LLM's hands — then there is simply nothing to verify.
 
-Зараз є три команди нижче. `resolve-popup` / `resolve-report` / `resolve-files` — додаються в міру потреби.
+For now there are the commands below. `resolve-report` / `resolve-files` — added as needed.
 
-### `a2 endpoint resolve-action <route>` · `a2 endpoint resolve-dialog <route>`
+### `a2 endpoint resolve-action <route>` · `a2 endpoint resolve-dialog <route>` · `a2 endpoint resolve-popup <route>`
 
-Renderable — `actions` (page) і `dialogs` (modal). **Форма виводу однакова**; різниця лише в тому, в якій секції model.json шукати ім'я (команда = дзеркало секції, не різниця контракту).
+Renderable — `actions` (page), `dialogs` (modal), and `popups` (popup). **The output shape is identical**; the only difference is which model.json section to look the name up in (the command = a mirror of the section, not a difference in contract).
 
 ```json
 {
@@ -172,11 +180,11 @@ Renderable — `actions` (page) і `dialogs` (modal). **Форма виводу 
 }
 ```
 
-- **`model`** — головний редагований об'єкт; інші кореневі props (lookup-списки для комбо) — не сутність.
-- **`view`/`template`** — `{ dir, file }`: `dir` через `/` (як `route`), `file` — реальне ім'я з розширенням, готове відкрити. `template.file` — **source для правки** (`.ts`; якщо нема — `.js`), не скомпільований `.js`. Перевірки наявності нема навмисно: відсутній або невірно названий файл покаже `build`, не resolve.
-- **`sqlProcedures`** — verb (нижній регістр) → реальне SQL-ім'я процедури, яке рантайм покличе, готове до `CREATE OR ALTER` (схема без дужок, як канон `cat.[T]`). Набір залежить від елемента: `edit` → `load`+`update`, без `index`. Explicit і derived не розрізняються — потрібне ім'я, не походження.
-- **`dataModel.types`** — типове дерево, яке рантайм згенерував зі схеми result-set-ів; проєкція платформного model-опису 1:1. Кожен prop має `type` + `len`: `len` = `null`, крім рядка із заданою довжиною (`"string"`, `len: 100`). Примітиви — нижній регістр (`number`/`string`/…); іменований тип — `T…`; масив → `{ "item": "T…" }`. `id`/`name` присутні завжди (`null`, коли нема, як у `TRoot`). Це те, з чим звіряєш XAML-binds і що мали віддати твої SQL-маркери.
+- **`model`** — the main editable object; other root props (lookup lists for combos) are not the entity.
+- **`view`/`template`** — `{ dir, file }`: `dir` with `/` (like `route`), `file` — the real name with extension, ready to open. `template.file` — the **source to edit** (`.ts`; if absent — `.js`), not the compiled `.js`. There is deliberately no existence check: a missing or misnamed file is surfaced by `build`, not by resolve.
+- **`sqlProcedures`** — verb (lowercase) → the real SQL procedure name the runtime will call, ready for `CREATE OR ALTER` (schema without brackets, like the `cat.[T]` canon). The set depends on the element: `edit` → `load`+`update`, no `index`. Explicit and derived are not distinguished — the name is what's needed, not the origin.
+- **`dataModel.types`** — the type tree the runtime generated from the result-set schema; a 1:1 projection of the platform model description. Each prop has `type` + `len`: `len` = `null`, except for a string with a given length (`"string"`, `len: 100`). Primitives — lowercase (`number`/`string`/…); a named type — `T…`; an array → `{ "item": "T…" }`. `id`/`name` are always present (`null` when absent, as in `TRoot`). This is what you cross-check XAML binds against and what your SQL markers were supposed to return.
 
 ### `a2 endpoint resolve-command <route>`
 
-Callable — секція `commands`. На відміну від renderable: **`view`/`template` відсутні**; `sqlProcedures` = те, що команда реально кличе (derived verb або explicit `procedure`/clr/api); `dataModel` — **лише якщо команда повертає модель**, інакше null.
+Callable — the `commands` section. Unlike renderable: **`view`/`template` are absent**; `sqlProcedures` = what the command actually calls (derived verb or explicit `procedure`/clr/api); `dataModel` — **only if the command returns a model**, otherwise null.

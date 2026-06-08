@@ -44,11 +44,31 @@ to record. Bring the shell up:
 2. `./setup-db.ps1` — creates the database and applies that script.
 
 If step 2 prints `Failed. Check SQL Server connection`, `setup-db.ps1` could not
-reach SQL Server at `localhost` — the instance it hardcodes (`$server`). Probe it:
-`sqlcmd -S localhost -Q "SELECT @@VERSION"`. A local install is usually a **named
-instance** (`.\SQLEXPRESS`, `(localdb)\MSSQLLocalDB`), not bare `localhost`; find
-the one that answers and set `$server` in `setup-db.ps1` to it, then rerun.
-*(Temporary — the connection will later come from `appsettings.json` via the CLI.)*
+reach SQL Server at `localhost` — the instance it hardcodes. **Stop and hand this
+back to the user.** Do not probe for instances, do not switch to a named instance
+or LocalDB, and never install SQL Server. The scaffold ships `localhost`; only the
+user knows their actual instance. Tell them to replace the server name in **two
+places** and rerun:
+
+- `$server` in `setup-db.ps1` (line 5)
+- `Server=...` in `WebApp/appsettings.json` (the `Default` connection string)
+
+Both must match — `setup-db.ps1` creates the database, `appsettings.json` is how
+the running app reaches it. Tell the user too: if a user-secrets file
+(`secrets.json`) defines the `Default` connection string, the running app picks it
+up and it **overrides** `appsettings.json` — so the server name has to be fixed
+there as well, or the app keeps hitting the old instance no matter what
+`appsettings.json` says.
+
+**The user may opt out of DB access entirely.** They can say *"don't touch the DB,
+I'll run everything myself — just tell me what."* This is a normal setup, e.g. the
+database lives on a remote machine reachable only through a connection string kept
+in `secrets.json` (which you never see) — every direct DB operation would just fail
+anyway. When the user says this: record it in `CLAUDE.md` (a `Database` note under
+Platform — *"DB is user-managed; never run setup-db.ps1, sqlcmd, migrations, or any
+direct DB command — output the SQL/commands for the user to run"*) and from then on
+**never** attempt a direct DB operation. Build, generate the SQL, hand the user the
+exact script or command to run, and stop.
 
 Setup ends here. The solution builds and the database is ready — the shell is runnable, 
 but you don't run it. Starting the host is the user's job, in their own environment 
@@ -95,6 +115,10 @@ Semantics already filled from §2. It is what every later task reads (SKILL.md �
 Built on **A2v10** — always use the `a2v10` skill when working with this project.
 
 XAML naming convention: `.vxaml`
+
+<!-- If the user opted out of DB access (§1), add a Database line here:
+     "DB is user-managed; never run setup-db.ps1/sqlcmd/migrations — output SQL for the user." -->
+
 
 ## Semantics
 

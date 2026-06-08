@@ -7,30 +7,35 @@
 ## Structure (recognition)
 
 - `appTitle` = the string rendered in the running app's **header** (top bar, beside the logo); it localizes via `@[...]` like any title.
-- Top-level `menu[]` entries = nav sections; each carries an `icon`.
-- Nested `items[]` = submenus (arbitrarily deep).
-- A leaf carries a `url`. The `url` addresses **either** an app-endpoint path (`/document/waybillin`) **or** a `$`-prefixed compiled-module route (`/$meta/config`) — the same addressing model as SKILL.md §3.
+- **Links live at the third level.** The tree is section (L1, carries `icon`) → group (L2) → link (L3, carries `url`). A `url` placed on level 1 or 2 renders but **won't open** — levels 1–2 are containers only.
+- A link's `url` addresses **either** an app-endpoint path (`/document/waybillin`) **or** a `$`-prefixed compiled-module route (`/$meta/config`) — the same addressing model as SKILL.md §3.
 - Titles use `@[...]` localization (SKILL.md §1).
 
 ## Example
 
 ```json
 {
+	"$schema": "@schemas/menu-json-schema.json#",
 	"appTitle": "@[AppTitle]",
 	"menu": [
 		{
-			"title": "@[Catalogs]",
+			"title": "@[Sales]",
 			"icon": "cart",
 			"items": [
-				{ "title": "@[Agents]", "url": "/catalog/agent", "create": true },
-				{ "title": "@[Stores]", "url": "/catalog/store" }
+				{
+					"title": "@[Catalogs]",
+					"items": [
+						{ "title": "@[Agents]", "url": "/catalog/agent", "create": true },
+						{ "title": "@[Stores]", "url": "/catalog/store" }
+					]
+				}
 			]
 		}
 	]
 }
 ```
 
-Other fields (`grow`, `underline`, `category`, `id`, …) and the full JSON schema → https://docs-llm.a2v10.com <!-- TODO: exact menu.json page / menu-json-schema.json -->
+Other fields (`grow`, `underline`, `category`, `id`, …) and the full JSON schema (`@schemas/menu-json-schema.json`) → https://docs-llm.a2v10.com/app/menu.md
 
 ## Legacy DB menu
 
