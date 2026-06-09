@@ -1,11 +1,19 @@
 # Semantics — what to know about a project
 
-The engine defines no domain meaning (SKILL.md §1). **Semantics** is everything
-the project decides and you must know before touching it. It is recorded in the
-project's CLAUDE.md; this file says **what it consists of** — read it to know what
-to discover (existing project) or decide (new project).
+The engine defines no domain meaning (SKILL.md §1). **Semantics** is everything the
+project decides and you must know before touching it. It lives in **two files**, split
+by grain:
 
-## Dimensions to know
+- **Skeleton → `CLAUDE.md`** — project-wide decisions fixed at setup: the kind-system,
+  the conventions below (idType, tenancy, naming, standard columns), and a one-line app
+  identity. Bounded — does not grow with the table count.
+- **Domain → `DOMAIN.md`** — per-entity meaning, grown over time, never dumped at setup
+  (see *DOMAIN.md — the per-entity registry* below).
+
+This file says **what semantics consists of** — read it to know what to discover (existing
+project) or decide (new project).
+
+## Dimensions to know — the skeleton (→ `CLAUDE.md`)
 
 - **Kinds** — the entity categories the project uses. A *kind* bundles a schema,
   standard columns, a verb/procedure set, and a view set. **Project-defined**:
@@ -57,3 +65,45 @@ detail lives in each example's README; here, only the recognition-level bundle.
 **journal** (`jrn`) — accumulation register documents post into. → described within `examples/document/operation` (no standalone example yet)
 - Endpoint at `journal/<name>/`; table `jrn.<Name>Journal`. Single-identifier convention: `OpTrans.Journal = "Stock"` → `jrn.StockJournal` → `/journal/stock`.
 - Filled by document posting (`doc.OpTrans`), not edited directly.
+
+## DOMAIN.md — the per-entity registry
+
+The project's accumulated domain knowledge: one entry per entity, carrying meaning the
+code **cannot** express — never a restatement of the schema (that rots; the `a2` CLI
+already reports columns and refs). It doubles as the registry of what exists, so each
+entry carries a status.
+
+Entry shape:
+
+```markdown
+## <Entity> — <kind>
+To implement
+depends on: <Entity>, <Entity>          (or  —  when nothing)
+<one line: what it is and its role in the domain>
+- relationships, invariants, "don't do X" — only what the schema can't say
+```
+
+The second line is the **state line** — `To implement` while the entity is only decided, or
+`Implemented at <path>` once built (the path is its endpoint folder, e.g. `catalog/goods`):
+
+This single line is the **worklist and the index in one** — what is left to build (every
+`To implement`), and where each built entity lives (its `Implemented at <path>`). It drives
+the one-by-one endpoint work: `new-semantic.md` writes `To implement` per decided entity (or
+discovery does, for an existing app); creating that entity's endpoint flips the line to
+`Implemented at <path>` and fills its full meaning. The deep meaning (invariants,
+relationships, "don't do X") is written **when the entity is built**, not guessed ahead — a
+`To implement` entry is a one-line stub, an `Implemented` one carries the residue.
+
+**`depends on`** — the entities this one actually references (`—` when none). A *preference,
+not a gate*: a build order (dependents after their targets) and what to read first (their
+entries; the built schema of any `Implemented` — don't invent columns/keys). FK constraints go
+to `keys.sql` after all tables, so order is free — a not-yet-built or **cyclic** dependency
+never blocks; reference its `Id`. Only real references: a cycle is tolerated, not a licence to
+invent edges.
+
+- **before** working an entity — read its entry, if any;
+- **after** building or changing it — write or update the entry, residue-only. In the
+  current phase, confirm the entry with the user before writing it.
+
+A **bare app** (no domain) has an empty `DOMAIN.md`. Treat any entry as belief to verify
+against code, not ground truth — never a restatement of the schema.

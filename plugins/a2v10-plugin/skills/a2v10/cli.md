@@ -57,7 +57,7 @@ Brackets are mandatory — a table name may contain a dot.
 
 ## Command `a2 app config` — project configuration
 
-Returns application-level decisions that must be **written into CLAUDE.md** during onboarding of an existing project (SKILL.md §5 → `references/existing-project.md`), plus the list of modules.
+Returns application-level decisions that must be **written into CLAUDE.md** during onboarding of an existing project (SKILL.md §6 → `references/existing-project.md`), plus the list of modules.
 
 ```json
 {
@@ -145,7 +145,7 @@ One command per model.json section. Each resolves a single element the way the r
 
 `dataModel` is obtained by **invoking** the `load`/`index` procedure, so if it doesn't exist the command fails entirely (`success: false`, `error`) rather than returning a partial result.
 
-**When to call — post-deploy, discretionary.** This is the verification half of the "wrote → verify" loop, not authoring-time: the procedures must already exist (migrations applied) and `build` must have been done. Before deployment the command fails **by design** — that means "not deployed yet", not "broken". Calling it is not mandatory after every small change; the deploy may not be in the LLM's hands — then there is simply nothing to verify.
+**When to call — post-deploy, discretionary.** This is the verification half of the "wrote → verify" loop, not authoring-time: the procedures must already exist in the DB — the **module you edited** rebuilt so its `main.sql` is regenerated, and that script applied. Rebuild **just that module** — `dotnet build <root>`, the module's `root` folder (from `a2 app config`) — **never the solution**: a solution build also rebuilds the `WebApp` host and fails when the user is running it (its output DLLs and port are locked), while the module build is untouched by the running host. (Whole-solution build belongs only to first-time setup, before the host has ever run → `references/new-project.md`.) Before deployment the command fails **by design** — that means "not deployed yet", not "broken". Calling it is not mandatory after every small change; the deploy may not be in the LLM's hands — then there is simply nothing to verify.
 
 For now there are the commands below. `resolve-report` / `resolve-files` — added as needed.
 

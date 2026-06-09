@@ -20,7 +20,7 @@ What a `catalog`, an `Agent`, or an `edit` action *means* — and likewise schem
 (`cat/doc/jrn`), the element set, column sets, naming style — is defined entirely
 by the app, never by the engine; they are *how most apps usually look*, not rules.
 This file is the **syntax reference**. The app's *meaning* comes from the project,
-not from here (see **§5 Workflow**).
+not from here (see **§6 Workflow**).
 
 **Localization** is a runtime-wide macro: the runtime replaces `@[Key]` with a localized value from the project's dictionaries. Details → `references/localization.md`.
 
@@ -87,19 +87,29 @@ These are things the engine *allows* and the model is *naturally pulled toward*.
 
 **Broke and the cause isn't obvious?** Don't guess — go to the references for the layer you touched (and `references/troubleshooting.md`); they spell out what to verify and how.
 
-## 5. Workflow
+## 5. Discipline — operator error, orthogonal to the engine
+
+§4 is the engine's contract; this is *your* contract — the priors and copy-habits you bring. A2v10 has **no build step**: none of these fail loudly. Code just silently doesn't bind, or quietly diverges.
+
+- **Clone-and-mutate: copied is guilty until verified.** The workflow is example → clone → mutate, and the trap is carrying the donor's names into the new entity. After cloning, sweep **every** inherited name — markers, TVP columns, d.ts properties, XAML bindings, proc body, comments — against the new entity. Cross-layer names must agree (§4); a clone is exactly where they silently stop.
+- **Comments are load-bearing — true-or-delete.** A stale comment is cloned with the code and propagates, so fix or cut it, never leave a wrong one. Site-local invariants and "don't do X here" → a comment at the site; cross-cutting meaning → the project docs — `CLAUDE.md` (skeleton) or `DOMAIN.md` (per-entity), per `semantic.md`. A comment on a seam is part of the contract, not optional prose.
+- **Don't invent platform surface.** Not in the references or an existing example → it does not exist. The surface is small and names are free — which tempts confabulated keys, markers, attributes. Go to the docs or ask; never invent.
+- **Don't carry framework priors.** A2v10 is not MVC/ORM. Resist the pull toward ad-hoc SQL, an ORM, a build step, migrations — data is **only** through procedures, files interpreted live. What you "know" from Rails/Django/EF is wrong here.
+- **Reuse before create.** Before adding a localization key, a base proc, a shared template — check it doesn't already exist. A second way to do one thing is the defect, not a feature.
+
+## 6. Workflow
 
 1. **Read CLAUDE.md.**
-2. **It exists** → work the task → §6 Dispatch.
+2. **It exists** → work the task → §7 Dispatch.
 3. **It's missing** → set up the project first, then work:
    - new project → `references/new-project.md`
    - existing project → `references/existing-project.md`
 
-Setup establishes the project's semantics and records them in CLAUDE.md — so step 3 runs once.
+Setup establishes the project's skeleton in CLAUDE.md (per-entity domain grows later in `DOMAIN.md`) — so step 3 runs once.
 
 Unsure → ask; never guess.
 
-## 6. Dispatch — find the task
+## 7. Dispatch — find the task
 
 Each row is an action you take. The kind (catalog / document / journal / …) is **semantics**, not a routing axis — `new-endpoint.md` reads it from CLAUDE.md.
 

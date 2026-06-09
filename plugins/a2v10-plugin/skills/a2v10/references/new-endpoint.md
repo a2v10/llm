@@ -14,5 +14,11 @@ An endpoint is a folder with `model.json`. Its location depends on the module �
 
 The endpoint works by its URL the moment it exists. To surface it in the app's navigation, add an entry to `menu.json` — a separate task, see `references/menu.md`.
 
+## Record it in DOMAIN.md
+
+**Before building** — read the entity's `DOMAIN.md` entry and those of its `depends on`; for any already `Implemented`, read its built schema (`a2` CLI) and build against real columns/keys, not invented. Order is free (FK → `keys.sql` after all tables): a not-yet-built or cyclic dependency never blocks — reference its `Id`.
+
+**After building** — flip the entry's state line to `Implemented at <path>`, fill role, relationships, invariants, "don't do X" — **residue only**. Confirm with the user. Format → `semantic.md`.
+
 
 
