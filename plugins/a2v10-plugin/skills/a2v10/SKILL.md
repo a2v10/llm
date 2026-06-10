@@ -74,6 +74,7 @@ The elements come in two kinds:
 
 ### Must — break it and it does not work (engine contract)
 
+- **The database is not yours — never connect to it yourself.** No DDL, no DML, not even `select`; with any tool, from any language, under any credentials you find — found credentials are not permission. The single door, by design: the read-only `a2` CLI (`a2 db …`). Applying SQL to a database is always the **user's** action — say *"apply the DB changes and tell me when done"*, and continue only after they confirm.
 - Access data only through stored procedures; never raw SQL.
 - Procedures must exist under the **exact** name — either the one the runtime **derives** from `model` (`<schema>.[<model>.<Verb>]`) or the one a `command` names **explicitly** (`procedure`). A misnamed proc is simply not found.
 - Follow the result-set marker grammar; keep cross-layer names in agreement (TVP column = client property; marker ↔ d.ts ↔ XAML).
@@ -96,22 +97,22 @@ These are things the engine *allows* and the model is *naturally pulled toward*.
 - **Don't invent platform surface.** Not in the references or an existing example → it does not exist. The surface is small and names are free — which tempts confabulated keys, markers, attributes. Go to the docs or ask; never invent.
 - **Don't carry framework priors.** A2v10 is not MVC/ORM. Resist the pull toward ad-hoc SQL, an ORM, a build step, migrations — data is **only** through procedures, files interpreted live. What you "know" from Rails/Django/EF is wrong here.
 - **Reuse before create.** Before adding a localization key, a base proc, a shared template — check it doesn't already exist. A second way to do one thing is the defect, not a feature.
+- **Don't build knowledge ahead of need.** No nameable consumer → don't create it; derivable on touch → don't store it.
 
 ## 6. Workflow
 
-1. **Read CLAUDE.md.**
-2. **It exists** → work the task → §7 Dispatch.
-3. **It's missing** → set up the project first, then work:
-   - new project → `references/new-project.md`
-   - existing project → `references/existing-project.md`
+1. **CLAUDE.md exists** → read it (and glance at `DOMAIN.md`): it carries the project's state and routing — a bare app's `## Semantics` stub routes its first domain task itself (→ `references/new-semantic.md`). Work the task → §7 Dispatch.
+2. **No CLAUDE.md** → **onboarding, exactly once.** The fork is exclusive, on one check: **is there a `model.json` anywhere in the tree?** (the platform's defining marker — §3):
+   - **absent** → new project → `references/new-project.md`
+   - **present** → existing project → `references/existing-project.md`
 
-Setup establishes the project's skeleton in CLAUDE.md (per-entity domain grows later in `DOMAIN.md`) — so step 3 runs once.
+   Both end with `CLAUDE.md` and `DOMAIN.md` written — after that, only path 1 ever runs.
 
 Unsure → ask; never guess.
 
 ## 7. Dispatch — find the task
 
-Each row is an action you take. The kind (catalog / document / journal / …) is **semantics**, not a routing axis — `new-endpoint.md` reads it from CLAUDE.md.
+Each row is an action you take. The kind (catalog / document / journal / …) is **semantics**, not a routing axis — `new-endpoint.md` reads it in two parts: *which* kind an entity is, from its `DOMAIN.md` entry; what that kind *means* (schema, columns, verbs, views), from `CLAUDE.md` `## Semantics` where the project deviates, otherwise from this skill's defaults.
 
 **Create an endpoint** (from an existing table / from scratch) → `references/new-endpoint.md`
 

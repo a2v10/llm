@@ -39,8 +39,8 @@ it; record it, don't break it. Only real references, not a free-for-all.
 - **`CLAUDE.md`** — fill `## Semantics` with one line on what the app is, plus the kinds in use
   and each kind's role (the skeleton; use the `new-project.md` §3 template).
 - **`DOMAIN.md`** — one entry per entity from §3 (name + kind + `depends on` + one-line role),
-  each marked `To implement`. Format → `semantic.md`. These are the plan; creating an entity's
-  endpoint flips its line to `Implemented at <path>` and fills its full meaning.
+  each marked `planned`. Format → `semantic.md`. These are the plan; creating an entity's
+  endpoint flips its line to `confirmed at <path>` and fills its full meaning.
 
 ## 5. Hand back — do not build
 
@@ -49,9 +49,9 @@ it; record it, don't break it. Only real references, not a free-for-all.
 > *"I understand the app and its semantics are recorded — I'm ready to write. I suggest we
 > fill the endpoints one at a time."*
 
-Then return to the normal workflow (SKILL.md §6): each `To implement` entity is a separate
+Then return to the normal workflow (SKILL.md §6): each `planned` entity is a separate
 **Create an endpoint** task (§7 Dispatch), done one by one, each reading `CLAUDE.md` and
-flipping its `DOMAIN.md` line to `Implemented at <path>`. Suggest an order that follows
+flipping its `DOMAIN.md` line to `confirmed at <path>`. Suggest an order that follows
 `depends on` — entities that depend on nothing (the catalogs) first, their dependents after;
 entities in a cycle in any order.
 

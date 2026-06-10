@@ -4,9 +4,11 @@ The engine defines no domain meaning (SKILL.md §1). **Semantics** is everything
 project decides and you must know before touching it. It lives in **two files**, split
 by grain:
 
-- **Skeleton → `CLAUDE.md`** — project-wide decisions fixed at setup: the kind-system,
-  the conventions below (idType, tenancy, naming, standard columns), and a one-line app
-  identity. Bounded — does not grow with the table count.
+- **Skeleton → `CLAUDE.md` (`## Semantics`)** — project-wide decisions fixed at setup:
+  a one-line app identity, the global conventions (idType, tenancy, naming, standard
+  columns), and kind *definitions* **only where the project deviates** from this skill's
+  defaults (see *Kinds* below). Bounded — does not grow with the table count; thin
+  (near-empty) for a vanilla cat/doc/jrn app, and that is correct.
 - **Domain → `DOMAIN.md`** — per-entity meaning, grown over time, never dumped at setup
   (see *DOMAIN.md — the per-entity registry* below).
 
@@ -15,11 +17,15 @@ project) or decide (new project).
 
 ## Dimensions to know — the skeleton (→ `CLAUDE.md`)
 
-- **Kinds** — the entity categories the project uses. A *kind* bundles a schema,
-  standard columns, a verb/procedure set, and a view set. **Project-defined**:
-  `catalog`/`document`/`journal` (schemas `cat`/`doc`/`jrn`) are only the common
-  default — an app may instead use `leads`/`contacts`, `devices`, anything. Never
-  assume cat/doc/jrn; read the project's actual kinds.
+- **Kinds** — the entity categories the project uses; a *kind* bundles a schema,
+  standard columns, a verb/procedure set, and a view set. `catalog`/`document`/`journal`
+  (schemas `cat`/`doc`/`jrn`) are only the common default — never assume them; read the
+  project's actual kinds. **Record a kind's *definition* in `## Semantics` only when it
+  departs from the default** — own kinds (`leads`/`devices`), changed standard columns, a
+  different verb/view set. For the defaults the skill (this file + `examples/`) is the home —
+  point, don't copy. Two non-facts to keep out: the *list* of kinds in use (derivable from
+  `DOMAIN.md` as `DISTINCT kind`) and any restatement of default kind behaviour. *Which*
+  kind each entity is lives in its `DOMAIN.md` entry, not here.
 - **idType** — surrogate PK type (default `bigint`, sequence per table).
 - **Tenancy** — multi- or single-tenant; all-or-nothing across the project.
 - **Naming** — model singular vs table plural; constraint patterns.
@@ -77,33 +83,52 @@ Entry shape:
 
 ```markdown
 ## <Entity> — <kind>
-To implement
+confirmed at catalog/agent
 depends on: <Entity>, <Entity>          (or  —  when nothing)
 <one line: what it is and its role in the domain>
 - relationships, invariants, "don't do X" — only what the schema can't say
 ```
 
-The second line is the **state line** — `To implement` while the entity is only decided, or
-`Implemented at <path>` once built (the path is its endpoint folder, e.g. `catalog/goods`):
+### State line — one axis, three values
 
-This single line is the **worklist and the index in one** — what is left to build (every
-`To implement`), and where each built entity lives (its `Implemented at <path>`). It drives
-the one-by-one endpoint work: `new-semantic.md` writes `To implement` per decided entity (or
-discovery does, for an existing app); creating that entity's endpoint flips the line to
-`Implemented at <path>` and fills its full meaning. The deep meaning (invariants,
-relationships, "don't do X") is written **when the entity is built**, not guessed ahead — a
-`To implement` entry is a one-line stub, an `Implemented` one carries the residue.
+The second line is the **state line**: the model's grounded relation to the entity, on a single
+axis. The path is the endpoint folder (e.g. `catalog/agent`).
+
+- **`planned`** — decided, not built. Next: build it.
+- **`confirmed at <path>`** — built and verified (procedure read, residue captured). Next: trust it.
+- **`out of scope`** — seen and deliberately not worked out (a dead table, an unreachable tail).
+  Next: don't touch — the recorded form of *"don't know → don't touch"*; the tail is named, not absent.
+
+One line, the **worklist and index in one**: what is left (`planned`), what is known (`confirmed`),
+what is parked (`out of scope`). Two entry points converge at `confirmed`:
+
+- **new project** — `planned → confirmed`: building is knowing (you authored it).
+- **existing project** — an entry is **born `confirmed` on first touch**: the touch reads the
+  procedure (that read *is* the verification), then writes the entry. Until touched, an entity has
+  no entry — an empty registry over a built app is the normal state, not a gap. `planned` does not
+  occur — everything is already built.
+
+The deep meaning (invariants, relationships, "don't do X") is written **when the entity is touched**,
+not guessed ahead — a `planned` entry is a one-line stub, a `confirmed` one carries the residue.
+
+### Grounding
+
+Every line of an entry must be groundable — the schema, a procedure body, or the user's word says it.
+Can't ground it → leave it out, or mark the entity `out of scope`.
 
 **`depends on`** — the entities this one actually references (`—` when none). A *preference,
 not a gate*: a build order (dependents after their targets) and what to read first (their
-entries; the built schema of any `Implemented` — don't invent columns/keys). FK constraints go
+entries; the built schema of any `confirmed` — don't invent columns/keys). FK constraints go
 to `keys.sql` after all tables, so order is free — a not-yet-built or **cyclic** dependency
 never blocks; reference its `Id`. Only real references: a cycle is tolerated, not a licence to
-invent edges.
+invent edges. In an **existing project** `depends on` is filled **on touch** (from `table-columns`
+`ref`) — build-order is moot when everything is already built, and reading every
+table's FKs up front is the bomb the 90/10 line forbids.
 
 - **before** working an entity — read its entry, if any;
 - **after** building or changing it — write or update the entry, residue-only. In the
   current phase, confirm the entry with the user before writing it.
 
-A **bare app** (no domain) has an empty `DOMAIN.md`. Treat any entry as belief to verify
-against code, not ground truth — never a restatement of the schema.
+A **bare app** (no domain) has an empty `DOMAIN.md` and a stub `## Semantics` in CLAUDE.md — the
+stub is what routes its first domain task to `new-semantic.md` (SKILL.md §6). Treat any
+entry as belief to verify against code, not ground truth — never a restatement of the schema.

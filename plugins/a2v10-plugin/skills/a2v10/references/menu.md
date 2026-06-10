@@ -9,6 +9,7 @@
 - `appTitle` = the string rendered in the running app's **header** (top bar, beside the logo); it localizes via `@[...]` like any title.
 - **Links live at the third level.** The tree is section (L1, carries `icon`) → group (L2) → link (L3, carries `url`). A `url` placed on level 1 or 2 renders but **won't open** — levels 1–2 are containers only.
 - A link's `url` addresses **either** an app-endpoint path (`/document/waybillin`) **or** a `$`-prefixed compiled-module route (`/$meta/config`) — the same addressing model as SKILL.md §3.
+- An endpoint that lives in a module folder is addressed **with that module's `prefix`** — the disk path does not contain it (`StoreApp/catalog/store` on disk → url `/$store/catalog/store`, never `/catalog/store`). The folder path alone cannot tell you the url; get the prefix from `a2 app config`.
 - Titles use `@[...]` localization (SKILL.md §1).
 - **`icon` is a closed dictionary — never guess.** An unknown name silently fails to render (no error, no fallback). Don't infer from Font Awesome / Material / Bootstrap or from the label. Use one of the names below verbatim, or omit `icon` (a section without it is valid).
 

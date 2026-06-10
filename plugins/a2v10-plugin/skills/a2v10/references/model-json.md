@@ -29,7 +29,6 @@ The properties `source`, `schema`, `model` defined at the top level of the file 
 | `source`      | string | Default data source (inherited)                |
 | `model`       | string | Default model (inherited)                      |
 | `schema`      | string | Default DB schema (inherited)                  |
-| `module`      | string | Module name                                    |
 
 ---
 
