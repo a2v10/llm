@@ -42,14 +42,14 @@ MainApp/
     └── invoice/                     ← endpoint of a specific operation
         ├── model.json               — parameters.Operation = "invoice"
         ├── init.sql                 — INSERT INTO doc.Operations
-        ├── index.view.xaml          — journal of documents for this operation
-        ├── edit.view.xaml           — edit form
+        ├── index.view.vxaml         — journal of documents for this operation
+        ├── edit.view.vxaml          — edit form
         └── logic.sql                ← optional: operation-specific procedures (Invoice.Post, etc.)
 ```
 
 > **Note about `examples/document/operation/`**
 > This folder is a combined example: shared SQL files (`schema.sql`, `keys.sql`, `logic.sql`)
-> and endpoint files (`model.json`, `init.sql`, `*.view.xaml`) live together.
+> and endpoint files (`model.json`, `init.sql`, `*.view.vxaml`) live together.
 > In a real application the shared files live in `document/`, the endpoint in `document/invoice/`.
 
 ### init.sql and sql.json
@@ -83,11 +83,15 @@ The `ComponentDictionary` pattern — see `references/xaml.md`.
 |------|---------|
 | `model.json` | Configuration with `parameters: { Operation: '...' }` |
 | `init.sql` | `INSERT INTO doc.Operations` (if not exists) |
-| `index.view.xaml` | XAML for the operation's document list |
-| `edit.view.xaml` | XAML for the edit form |
+| `index.view.vxaml` | XAML for the operation's document list |
+| `edit.view.vxaml` | XAML for the edit form |
 | `index.d.ts`, `edit.d.ts` | *(optional)* Type extensions |
 | `index.template.ts`, `edit.template.ts` | *(optional)* Template extensions |
 | `logic.sql` | *(optional)* Operation-specific logic (e.g. `Invoice.Post`) |
+
+## Edit form: keep the TabBar scaffold
+
+The document edit form (`edit.view.vxaml`) keeps `TabBar` + `Switch` even with a **single** tab. It looks redundant for one tab, but it is the extension point: a new section (payments, document links, history) is one `TabButton` + one `Case`. Collapsing it to a bare section trades a couple of lines now for rebuilding the form's structure on the next extension. Do not remove it.
 
 ## DB schema
 

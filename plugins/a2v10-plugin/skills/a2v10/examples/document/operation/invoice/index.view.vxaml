@@ -5,6 +5,7 @@
 				<FilterDescription>
 					<FilterItem Property="Period" DataType="Period"/>
 					<FilterItem Property="Fragment" DataType="String"/>
+					<FilterItem Property="Agent" DataType="Object"/>
 				</FilterDescription>
 			</CollectionView.Filter>
 		</CollectionView>
@@ -47,6 +48,8 @@
 		<Taskpad>
 			<Panel Header="@[Filters]">
 				<PeriodPicker Value="{Bind Parent.Filter.Period}" Placement="BottomRight"/>
+				<SelectorSimple Label="@[Agent]" Value="{Bind Parent.Filter.Agent}" Url="/catalog/agent"
+					Placeholder="@[Agent.All]" ShowClear="True"/>
 			</Panel>
 		</Taskpad>
 	</Page.Taskpad>

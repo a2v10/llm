@@ -14,9 +14,9 @@ A simple flat catalog without FKs or detail tables. Fields: `Name`, `Memo`.
 | `index.template.ts`   | List template; shared by index and browse       |
 | `edit.d.ts`           | Type definitions for the edit form              |
 | `edit.template.ts`    | Edit form template                              |
-| `index.view.xaml`     | List page                                       |
-| `edit.dialog.xaml`    | Create / edit record dialog                     |
-| `browse.dialog.xaml`  | Pick-record dialog for the catalog              |
+| `index.view.vxaml`    | List page                                       |
+| `edit.dialog.vxaml`   | Create / edit record dialog                     |
+| `browse.dialog.vxaml` | Pick-record dialog for the catalog              |
 | `_default.uk.txt` *(append)* | Entity keys: `@Sample`, `@Samples`, `@Browse.Sample` |
 
 ## Procedures

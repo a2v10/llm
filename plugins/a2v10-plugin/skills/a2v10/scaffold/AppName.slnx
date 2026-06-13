@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="WebApp/WebApp.csproj" />
+  <Project Path="WebApp/WebApp.csproj" DefaultStartup="true" />
   <Project Path="MainApp/MainApp.csproj" />
 </Solution>

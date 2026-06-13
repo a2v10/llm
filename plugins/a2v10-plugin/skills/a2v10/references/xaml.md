@@ -12,6 +12,8 @@
 xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
 ```
 
+> **A2v10 XAML is a WPF dialect, not WPF.** Names overlap — some elements and properties match WPF, some don't, some differ. Don't trust your WPF prior: verify every element and property name against the examples or the full docs.
+
 ## Root elements
 
 | Element              | Purpose                                  |

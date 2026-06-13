@@ -5,7 +5,7 @@
 		<Button Content="@[Select]" Command="{BindCmd Select, Argument={Bind Samples}}" Style="Primary"/>
 		<Button Content="@[Cancel]" Command="{BindCmd Close}"/>
 	</Dialog.Buttons>
-	<Page.CollectionView>
+	<Dialog.CollectionView>
 		<CollectionView ItemsSource="{Bind Samples}" RunAt="ServerUrl">
 			<CollectionView.Filter>
 				<FilterDescription>
@@ -13,7 +13,7 @@
 				</FilterDescription>
 			</CollectionView.Filter>
 		</CollectionView>
-	</Page.CollectionView>
+	</Dialog.CollectionView>
 	<Grid Rows="Auto,1*,Auto">
 		<Toolbar>
 			<Button Icon="Plus" Content="@[Create]"

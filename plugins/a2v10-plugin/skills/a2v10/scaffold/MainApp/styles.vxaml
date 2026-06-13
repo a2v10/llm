@@ -19,4 +19,8 @@
 		<Setter Property="Width" Value="20rem"/>
 		<Setter Property="Placeholder" Value="@[Search]"/>
 	</Style>
+	<Style x:Key="Panel">
+		<Setter Property="Collapsible" Value="True"/>
+		<Setter Property="Style" Value="Transparent"/>
+	</Style>
 </Styles>

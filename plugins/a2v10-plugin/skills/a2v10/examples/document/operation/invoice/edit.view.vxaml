@@ -16,7 +16,7 @@
 		</Panel>
 
 		<TabBar Value="{Bind Root.$$Tab}" Grid.Row="3">
-			<TabButton Content="Запаси" ActiveValue="" Badge="{BindNumber Document.Rows.length}"/>
+			<TabButton Content="Запаси" ActiveValue="" Badge="{BindNumber Document.Rows.Count}"/>
 		</TabBar>
 
 		<Switch Expression="{Bind Root.$$Tab}" Grid.Row="4">
@@ -26,6 +26,7 @@
 						<Button Icon="Plus" Content="@[AddRow]" 
 							Command="{BindCmd Append, Argument={Bind Document.Rows}}"/>
 					</Toolbar>
+					<!-- Рядки -->
 					<Table ItemsSource="{Bind Document.Rows}" GridLines="Both" Width="100%" StickyHeaders="True"
 							Columns="Fit,Auto,8rem,8rem,8rem,Fit" Height="100%">
 						<Table.Header>
@@ -52,7 +53,6 @@
 				</Grid>
 			</Case>
 		</Switch>
-		<!-- Рядки -->
 
 		<Component Name="Document.Footer" Scope="{Bind Document}" Grid.Row="5"/>
 	</Grid>
