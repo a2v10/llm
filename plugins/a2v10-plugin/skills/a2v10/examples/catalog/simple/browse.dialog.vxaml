@@ -6,7 +6,7 @@
 		<Button Content="@[Cancel]" Command="{BindCmd Close}"/>
 	</Dialog.Buttons>
 	<Dialog.CollectionView>
-		<CollectionView ItemsSource="{Bind Samples}" RunAt="ServerUrl">
+		<CollectionView ItemsSource="{Bind Samples}" RunAt="Server">
 			<CollectionView.Filter>
 				<FilterDescription>
 					<FilterItem Property="Fragment" DataType="String"/>

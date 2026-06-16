@@ -36,11 +36,14 @@ it; record it, don't break it. Only real references, not a free-for-all.
 
 ## 4. Record it
 
-- **`CLAUDE.md`** — fill `## Semantics` with one line on what the app is, plus the kinds in use
-  and each kind's role (the skeleton; use the `new-project.md` §3 template).
-- **`DOMAIN.md`** — one entry per entity from §3 (name + kind + `depends on` + one-line role),
-  each marked `planned`. Format → `semantic.md`. These are the plan; creating an entity's
-  endpoint flips its line to `confirmed at <path>` and fills its full meaning.
+`new-project.md` §3 already wrote `CLAUDE.md` and an empty `DOMAIN.md` during scaffold — you
+**edit** them, you do not author them.
+
+- **`CLAUDE.md`** — replace the `## Semantics` placeholder comment with one line on what the app
+  is, plus the kinds in use and each kind's role.
+- **`DOMAIN.md`** — append one entry per entity from §3 above (name + kind + `depends on` +
+  one-line role), each marked `planned`. Format → `semantic.md`. These are the plan; creating an
+  entity's endpoint flips its line to `confirmed at <path>` and fills its full meaning.
 
 ## 5. Hand back — do not build
 

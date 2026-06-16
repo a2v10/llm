@@ -76,12 +76,13 @@ turn; backgrounded it becomes an orphan the user can't see — it holds the port
 build DLLs, and you'll end up hunting it down by PID just to unblock the next build. Build, set
 up the DB, tell the user it's ready, and hand off.
 
-## 3. Bare app → minimal docs, then stop
+## 3. Write the skeleton docs — both cases
 
-No purpose was named, so there is **no domain to record and none to invent**. Create a minimal
-`CLAUDE.md` and an empty `DOMAIN.md`, tell the user the shell is ready and ask what they want to
-build, and **stop here**. When it later gets a purpose, run `new-semantic.md` to determine its
-semantics — even though `CLAUDE.md` now exists.
+Write `CLAUDE.md` and an empty `DOMAIN.md` from the templates below — **for every new app, bare
+or domain.** This is the single site where the skeleton is authored; `new-semantic.md` only edits
+what stands here. `## Semantics` gets the placeholder comment as-is — at this moment no domain is
+recorded in either case. A **bare app** keeps it (none to record, none to invent); an **app for a
+domain** has §4 replace it.
 
 ````markdown
 # CLAUDE.md — <AppName>
@@ -110,17 +111,21 @@ XAML naming convention: `.vxaml`
 ````markdown
 # DOMAIN.md — <AppName> domain registry
 
-One entry per entity (format → `semantic.md`). Empty until the first endpoint.
+One entry per entity (format → `semantic.md`). Empty until the first entity is recorded.
 ````
 
-**App for a domain → do not stop.** Skip to §4.
+Then fork:
+
+- **Bare app** — tell the user the shell is ready and ask what to build; **stop here**. When it
+  later acquires a purpose, run `new-semantic.md` (even though `CLAUDE.md` now exists).
+- **App for a domain** — continue to §4.
 
 ## 4. App for a domain → determine the semantics
 
 Do **not** design entities or build endpoints here. Hand off to `references/new-semantic.md` —
-it determines what the app is (kind-system + the core entity list), records the skeleton in
-`CLAUDE.md` and the entities (each `planned`) in `DOMAIN.md`, and returns you to the
-normal workflow.
+it determines what the app is (kind-system + the core entity list), fills `## Semantics` in the
+`CLAUDE.md` §3 already wrote and records the entities (each `planned`) in `DOMAIN.md`, and returns
+you to the normal workflow.
 Endpoints are built afterward, one at a time, never in a setup loop.
 
 ## Conventions   *(both cases)*
@@ -137,7 +142,7 @@ rename the scaffold's XAML files to match).
 
 ## Done
 
-A **bare app** ends at §3 — a runnable shell, handed to the user, who says what to build next. An
+A **bare app** stops at the §3 fork — a runnable shell, handed to the user, who says what to build next. An
 **app for a domain** continues in `new-semantic.md` and ends there: semantics recorded, the user
 invited to fill endpoints one by one. Either way **setup builds no domain endpoints** — every
 endpoint is a normal SKILL.md §7 Dispatch task afterward, each reading `CLAUDE.md`.

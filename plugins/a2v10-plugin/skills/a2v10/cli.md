@@ -150,7 +150,7 @@ Two grains. **`list`** enumerates the exposed surface — cheap, reads `model.js
 
 ### `a2 endpoint list`
 
-Every endpoint across the application's modules — a flat array of **endpoint paths**, nothing else; a module endpoint carries its `prefix` (`$store/catalog/store`), the main app carries none. The path is a self-sufficient join key: the source (strip the prefix, look up that module's `root` in `app config` → `<root>/<rest>/model.json`), the runtime view (the same path + an element name = the `resolve-*` arguments), and — via the procedure that resolves — the table. The list carries no model/table/section data on purpose: it stays compact at 150–200 endpoints, and everything else is reachable from the path.
+Every endpoint across the application's modules — a flat array of **endpoint paths**, nothing else; a module endpoint carries its `prefix` (`$store/catalog/store`), the main app carries none. The path is a self-sufficient join key: the source (strip the prefix, look up that module's `root` in `app config` → `<root>/<rest>/model.json`), the runtime view (the same path plus an element name = the `resolve-*` route argument), and — via the procedure that resolves — the table. The list carries no model/table/section data on purpose: it stays compact at 150–200 endpoints, and everything else is reachable from the path.
 
 ```json
 { "success": true, "data": ["catalog/agent", "document/invoice", "$store/catalog/store"] }
@@ -162,15 +162,17 @@ Reads source only (no DB, no procedure call), so it works on a project that isn'
 
 One command per model.json section. Each resolves a single element the way the runtime sees it: which procedures and files it is bound to, and which model shape it returns. This is the answer key for cross-checking the layers — don't guess the shape from your own markers, verify it against what the runtime actually assembled.
 
-Two arguments: `<endpoint>` — the endpoint path exactly as `list` prints it (with `$prefix` for a module), `<name>` — the element's name within the command's section. E.g. `a2 endpoint resolve-action catalog/agent edit`. **No `id`** — types come from the schema of the result sets (column metadata), not from data; an actual record is not needed.
+One argument: `<route>` — the element's route: the `list` path plus the element name (`catalog/agent` + `edit` → `catalog/agent/edit`), carrying the `$prefix` for a module. E.g. `a2 endpoint resolve-action catalog/agent/edit`. **No `id`** — types come from the schema of the result sets (column metadata), not from data; an actual record is not needed.
 
 `dataModel` is obtained by **invoking** the `load`/`index` procedure, so if it doesn't exist the command fails entirely (`success: false`, `error`) rather than returning a partial result.
 
 **When to call — post-deploy, discretionary.** This is the verification half of the "wrote → verify" loop, not authoring-time: the procedures must already exist in the DB — the **module you edited** rebuilt so its `main.sql` is regenerated, and that script applied. Rebuild **just that module** — `dotnet build <root>`, the module's `root` folder (from `a2 app config`) — **never the solution**: a solution build also rebuilds the host (`hostRoot` in `a2 app config`) and fails when the user is running it (its output DLLs and port are locked), while the module build is untouched by the running host. (Whole-solution build belongs only to first-time setup, before the host has ever run → `references/new-project.md`.) Before deployment the command fails **by design** — that means "not deployed yet", not "broken". Calling it is not mandatory after every small change; the deploy may not be in the LLM's hands — then there is simply nothing to verify.
 
-For now there are the commands below. `resolve-report` / `resolve-files` — added as needed.
+For now: the three renderable commands below. `resolve-command` (callables — the `commands`
+section), `resolve-report`, `resolve-files` — **planned, not yet implemented**; until then read a
+command's procedure binding straight from the `commands` section of `model.json`.
 
-### `a2 endpoint resolve-action <endpoint> <name>` · `a2 endpoint resolve-dialog <endpoint> <name>` · `a2 endpoint resolve-popup <endpoint> <name>`
+### `a2 endpoint resolve-action <route>` · `a2 endpoint resolve-dialog <route>` · `a2 endpoint resolve-popup <route>`
 
 Renderable — `actions` (page), `dialogs` (modal), and `popups` (popup). **The output shape is identical**; the only difference is which model.json section to look the name up in (the command = a mirror of the section, not a difference in contract).
 
@@ -178,11 +180,10 @@ Renderable — `actions` (page), `dialogs` (modal), and `popups` (popup). **The 
 {
   "success": true,
   "data": {
-    "endpoint": "catalog/agent",
-    "name": "edit",
+    "route": "catalog/agent/edit",
     "model": "Agent",
-    "view":     { "dir": "MainApp/catalog/agent", "file": "edit.view.xaml" },
-    "template": { "dir": "MainApp/catalog/agent", "file": "edit.template.ts" },
+    "view":     { "route": "catalog/agent/edit", "file": "edit.view.vxaml" },
+    "template": { "route": "catalog/agent/edit", "file": "edit.template.ts" },
     "sqlProcedures": {
       "load":   "cat.[Agent.Load]",
       "update": "cat.[Agent.Update]"
@@ -202,11 +203,8 @@ Renderable — `actions` (page), `dialogs` (modal), and `popups` (popup). **The 
 }
 ```
 
+- **`route`** — the resolved element's **semantic route**, prefix-aware (`$store/...` for a module, none for the main app); it echoes the argument and is the currency `list` speaks — **not a filesystem path**.
 - **`model`** — the main editable object; other root props (lookup lists for combos) are not the entity.
-- **`view`/`template`** — `{ dir, file }`: `dir` — the **disk folder from the project root**, module `root` already substituted (`MainApp/catalog/agent`, `StoreApp/catalog/store`) — no prefix lookup needed; `file` — the real name with extension; together ready to open. `template.file` — the **source to edit** (`.ts`; if absent — `.js`), not the compiled `.js`. There is deliberately no existence check: a missing or misnamed file is surfaced by `build`, not by resolve.
+- **`view`/`template`** — `{ route, file }`: `route` — the same value as the top-level `route` (each block is self-contained), **not the file's folder**; `file` — the real name with extension. `template.file` — the **source to edit** (`.ts`; if absent — `.js`), not the compiled `.js`. There is deliberately no existence check: a missing or misnamed file is surfaced by `build`, not by resolve.
 - **`sqlProcedures`** — verb (lowercase) → the real SQL procedure name the runtime will call, ready for `CREATE OR ALTER` (schema without brackets, like the `cat.[T]` canon). The set depends on the element: `edit` → `load`+`update`, no `index`. Explicit and derived are not distinguished — the name is what's needed, not the origin.
 - **`dataModel.types`** — the type tree the runtime generated from the result-set schema; a 1:1 projection of the platform model description. Each prop has `type` + `len`: `len` = `null`, except for a string with a given length (`"string"`, `len: 100`). Primitives — lowercase (`number`/`string`/…); a named type — `T…`; an array → `{ "item": "T…" }`. `id`/`name` are always present (`null` when absent, as in `TRoot`). This is what you cross-check XAML binds against and what your SQL markers were supposed to return.
-
-### `a2 endpoint resolve-command <endpoint> <name>`
-
-Callable — the `commands` section. Unlike renderable: **`view`/`template` are absent**; `sqlProcedures` = what the command actually calls (derived verb or explicit `procedure`/clr/api); `dataModel` — **only if the command returns a model**, otherwise null.
