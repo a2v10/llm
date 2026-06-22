@@ -6,7 +6,7 @@ by grain:
 
 - **Skeleton → `CLAUDE.md` (`## Semantics`)** — project-wide decisions fixed at setup:
   a one-line app identity, the global conventions (idType, tenancy, naming, standard
-  columns), and kind *definitions* **only where the project deviates** from this skill's
+  columns), and kind *definitions* **only where the project differs** from this skill's
   defaults (see *Kinds* below). Bounded — does not grow with the table count; thin
   (near-empty) for a vanilla cat/doc/jrn app, and that is correct.
 - **Domain → `DOMAIN.md`** — per-entity meaning, grown over time, never dumped at setup
@@ -21,7 +21,7 @@ project) or decide (new project).
   standard columns, a verb/procedure set, and a view set. `catalog`/`document`/`journal`
   (schemas `cat`/`doc`/`jrn`) are only the common default — never assume them; read the
   project's actual kinds. **Record a kind's *definition* in `## Semantics` only when it
-  departs from the default** — own kinds (`leads`/`devices`), changed standard columns, a
+  differs from the default** — own kinds (`leads`/`devices`), changed standard columns, a
   different verb/view set. For the defaults the skill (this file + `examples/`) is the home —
   point, don't copy. Two non-facts to keep out: the *list* of kinds in use (derivable from
   `DOMAIN.md` as `DISTINCT kind`) and any restatement of default kind behaviour. *Which*
@@ -37,7 +37,7 @@ choices go in CLAUDE.md.
 
 ## Standard columns
 
-Default catalog set — every `cat.*` table carries these before any business field:
+The default catalog set — a typical `cat.*` table carries these before any business field, but a project is free to drop or replace any of them:
 
 ```sql
 Id       bigint not null   -- surrogate PK; default next value for cat.SQ_<Table>

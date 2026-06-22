@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../@schemas/model-json-schema.json#",
+  "schema": "rep",
+  "model": "",
+  "actions": {
+    "documents": {
+      "model": "Report.Document.List",
+      "template": "documentlist.template",
+      "view": "documentlist.view"
+    }
+  }
+}

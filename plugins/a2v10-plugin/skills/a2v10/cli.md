@@ -18,7 +18,7 @@ The command set grows over time. If `a2` reports an **unknown command or flag** 
 
 ## Core principle: a CLI for the LLM, not for a human
 
-Every call is isolated. The LLM gets only what the command returned. If it didn't return something — the LLM doesn't know it.
+Every call is isolated. The LLM gets only what the command answers. What it doesn't answer, the LLM doesn't know.
 
 ## What follows from this
 

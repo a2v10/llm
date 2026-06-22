@@ -38,8 +38,8 @@ read the named procedure (the **authoritative** table + the residue) → `db tab
 - **XAML extension** — ask the user (`.vxaml` for VS-2026, else `.xaml`; they may be mid-migration).
   Record as `XAML naming convention` — that line governs which extension new files get.
 - Write the skeleton from the template below — every `<...>` is a discovered value, not a token to
-  leave in place. `## Semantics` holds the discovered reality: the kinds in use and any deviation
-  from defaults (per `semantic.md`: record only what departs, don't restate defaults).
+  leave in place. `## Semantics` holds the discovered reality: the kinds in use and any difference
+  from defaults (per `semantic.md`: record only what differs, don't restate defaults).
   Non-derivable or conflicting dimensions → **propose → approve**, pointwise (only what the CLI can't plainly
   answer; don't ask what it can).
 
@@ -55,7 +55,7 @@ XAML naming convention: <.vxaml | .xaml — as the user answered>
 
 ## Semantics
 
-<one line on what the app is; the kinds in use and each kind's role; deviations from defaults>
+<one line on what the app is; the kinds in use and each kind's role; differences from defaults>
 
 ## Project structure
 

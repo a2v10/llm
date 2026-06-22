@@ -1,0 +1,66 @@
+<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
+	  Title="@[Report.Documents]"
+	  Components="{Components ../_components/report.components}">
+	<Page.Toolbar>
+		<Component Name="ReportToolbar" />
+	</Page.Toolbar>
+	<Page.Taskpad>
+		<Taskpad Title="@[Settings]">
+			<Grid Rows="Auto,1*" Height="100%" AlignItems="Stretch" Padding="0">
+				<TabBar Value="{Bind Root.$$Tab}" Grid.Row="1" Margin="-9,0,0,12">
+					<TabButton Content="@[Filters]" ActiveValue=""/>
+				</TabBar>
+				<StackPanel Grid.Row="2" Grid.VAlign="Top" Gap=".5rem">
+					<PeriodPicker Label="@[Period]" Value="{Bind Root.Filter.Period}" Display="Name"
+								  Placement="BottomRight" Description="{Bind Root.Filter.Period.Name}"/>
+					<SelectorSimple Label="@[Agent]" Value="{Bind Root.Filter.Agent}" ShowClear="True"
+									Url="/catalog/agent" Placeholder="@[Placeholder.All.Agent]"/>
+				</StackPanel>
+			</Grid>
+		</Taskpad>
+	</Page.Taskpad>
+	<Block CssClass="{Bind Root.$SheetPageClass}">
+		<Sheet GridLines="Both" Wrap="NoWrap" Columns="6rem,6rem,Auto,Auto,8rem"
+			   If="{Bind Filter.Run}">
+			<Sheet.Header>
+				<SheetRow Style="Title">
+					<SheetCell ColSpan="5">@[Report.Documents]</SheetCell>
+				</SheetRow>
+				<SheetRow Style="Parameter">
+					<SheetCell Content="@[Period]"/>
+					<SheetCell ColSpan="4" Content="{Bind Filter.Period.Name}" Bold="True"/>
+				</SheetRow>
+				<SheetRow Style="Parameter" If="{Bind Filter.Agent.Id}">
+					<SheetCell Content="@[Agent]"/>
+					<SheetCell ColSpan="4" Content="{Bind Filter.Agent.Name}"/>
+				</SheetRow>
+				<SheetRow Style="Divider"/>
+			</Sheet.Header>
+			<SheetSection>
+				<SheetRow Style="Header">
+					<SheetCell>@[Date]</SheetCell>
+					<SheetCell>@[No]</SheetCell>
+					<SheetCell>@[Operation]</SheetCell>
+					<SheetCell>@[Agent]</SheetCell>
+					<SheetCell>@[Sum]</SheetCell>
+				</SheetRow>
+			</SheetSection>
+			<SheetSection>
+				<SheetRow Style="Total" Wrap="NoWrap">
+					<SheetCell Content="@[Total]" ColSpan="4" Align="Left"/>
+					<SheetCell Content="{Bind RepData.Sum, DataType=Currency}" Align="Right"/>
+				</SheetRow>
+			</SheetSection>
+			<SheetSection ItemsSource="{Bind RepData}">
+				<SheetRow Wrap="NoWrap">
+					<SheetCell Align="Center" Content="{Bind Date, DataType=Date}"/>
+					<SheetCell Align="Center" Content="{Bind No}"/>
+					<SheetCell Align="Left" Content="{Bind Operation.Name}"/>
+					<SheetCell Align="Left" Content="{Bind Agent.Name}"/>
+					<SheetCell Align="Right" Content="{Bind Sum, DataType=Currency, HideZeros=True}"/>
+				</SheetRow>
+			</SheetSection>
+		</Sheet>
+		<Component Name="NoRunPanel"/>
+	</Block>
+</Page>

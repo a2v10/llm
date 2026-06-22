@@ -1,0 +1,28 @@
+<ComponentDictionary xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<!-- Shared report chrome (toolbar + pre-run panel). See references/screen-report.md. -->
+	<Toolbar x:Key="ReportToolbar" CssClass="bg-primary">
+		<Button Icon="PlayOutline" Content="@[Generate]"
+				Command="{BindCmd Execute, CommandName=generate}"/>
+		<Separator />
+		<Button Icon="Print" Command="{BindCmd Print}" />
+		<Button Icon="ExportExcel" Command="{BindCmd Command=ExportTo, Format=Excel, FileName={Bind Root.$Title}}" />
+		<ToolbarAligner />
+		<Alert Style="Warning" If="{Bind Root.$AlertVisible}" DropShadow="Shadow1"
+			   Margin="0,.5rem,0,0">
+			<Text>
+				<Span Space="After">@[Report.ParamsChanged]</Span>
+				<Hyperlink Command="{BindCmd Execute, CommandName=generate}">@[Generate.Now]</Hyperlink>
+			</Text>
+		</Alert>
+	</Toolbar>
+
+	<EmptyPanel x:Key="NoRunPanel" If="{Bind !Filter.Run}" Icon="WarningOutline" Margin="10rem,0">
+		<Text>
+			@[Report.NotRunYet]
+			<Hyperlink Content="@[Generate.Now]"
+					Command="{BindCmd Execute, CommandName=generate}"/>
+		</Text>
+	</EmptyPanel>
+
+</ComponentDictionary>

@@ -107,7 +107,11 @@ An object with arbitrary key names. Each element describes a command.
 
 ---
 
-## reports
+## reports — file reports ONLY
+
+> ⚠️ This section is **only** for reports rendered **to a file** (PDF/xlsx/xml/json), produced by the server.
+> An **on-screen report is NOT here** — an interactive `Sheet` page is an `action` (→ `references/screen-report.md`).
+> Shown on screen instead of downloaded as a file → wrong section.
 
 An object with arbitrary key names.
 
@@ -182,21 +186,7 @@ An object with arbitrary key names. Describes uploaded file handling.
 | `blobSource`     | string  | Blob source                                                  |
 | `blobStorage`    | string  | Blob storage                                                 |
 | `key`            | string  | Key                                                          |
-| `availableModels`| array   | List of allowed models for import (see below)                |
 | `permissions`    | object  | Access rights (see [permissions](#permissions))              |
-
-### availableModels
-
-An array of objects. Each object:
-
-| Property     | Type   | Description            |
-|--------------|--------|------------------------|
-| `name`       | string | Model name             |
-| `columns`    | string | Columns description    |
-| `source`     | string | Data source            |
-| `schema`     | string | DB schema              |
-| `model`      | string | Model                  |
-| `parameters` | object | Default parameters     |
 
 ---
 > Full documentation: [model.md](https://docs-llm.a2v10.com/model.md)

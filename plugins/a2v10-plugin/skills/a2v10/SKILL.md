@@ -51,9 +51,11 @@ The elements come in two kinds:
 | Kind | Sections | What it is |
 |---|---|---|
 | **Renderable** | `actions` (page), `dialogs` (modal), `popups` | Has UI: binds `view`+`template`, the runtime renders it, the user interacts and posts the model back. |
-| **Callable** | `commands`, `reports`, `files` | No UI: invoked, runs once, returns data / a file / an effect. |
+| **Callable** | `commands`, `reports` (**file export only** — see below), `files` | No UI: invoked, runs once, returns data / a file / an effect. |
 
 *(Full catalog of sections and their options → `references/model-json.md`.)*
+
+**"Report" defaults to on-screen.** Bare *report* (звіт) means an **on-screen report** — an `action` that renders a `Sheet`: an interactive, filterable page (the common case). The word means a **file** only inside the `reports` *section*, which is **file-export only** (PDF/xlsx/xml/json, rendered by the server). Decision rule: a task says "report" and does **not** name a file/format (PDF, Excel, xlsx, export, download) → on-screen report (→ `references/screen-report.md`); names a file → `reports` section (→ `references/model-json.md`).
 
 **View/template (renderables) — declared.** `view:` / `template:` keys name the file explicitly; the path may be local (`edit.view`) or relative cross-folder (`../another/edit.view`).
 
@@ -83,7 +85,7 @@ The elements come in two kinds:
 
 These are things the engine *allows* and the model is *naturally pulled toward*. Resist them.
 
-- **Do not retarget `model` per element.** The engine permits a per-element `model` override; treat it as a severe anti-pattern — one `model.json` = one `model`. Override only when there is genuinely no other way.
+- **Do not retarget `model` per element.** The engine permits a per-element `model` override; treat it as a severe anti-pattern — one `model.json` = one `model`. Override only when there is genuinely no other way. **This governs *entity* endpoints** (catalog/document), where the elements are facets — `edit`/`index`/`copy` — of one entity. It does **not** apply to a `reports`/`commands` folder, which is a **collection of independent callables**: each report (or command) is its own thing, so a per-element `model` there is normal, not the anti-pattern. The grouping is the author's choice — many reports in one `model.json`, or one each.
 - **Do not over-share views.** Default: one `view` + one `template` per model. Sharing them across models — and conditional rendering inside a shared view — is a *rare, deliberate* exception, justified explicitly. **Never** collapse many models into one view via `if`-branches to "save files."
 
 **Broke and the cause isn't obvious?** Don't guess — go to the references for the layer you touched (and `references/troubleshooting.md`); they spell out what to verify and how.
@@ -112,7 +114,7 @@ Unsure → ask; never guess.
 
 ## 7. Dispatch — find the task
 
-Each row is an action you take. The kind (catalog / document / journal / …) is **semantics**, not a routing axis — `new-endpoint.md` reads it in two parts: *which* kind an entity is, from its `DOMAIN.md` entry; what that kind *means* (schema, columns, verbs, views), from `CLAUDE.md` `## Semantics` where the project deviates, otherwise from this skill's defaults.
+Each row is an action you take. The kind (catalog / document / journal / …) is **semantics**, not a routing axis — `new-endpoint.md` reads it in two parts: *which* kind an entity is, from its `DOMAIN.md` entry; what that kind *means* (schema, columns, verbs, views), from `CLAUDE.md` `## Semantics` where the project differs, otherwise from this skill's defaults.
 
 **Create an endpoint** (from an existing table / from scratch) → `references/new-endpoint.md`
 
@@ -126,7 +128,8 @@ Each row is an action you take. The kind (catalog / document / journal / …) is
 | edit the view | `references/xaml.md` |
 | edit the template | `references/template.md` |
 | edit a procedure | `references/sql-procedures.md` (verb/structure) + `references/sql-rules.md` (result-set markers) |
-| add a report / command | `references/model-json.md` |
+| add an on-screen report (Sheet page) | `references/screen-report.md` |
+| add a file report (PDF/xlsx/xml export) / command | `references/model-json.md` |
 | add a dialog | `references/model-json.md` + `references/xaml.md` + `references/sql-procedures.md` — Renderable: declare it, then build its view + template + proc |
 
 **No row matches?** Don't force-fit. Route by the layer you touch (SQL → `sql-rules.md` / `sql-procedures.md`, view → `xaml.md`, behavior → `template.md`, config → `model-json.md`). Capabilities none cover → full docs: https://docs-llm.a2v10.com . Still unclear → ask.
