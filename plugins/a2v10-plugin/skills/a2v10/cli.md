@@ -76,7 +76,7 @@ Returns application-level decisions that must be **written into CLAUDE.md** duri
 }
 ```
 
-- `multiTenant` — whether the project is multi-tenant (affects procedure parameters / WHERE clauses).
+- `multiTenant` — the **deployment mode**, not the schema. `true` implies a multi-tenant schema (a single-tenant application started in that mode simply fails); `false` proves nothing — an MT application may be deployed single-tenant. Never decide `TenantId` in tables or procedures from this flag; read it from the schema (→ `references/sql-procedures.md`).
 - `hostRoot` — the ASP.NET Core host folder, a path **from the project root, without a leading slash** (same contract as a module's `root`); always present. The host is the opposite of a module: it has no `model.json`, **endpoints are never written there**, and you never build or run it yourself.
 - `modules` — the list of application modules (see below).
 
@@ -160,7 +160,9 @@ Reads source only (no DB, no procedure call), so it works on a project that isn'
 
 ### The `resolve-*` family
 
-One command per model.json section. Each resolves a single element the way the runtime sees it: which procedures and files it is bound to, and which model shape it returns. This is the answer key for cross-checking the layers — don't guess the shape from your own markers, verify it against what the runtime actually assembled.
+One command per model.json section. Each resolves a single element the way the runtime sees it: which procedures and files it is bound to, and which model shape it returns.
+
+**Two halves, two sources — and one of them may be stale.** The bindings (`route`, `view`/`template`, `sqlProcedures`) are derived from your `model.json`; `dataModel` comes from **invoking the deployed procedure**, i.e. it describes the database as it currently stands, which may be older than the SQL on disk. **Whether the two agree is not observable from here.** So a matching shape confirms the *deployed* procedure, not the file you just wrote, and a mismatch does not say which side is stale. Read it as the runtime's report on real state — it does not verify authoring.
 
 One argument: `<route>` — the element's route: the `list` path plus the element name (`catalog/agent` + `edit` → `catalog/agent/edit`), carrying the `$prefix` for a module. E.g. `a2 endpoint resolve-action catalog/agent/edit`. **No `id`** — types come from the schema of the result sets (column metadata), not from data; an actual record is not needed.
 

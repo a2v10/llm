@@ -78,3 +78,10 @@ lean on two in particular:
 - Don't reach for verb `Index` (that's the list of an *entity* endpoint); a report loads as
   one object (Filter + data) → verb `Load`.
 - Don't rewrite the lifecycle in each report — extend `_plain.template`, don't replace it.
+- Don't wrap the report data in a `CollectionView`. It auto-reloads on any filter change —
+  in a report that re-runs a heavy query needlessly and defeats the Stale → regenerate
+  lifecycle (the result must stay put until **Generate**). Keep the filter a plain `Filter`
+  object and refresh by hand (`generate` → `$requery`).
+- Don't paginate — no `Offset`/`PageSize`. A report returns the **whole** filtered set; the
+  `Total` (a client `$sum` over `RepData`) and print/export run over all rows, so a page would
+  silently corrupt the total and truncate the output. (Contrast `Sample.Index`, which pages.)

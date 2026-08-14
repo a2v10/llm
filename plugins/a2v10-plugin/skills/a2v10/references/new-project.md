@@ -38,8 +38,9 @@ no `.md` files:
 - `MainApp/` — application source root (`model.json`, xaml, sql, ts)
 - `AppName.slnx` — Visual Studio solution (both projects)
 
-Copy the whole `scaffold/` tree into the new project's directory, then replace every
-placeholder across the copied files:
+Copy the whole `scaffold/` tree into the new project's directory — **copy the files** (`Copy-Item` /
+`cp`), never reproduce them by reading and re-writing: that silently drops encodings (BOM) and costs a
+call per file. Then replace every placeholder across the copied files:
 
 - `^AppName^` — application name (ask the user)
 - `^Year^` — current year

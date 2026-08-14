@@ -16,17 +16,27 @@ Each procedure is a fixed sequence of slots. Fill each slot from the endpoint sp
 
 For semantic-type → SQL/TableType mapping see [mapping.md](mapping.md). For cross-layer invariants (sort/filter/FK pairs) — same file.
 
+## Business errors — `throw` with `UI:` prefix
+
+Raise a user-facing business failure (out of stock, over a limit) from any procedure with
+`throw 60000, N'UI:текст для користувача', 0`. The `UI:` prefix makes the client show it to
+the user **formatted**; without the prefix it reads as a **developer** error → bare alert.
+Prefix everything the user should act on; leave internal asserts unprefixed. Client render
++ when to catch it → [platform-behavior.md](platform-behavior.md).
+
 ## TenantId — multi-tenant plumbing
 
 `TenantId` is a **project-level decision** (recorded in `semantic.md` / CLAUDE.md): it is
-either present in every table and procedure, or absent entirely. Pick once at project start
-(check any existing table or procedure of the project). When multi-tenant, every procedure
-below carries this plumbing:
+either present in every table and procedure, or absent entirely. Read it from the **schema** —
+any existing table or procedure of the project. **Not from `a2 app config`:** `multiTenant` there
+is the deployment mode, and an MT application deployed single-tenant reports `false` (→ `cli.md`).
+When multi-tenant, every procedure below carries this plumbing:
 
 - Signature: `@TenantId int = 1` always **first**, before `@UserId`.
 - WHERE in every query: `where TenantId = @TenantId and ...`
 - MERGE ON: `on (t.TenantId = @TenantId and t.Id = s.Id)`
 - INSERT: `(TenantId, [Name], ...) values (@TenantId, s.[Name], ...)`
+- FK to a tenant table — composite, on `(TenantId, Id)`.
 - **TableType — without `TenantId`.** It is external, passed as a procedure parameter, not by client data.
 
 When single-tenant — `TenantId` is absent from tables, parameters, and WHERE clauses; drop it everywhere in the templates.
@@ -34,6 +44,10 @@ When single-tenant — `TenantId` is absent from tables, parameters, and WHERE c
 ---
 
 ## Index — paginated list
+
+Slots 4–9 are the two-stage fetch (temp table → join → `order by t.rowNo`, `!RowCount`, Map
+for the current page only, `$System`). Why it is shaped that way →
+[sql/paging.md](https://docs-llm.a2v10.com/sql/paging.md).
 
 ### Parameters (fixed order)
 
@@ -174,6 +188,8 @@ select [!$System!] = null,
 ---
 
 ## Load — single object by Id
+
+Object/Map/`!RefId` mechanics → [sql/object.md](https://docs-llm.a2v10.com/sql/object.md).
 
 ### Parameters
 - `@TenantId int = 1` *(multi-tenant only)*

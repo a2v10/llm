@@ -18,8 +18,8 @@ are only the *exposed surface* (what is used, and the path); the link endpoint�
 
 **Front-load only what the skeleton consumes** (a handful of cheap calls). Cheap alone doesn't qualify — `a2 endpoint list` is cheap too, but setup consumes nothing from it; it serves task time:
 
-- `a2 app config` — `multiTenant` + `modules`; scope discovery to modules with `root != null`.
-- `a2 db tables` — which schemas are in use; sample a few tables for the conventions.
+- `a2 app config` — `modules`; scope discovery to modules with `root != null`.
+- `a2 db tables` — which schemas are in use; sample a few tables for the conventions and for tenancy.
 
 **Depth is per entity, on touch — never bulk.** Do **not** `resolve` 150–200 endpoints or read their
 procedures up front: that is the context bomb, ROI ~199:1 (you'd pre-load 199 entities to use one).
@@ -28,13 +28,13 @@ read the named procedure (the **authoritative** table + the residue) → `db tab
 
 ## 1. Skeleton → `CLAUDE.md` (once, cheap)
 
-- **`app config`** → `multiTenant` (tenancy dimension), `hostRoot` (the host folder's real name),
-  `modules` (routing + where source lives).
+- **`app config`** → `hostRoot` (the host folder's real name), `modules` (routing + where source lives).
+  Not the tenancy dimension: `multiTenant` there is the deployment mode (→ `cli.md`).
   Domain lives in the module(s) with `root != null`; `root: null` modules are platform/system — out of scope.
   The `hostRoot` folder is not a module — never write endpoints there.
 - **`db tables`** → which schemas are present = the **kinds in use**. Sample a few `table-columns`
-  → `idType`, the standard-column set, naming (table/model spelling). Record the **reality, including
-  where the app breaks a convention.**
+  → `idType`, the standard-column set, naming (table/model spelling), **tenancy** (a `TenantId`
+  column). Record the **reality, including where the app breaks a convention.**
 - **XAML extension** — ask the user (`.vxaml` for VS-2026, else `.xaml`; they may be mid-migration).
   Record as `XAML naming convention` — that line governs which extension new files get.
 - Write the skeleton from the template below — every `<...>` is a discovered value, not a token to

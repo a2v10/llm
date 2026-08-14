@@ -1,0 +1,36 @@
+<!-- Browse Agent -->
+<Dialog xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
+		Title="@[Browse.Agent]" Overflow="True">
+	<Dialog.Buttons>
+		<Button Content="@[Select]" Command="{BindCmd Select, Argument={Bind Agents}}" Style="Primary"/>
+		<Button Content="@[Cancel]" Command="{BindCmd Close}"/>
+	</Dialog.Buttons>
+	<Dialog.CollectionView>
+		<CollectionView ItemsSource="{Bind Agents}" RunAt="Server">
+			<CollectionView.Filter>
+				<FilterDescription>
+					<FilterItem Property="Fragment" DataType="String"/>
+				</FilterDescription>
+			</CollectionView.Filter>
+		</CollectionView>
+	</Dialog.CollectionView>
+	<Grid Rows="Auto,1*,Auto">
+		<Toolbar>
+			<Button Icon="Plus" Content="@[Create]"
+				Command="{BindCmd Dialog, Action=Append, Argument={Bind Agents}, Url='/catalog/agent/edit'}"/>
+			<Button Icon="Edit"
+				Command="{BindCmd Dialog, Action=EditSelected, Argument={Bind Agents}, Url='/catalog/agent/edit'}"/>
+			<Separator />
+			<Button Icon="Reload" Command="{BindCmd Reload}"/>
+			<ToolbarAligner />
+			<SearchBox Value="{Bind Parent.Filter.Fragment}" TabIndex="1"/>
+		</Toolbar>
+		<DataGrid ItemsSource="{Bind Parent.ItemsSource}"
+				Height="30rem" FixedHeader="True" Striped="True"
+				DoubleClick="{BindCmd Select, Argument={Bind Agents}}">
+			<DataGridColumn Header="#" Content="{Bind Id}" Role="Id"/>
+			<DataGridColumn Header="@[Name]" Content="{Bind Name}" />
+		</DataGrid>
+		<Pager Source="{Bind Parent.Pager}"/>
+	</Grid>
+</Dialog>

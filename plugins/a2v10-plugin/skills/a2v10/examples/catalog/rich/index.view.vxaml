@@ -1,0 +1,63 @@
+<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml" Title="@[Agents]">
+	<Page.CollectionView>
+		<CollectionView ItemsSource="{Bind Agents}" RunAt="Server">
+			<CollectionView.Filter>
+				<FilterDescription>
+					<FilterItem Property="Fragment" DataType="String"/>
+					<FilterItem Property="State" DataType="Object"/>
+				</FilterDescription>
+			</CollectionView.Filter>
+		</CollectionView>
+	</Page.CollectionView>
+	<Grid Rows="Auto,1*,Auto" Height="100%">
+		<Toolbar>
+			<Button Icon="Plus" Content="@[Create]"
+					Command="{BindCmd Dialog, Action=Append, Argument={Bind Agents}, Url='/catalog/agent/edit'}"/>
+			<Separator />
+			<Button Icon="Edit"
+					Command="{BindCmd Dialog, Action=EditSelected, Argument={Bind Agents}, Url='/catalog/agent/edit'}"/>
+			<Button Icon="Delete"
+					Command="{BindCmd DbRemoveSelected, Argument={Bind Agents}, Confirm='@[Confirm.Delete.Element]'}"/>
+			<Separator />
+			<Button Icon="Reload" Command="{BindCmd Reload}" />
+			<ToolbarAligner />
+			<SearchBox Value="{Bind Parent.Filter.Fragment}" TabIndex="1"/>
+		</Toolbar>
+		<DataGrid ItemsSource="{Bind Parent.ItemsSource}"
+				  FixedHeader="True" Sort="False"
+				  DoubleClick="{BindCmd Dialog, Action=EditSelected, Argument={Bind Agents}, Url='/catalog/agent/edit'}">
+			<DataGridColumn Header="#" Content="{Bind Id}" Role="Id"/>
+			<!-- SortProperty names the sort field: the content is a Block, not a simple Content bind -->
+			<DataGridColumn Header="@[Name]" Sort="True" SortProperty="Name">
+				<Block>
+					<Span Content="{Bind Name}" LineClamp="2"/>
+					<TagsList ItemsSource="{Bind Tags}"/>
+				</Block>
+			</DataGridColumn>
+			<DataGridColumn Header="@[Manager]" Content="{Bind Manager.Name}" LineClamp="2"/>
+			<DataGridColumn Header="@[State]">
+				<Span Content="{Bind State.Name}" CssClass="{Bind State.Color}"/>
+			</DataGridColumn>
+			<DataGridColumn Header="@[Customer]" Content="{Bind IsCustomer}" Role="CheckBox"/>
+			<DataGridColumn Header="@[Supplier]" Content="{Bind IsSupplier}" Role="CheckBox"/>
+			<DataGridColumn />
+			<DataGridColumn Fit="True" Wrap="NoWrap">
+				<CommandBar Visibility="Hover">
+					<Button Icon="Edit"
+							Command="{BindCmd Dialog, Action=Edit, Argument={Bind}, Url='/catalog/agent/edit'}"/>
+					<Button Icon="Delete"
+							Command="{BindCmd DbRemove, Argument={Bind}, Confirm='@[Confirm.Delete.Element]'}"/>
+				</CommandBar>
+			</DataGridColumn>
+		</DataGrid>
+		<Pager Source="{Bind Parent.Pager}"/>
+	</Grid>
+	<Page.Taskpad>
+		<Taskpad>
+			<Panel Header="@[Filters]">
+				<SelectorSimple Label="@[State]" Value="{Bind Parent.Filter.State}" Url="/catalog/agentstate"
+					Placeholder="@[All]" ShowClear="True"/>
+			</Panel>
+		</Taskpad>
+	</Page.Taskpad>
+</Page>

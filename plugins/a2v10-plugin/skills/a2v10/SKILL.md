@@ -4,7 +4,8 @@ description: >
   Work with the A2v10 platform: endpoints (model.json), XAML/HTML views, SQL
   stored procedures, template.ts, localization.
   USE when the request mentions A2v10, model.json, view.vxaml (or view.xaml), template.ts, an
-  A2v10 endpoint, or files matching the A2v10 layout. Do NOT use for generic
+  A2v10 endpoint, or files matching the A2v10 layout — including when it merely asks what A2v10
+  is, what can be built with it, or how to start. Do NOT use for generic
   SQL, XAML, or TypeScript unrelated to A2v10.
 ---
 
@@ -14,7 +15,6 @@ description: >
 
 A2v10 is a **generic runtime**, like a web framework: it gives you *syntax*
 (routing, file binding, the SQL↔runtime protocol) and **no domain semantics**.
-Files are interpreted on the fly — there is **no build or compile step**.
 Data access is **ONLY through stored procedures** — the platform never runs ad-hoc SQL.
 What a `catalog`, an `Agent`, or an `edit` action *means* — and likewise schemas
 (`cat/doc/jrn`), the element set, column sets, naming style — is defined entirely
@@ -68,7 +68,7 @@ The elements come in two kinds:
 
 **Verb ≠ Contract.** The **Verb** (or explicit name) is how the runtime *finds* the procedure. The **Contract** — its parameter shape (TVP) and result-set markers — is what it *returns*. Orthogonal: a proc found by the right verb still binds wrong if its Contract is off, and every procedure (derived or explicit) has a Contract.
 
-**SQL ↔ runtime protocol.** Stored procedures return data via **result-set markers** — a naming grammar that binds proc output to the client model, with names agreeing across layers (TVP column = client property; marker ↔ `d.ts` ↔ XAML). The grammar itself is writing-time detail → `references/sql-rules.md`.
+**SQL ↔ runtime protocol.** Stored procedures return data via **result-set markers** — a naming grammar that binds proc output to the client model, with names agreeing across layers (TVP column = client property; marker ↔ `d.ts` ↔ XAML). Besides the sets that form the model, a procedure may return **system** sets (`$`-prefixed type token) that steer the processing rather than the shape. The grammar itself is writing-time detail → `references/sql-rules.md`.
 
 **Some elements follow conventions.** Few, but real: where the engine treats names as free, certain (mostly client-side) elements assume a specific name/structure and **silently fail** without it. Catalog of these exceptions → `references/elem-conventions.md`; honor it.
 
@@ -76,7 +76,7 @@ The elements come in two kinds:
 
 ### Must — break it and it does not work (engine contract)
 
-- **The database is not yours — never connect to it yourself.** No DDL, no DML, not even `select`; with any tool, from any language, under any credentials you find — found credentials are not permission. The single door, by design: the read-only `a2` CLI (`a2 db …`). Applying SQL to a database is always the **user's** action — say *"apply the DB changes and tell me when done"*, and continue only after they confirm.
+- **The database is not yours — never connect to it yourself.** No DDL, no DML, not even `select`; with any tool, from any language, under any credentials you find — found credentials are not permission. The single door, by design: the read-only `a2` CLI (`a2 db …`). Applying SQL to a database is always the **user's** action — say *"rebuild the module so its SQL bundle (`sql.json` → `outputFile`) regenerates, apply it, and tell me when done"*, and continue only after they confirm.
 - Access data only through stored procedures; never raw SQL.
 - Procedures must exist under the **exact** name — either the one the runtime **derives** from `model` (`<schema>.[<model>.<Verb>]`) or the one a `command` names **explicitly** (`procedure`). A misnamed proc is simply not found.
 - Follow the result-set marker grammar; keep cross-layer names in agreement (TVP column = client property; marker ↔ d.ts ↔ XAML).
@@ -97,11 +97,16 @@ These are things the engine *allows* and the model is *naturally pulled toward*.
 - **Clone-and-mutate: copied is guilty until verified.** The workflow is example → clone → mutate, and the trap is carrying the donor's names into the new entity. After cloning, sweep **every** inherited name — markers, TVP columns, d.ts properties, XAML bindings, proc body, comments — against the new entity. Cross-layer names must agree (§4); a clone is exactly where they silently stop.
 - **Comments are load-bearing — true-or-delete.** A stale comment is cloned with the code and propagates, so fix or cut it, never leave a wrong one. Site-local invariants and "don't do X here" → a comment at the site; cross-cutting meaning → the project docs — `CLAUDE.md` (skeleton) or `DOMAIN.md` (per-entity), per `semantic.md`. A comment on a seam is part of the contract, not optional prose.
 - **Don't invent platform surface.** Not in the references or an existing example → it does not exist. The surface is small and names are free — which tempts confabulated keys, markers, attributes. Go to the docs or ask; never invent.
-- **Don't carry framework priors.** A2v10 is not MVC/ORM. Resist the pull toward ad-hoc SQL, an ORM, a build step, migrations — data is **only** through procedures, files interpreted live. What you "know" from Rails/Django/EF is wrong here.
+- **Don't carry framework priors.** A2v10 is not MVC/ORM. Resist the pull toward ad-hoc SQL, an ORM, migrations — data is **only** through procedures, files interpreted live. What you "know" from Rails/Django/EF is wrong here.
+- **The platform honors some behavioral priors for you — don't hand-roll them, don't invent them.** The runtime handles certain robustness defaults itself (→ `references/platform-behavior.md`); against those, defensive scaffolding is duplication, not safety. But **whether** it handles a given case is a platform fact — read the catalogue or ask; never infer "I must defend against X" from a generic prior. Reaching for defensive wrapping by default is the tell you're reasoning from priors, not the platform.
 - **Reuse before create.** Before adding a localization key, a base proc, a shared template — check it doesn't already exist. A second way to do one thing is the defect, not a feature.
 - **Don't build knowledge ahead of need.** No nameable consumer → don't create it; derivable on touch → don't store it.
 
 ## 6. Workflow
+
+**First — is there work in the turn?** *What is A2v10 / what can I build / where do I start* is a
+question, not a task → **orientation**, `references/intro.md`: answer, write nothing, start no
+setup. An action named (create / add / fix / build …) is a task → continue. Ambiguous → question.
 
 1. **CLAUDE.md exists** → read it (and glance at `DOMAIN.md`): it carries the project's state and routing — a bare app's `## Semantics` stub routes its first domain task itself (→ `references/new-semantic.md`). Work the task → §7 Dispatch.
 2. **No CLAUDE.md** → **onboarding, exactly once.** The fork is exclusive, on one check: **is there a `model.json` anywhere in the tree?** (the platform's defining marker — §3):

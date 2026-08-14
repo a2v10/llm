@@ -1,0 +1,99 @@
+<!-- Edit Agent — Dialog -->
+<Dialog xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
+		Title="{Bind Agent.Id, Format='@[Agent] [{0}]'}" Overflow="True">
+	<Dialog.Buttons>
+		<Button Content="@[SaveAndClose]" Command="{BindCmd SaveAndClose, ValidRequired=True}" Style="Primary"/>
+		<Button Content="@[Cancel]" Command="{BindCmd Close}"/>
+	</Dialog.Buttons>
+	<!-- Taskpad = our classification of the agent (Manager, Tags), apart from its real properties -->
+	<Dialog.Taskpad>
+		<Taskpad XamlStyle="{StyleResource DialogTaskpad}">
+			<SelectorSimple Label="@[Manager]" Value="{Bind Agent.Manager}" Url="/catalog/employee"/>
+			<TagsControl Label="@[Tags]" Value="{Bind Agent.Tags}" ItemsSource="{Bind Tags}"
+				Placeholder="@[Tag.Choose]" SettingsText="@[Tag.Settings]"
+				SettingsDelegate="tagSettings"/>
+		</Taskpad>
+	</Dialog.Taskpad>
+	<Grid Rows="Auto,Auto,1*" Height="100%">
+
+		<Panel Header="@[GeneralInfo]">
+			<Grid Columns="1*,1*">
+				<TextBox Label="@[Name]" Value="{Bind Agent.Name}" Bold="True" TabIndex="1"/>
+				<SelectorSimple Label="@[State]" Value="{Bind Agent.State}" Url="/catalog/agentstate"/>
+				<TextBox Label="@[Memo]" Value="{Bind Agent.Memo}" Multiline="True" Rows="2"/>
+				<CheckBox Label="@[Customer]" Value="{Bind Agent.IsCustomer}"/>
+				<CheckBox Label="@[Supplier]" Value="{Bind Agent.IsSupplier}"/>
+			</Grid>
+		</Panel>
+
+		<TabBar Value="{Bind Root.$$Tab}" Grid.Row="1">
+			<TabButton Content="@[Addresses]" ActiveValue="" Badge="{BindNumber Agent.Addresses.Count}"/>
+			<TabButton Content="@[Accounts]" ActiveValue="acc" Badge="{BindNumber Agent.Accounts.Count}"/>
+		</TabBar>
+
+		<Switch Expression="{Bind Root.$$Tab}" Grid.Row="2">
+			<!-- table part #1 — addresses (plain scalars) -->
+			<Case Value="">
+				<Grid Rows="Auto,1*" AlignItems="Top" Overflow="Hidden" Height="100%">
+					<Toolbar>
+						<Button Icon="Plus" Content="@[AddRow]"
+							Command="{BindCmd Append, Argument={Bind Agent.Addresses}}"/>
+					</Toolbar>
+					<Table ItemsSource="{Bind Agent.Addresses}" GridLines="Both" Width="100%" StickyHeaders="True"
+							Columns="Fit,Auto,1*,1*,Auto,Fit" Height="100%">
+						<Table.Header>
+							<TableRow>
+								<TableCell Content="@[RowNo]"/>
+								<TableCell Content="@[Kind]"/>
+								<TableCell Content="@[City]"/>
+								<TableCell Content="@[Street]"/>
+								<TableCell Content="@[Zip]"/>
+								<TableCell/>
+							</TableRow>
+						</Table.Header>
+						<TableRow>
+							<TableCell Content="{Bind RowNo}" Align="Right" Wrap="NoWrap"/>
+							<TextBox Value="{Bind Kind}"/>
+							<TextBox Value="{Bind City}"/>
+							<TextBox Value="{Bind Street}"/>
+							<TextBox Value="{Bind Zip}"/>
+							<TableCell>
+								<Hyperlink Content="✕" Command="{BindCmd Remove, Argument={Bind}, Confirm='@[Confirm.Delete.Element]'}"/>
+							</TableCell>
+						</TableRow>
+					</Table>
+				</Grid>
+			</Case>
+			<!-- table part #2 — accounts (Bank + Currency references in a row) -->
+			<Case Value="acc">
+				<Grid Rows="Auto,1*" AlignItems="Top" Overflow="Hidden" Height="100%">
+					<Toolbar>
+						<Button Icon="Plus" Content="@[AddRow]"
+							Command="{BindCmd Append, Argument={Bind Agent.Accounts}}"/>
+					</Toolbar>
+					<Table ItemsSource="{Bind Agent.Accounts}" GridLines="Both" Width="100%" StickyHeaders="True"
+							Columns="Fit,1*,10rem,Auto,Fit" Height="100%">
+						<Table.Header>
+							<TableRow>
+								<TableCell Content="@[RowNo]"/>
+								<TableCell Content="@[Bank]"/>
+								<TableCell Content="@[Currency]"/>
+								<TableCell Content="@[Iban]"/>
+								<TableCell/>
+							</TableRow>
+						</Table.Header>
+						<TableRow>
+							<TableCell Content="{Bind RowNo}" Align="Right" Wrap="NoWrap"/>
+							<SelectorSimple Value="{Bind Bank}" Url="/catalog/bank"/>
+							<SelectorSimple Value="{Bind Currency}" Url="/catalog/currency"/>
+							<TextBox Value="{Bind Iban}"/>
+							<TableCell>
+								<Hyperlink Content="✕" Command="{BindCmd Remove, Argument={Bind}, Confirm='@[Confirm.Delete.Element]'}"/>
+							</TableCell>
+						</TableRow>
+					</Table>
+				</Grid>
+			</Case>
+		</Switch>
+	</Grid>
+</Dialog>

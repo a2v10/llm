@@ -38,12 +38,12 @@ the engine recognises the field as the recordset descriptor rather than data.
 
 | Marker        | Purpose                                                    |
 |---------------|------------------------------------------------------------|
-| `!Object`     | Single object                                              |
+| `!Object`     | Single object. → [sql/object.md](https://docs-llm.a2v10.com/sql/object.md) |
 | `!Array`      | Collection (rows)                                          |
-| `!Map`        | Lookup map, resolved by `Id`                               |
+| `!Map`        | Lookup map, resolved by `Id`. Exists only to serve `!RefId`. → [sql/object.md](https://docs-llm.a2v10.com/sql/object.md) |
 | `!Tree`       | Hierarchical result (static via recursive CTE + `!ParentId`, or dynamic with an `.Expand` proc). → [sql/tree.md](https://docs-llm.a2v10.com/sql/tree.md) |
 | `!Group`      | Grouped/subtotal hierarchy from `GROUP BY ROLLUP` (not explicit parent ids). Rows sorted so subtotals precede details; nests via `!Items`. → [sql/grouping.md](https://docs-llm.a2v10.com/sql/grouping.md) |
-| `!MapObject`  | Like `!Map`, but keyed by a `!Key` value (a set of named keys) instead of `Id`: each distinct key becomes a named property on the parent object. Placeholder lists the expected keys — `[Logins!TLogin!MapObject!ApiKey:Basic]`. |
+| `!MapObject`  | Like `!Map`, but keyed by a `!Key` value instead of `Id`: each distinct key becomes a named property on the parent object. → [sql/map-object.md](https://docs-llm.a2v10.com/sql/map-object.md) |
 | `!CrossArray` | Pivot/cross-tab: a horizontal array whose columns emerge from data values (like SQL `PIVOT`, but columns need not be known ahead). Element order from `!Key`. → [sql/cross.md](https://docs-llm.a2v10.com/sql/cross.md) |
 | `!CrossObject`| Like `!CrossArray` but an object keyed by value instead of an array. → [sql/cross.md](https://docs-llm.a2v10.com/sql/cross.md) |
 
@@ -64,10 +64,10 @@ parent. (Concrete parent-child invariants → [mapping.md](mapping.md) §2, Pair
 | `!Id`          | Primary key / identity of the row                                |
 | `!Key`         | Per-row key in `!MapObject`/`!Cross*` sets (`!!` form). MapObject: becomes the parent property name. Cross: orders elements, exposed via `$cross`. |
 | `!Name`        | Display name field                                               |
-| `!UtcDate`     | Convert the column UTC→local on model load. Uses the **server's** local time, not the client's. |
-| `!RefId`       | FK reference to another entity (paired with a `!Map`)            |
+| `!Utc`         | Convert the column UTC→local on model load. Uses the **server's** local time, not the client's. |
+| `!RefId`       | FK reference to another entity (paired with a `!Map`). → [sql/object.md](https://docs-llm.a2v10.com/sql/object.md) |
 | `!ParentId`    | Binds a child row to its parent (`[!<Parent>.<Field>!ParentId]`) |
-| `!RowCount`    | Total row count for paging                                       |
+| `!RowCount`    | Total row count for paging. → [sql/paging.md](https://docs-llm.a2v10.com/sql/paging.md) |
 | `!RowNumber`   | Ordinal number of the row                                        |
 | `!HasChildren` | Tree node has children → UI shows the expand arrow. Computed in SQL (`case when exists(...) then 1 else 0 end`); `!!` form, no type token. |
 | `!Items`       | Nested-children placeholder column in `!Tree`/`!Group` results; always `= null`. |
@@ -75,16 +75,31 @@ parent. (Concrete parent-child invariants → [mapping.md](mapping.md) §2, Pair
 | `!Permissions` | Int bitmask of row access rights — `cast(CanView as int) + cast(CanEdit as int)*2 + cast(CanDelete as int)*4 + cast(CanApply as int)*8` (same bits as [model-json.md](model-json.md#permissions)). |
 | `!GroupMarker` | In a `!Group` set: holds `grouping(col)` (0=detail, 1=subtotal) for one `ROLLUP` column; one per rolled-up column, ordered `desc`. `!!` form. |
 | `!ReadOnly`    | In `$System` only, `[!!ReadOnly] = 0/1`: when 1, the platform disables every UI control and blocks saving the model. |
-| `!SortOrder`   | Echo of the active sort column (in `$System`)                    |
-| `!SortDir`     | Echo of the active sort direction (in `$System`)                 |
-| `!PageSize`    | Echo of the page size (in `$System`)                             |
-| `!Offset`      | Echo of the paging offset (in `$System`)                         |
-| `!Filter`      | Echo of a filter parameter back to the form (in `$System`)       |
+| `!SortOrder`   | Echo of the active sort column (in `$System`). → [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md) |
+| `!SortDir`     | Echo of the active sort direction (in `$System`). → [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md) |
+| `!PageSize`    | Echo of the page size (in `$System`). → [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md) |
+| `!Offset`      | Echo of the paging offset (in `$System`). → [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md) |
+| `!Filter`      | Echo of a filter parameter back to the form (in `$System`); several written forms per filter kind. → [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md) |
 | `!Json`        | Text column holding valid JSON; deserialized into an object in the model (not a string). **The object is NOT reactive.** |
 
-## `$System` — special recordset
+## System recordsets — `$`-prefixed type token
 
-`[!$System!]` (name mid-marker, not a suffix) — echoes paging/sort/filter state back so the form keeps it on refresh. Holds `!PageSize`, `!Offset`, `!SortOrder`, `!SortDir`, `!Filter`, `!RowCount`, plus `!ReadOnly` (control flag, not echo).
+Besides the sets that *form* the model, a procedure may return **system** sets: they steer
+the processing, not the shape. Three exist — that is the whole list:
+
+| Set | Purpose | Position among the result sets |
+|---|---|---|
+| `$System` | Echoes paging/sort/filter state back so the form keeps it on refresh; also carries `!ReadOnly`. Written `[!$System!]` — name mid-marker, not a suffix. | **After** every element it references (in practice, last) |
+| `$Aliases` | Passes a field name **by value** where SQL only allows a literal; substitution applies to all *following* sets. **ONLY** for a `MapObject` whose set of keys is unknown until runtime — see the ban below. | **Before** the first use of an alias |
+| `$Defaults` | Default values for not-yet-loaded elements of the model root. *NET.Core only.* | Anywhere |
+
+**`$Aliases` — one use only.** It is legal **solely** when a `!MapObject`'s set of keys is not
+known until runtime. Everything else is forbidden: **never** reach for `$Aliases` to shorten a
+name, to avoid repeating a column, or to make the SQL read better. Substitution applies to
+**every** name in **all** following result sets, so a "convenience" alias silently renames
+columns in sets you were not thinking about — and nothing fails loudly.
+
+→ [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md)
 
 ## `Metadata` — the `.Metadata` proc
 

@@ -69,6 +69,8 @@ A function (`(this: IRoot, arg?) => …`; returning `'save'` triggers a save) or
 
 Every `IElement` (and `IRoot`) exposes `$ctrl: IController` — the runtime surface you call from any command/event body. Common reaches: `$invoke`, `$showDialog`, `$navigate`, `$save`, `$requery`, `$reload`, `$close`, `$toast`, `$report`, `$upload`. Full surface → [controller](https://docs-llm.a2v10.com/client/controller.md).
 
+Server errors from `$invoke` are shown by the platform by default (business `UI:` message vs bare developer alert); reach for `catchError` **only** for a client-side follow-up on failure → [platform-behavior.md](platform-behavior.md).
+
 ### Cross-view refresh (stale-tab problem)
 
 An action that changes an entity also open in another tab/view leaves that view stale until told to refresh. The acting view emits on change (carrying at least the `Id`); the other view, subscribed by the same event name, calls `$requery()`. Mechanics → [controller](https://docs-llm.a2v10.com/client/controller.md).
