@@ -1,4 +1,4 @@
-﻿# Example: report.list — on-screen report (flat list)
+# Example: report.list — on-screen report (flat list)
 
 The minimal **on-screen report**: a period (+ optional agent) filter, a flat list of
 documents, a total. Use it as the clone donor for screen reports; for trees and drill-down

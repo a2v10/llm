@@ -1,4 +1,4 @@
-﻿# New project — scaffold, then fill the domain if the request names one
+# New project — scaffold, then fill the domain if the request names one
 
 A new A2v10 project starts as a bare runnable shell with no meaning. **Decide first**
 which of two cases you are in:

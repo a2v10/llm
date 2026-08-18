@@ -1,4 +1,4 @@
-﻿# Troubleshooting — what to verify when it doesn't work
+# Troubleshooting — what to verify when it doesn't work
 
 A2v10 fails **silently**: no build, no compiler, no error — the runtime simply
 does not pick up data, or an element does nothing. So you cannot debug by

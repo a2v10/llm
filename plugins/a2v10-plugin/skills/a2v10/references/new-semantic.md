@@ -1,4 +1,4 @@
-﻿# New project — determine the semantics
+# New project — determine the semantics
 
 Reached from `new-project.md` §4 once the shell is scaffolded and the request names a domain —
 or later, when a bare app acquires a purpose. Here you decide what the app *is* and what it is

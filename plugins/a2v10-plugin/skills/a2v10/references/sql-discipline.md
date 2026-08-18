@@ -1,4 +1,4 @@
-﻿# SQL authoring discipline
+# SQL authoring discipline
 
 Conventions for **tidy, re-runnable SQL**. None of it is a platform requirement — the
 engine ignores constraint names, table/model spelling, and re-run guards. Rename or drop

@@ -1,4 +1,4 @@
-﻿# Mapping — semantic types and cross-layer pairs
+# Mapping — semantic types and cross-layer pairs
 
 Two reference tables in one document. Use **Section 1** as the projection lookup when generating an endpoint from a SQL schema; use **Section 2** as a sanity-check after generation.
 

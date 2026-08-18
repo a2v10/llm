@@ -1,4 +1,4 @@
-﻿# Orientation — the turn has no task yet
+# Orientation — the turn has no task yet
 
 Reached from SKILL.md §6 when the user asks *what this is / what can I do / where do I start*
 instead of naming work. **Write nothing here** — no scaffold, no `CLAUDE.md`, no endpoint — until

@@ -1,4 +1,4 @@
-﻿# Localization
+# Localization
 
 A runtime-wide macro: wherever the runtime meets `@[Key]`, it substitutes the
 value for `Key` from the project's dictionary files. Plain text without `@[…]`

@@ -1,4 +1,4 @@
-﻿# System menu — app navigation (menu.json)
+# System menu — app navigation (menu.json)
 
 **Full docs — [docs-llm.a2v10.com/app/menu.md](https://docs-llm.a2v10.com/app/menu.md)** — the JSON
 schema, every node property, and [the complete icon list](https://docs-llm.a2v10.com/app/menu.md#icons)

@@ -1,4 +1,4 @@
-﻿# Existing project — discover the semantics
+# Existing project — discover the semantics
 
 **Guard — confirm there is an app first.** No `model.json` anywhere in the tree → there is no
 A2v10 app here yet; this is the *new-project* path (SKILL.md §6 → `new-project.md`), not this one.

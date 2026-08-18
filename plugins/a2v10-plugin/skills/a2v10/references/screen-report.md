@@ -1,4 +1,4 @@
-﻿# On-screen reports
+# On-screen reports
 
 An **on-screen report** is an interactive, filterable page that renders a `Sheet` —
 the default meaning of "report" (звіт) in this skill. It is an **`action`** (Renderable),

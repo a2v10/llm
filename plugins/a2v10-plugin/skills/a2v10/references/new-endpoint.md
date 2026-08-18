@@ -1,4 +1,4 @@
-﻿# How to add a new endpoint to an existing entity
+# How to add a new endpoint to an existing entity
 
 Step-by-step checklist for a focused create  a single endpoint.
 

@@ -1,4 +1,4 @@
-﻿# Semantics — what to know about a project
+# Semantics — what to know about a project
 
 The engine defines no domain meaning (SKILL.md §1). **Semantics** is everything the
 project decides and you must know before touching it. It lives in **two files**, split

@@ -1,4 +1,4 @@
-﻿# document.operation — Document-with-operations archetype
+# document.operation — Document-with-operations archetype
 
 Archetype for documents where different operation types are stored in **a single table**.
 Example: warehouse operations (Receipt, Issue, Transfer).

@@ -1,4 +1,4 @@
-﻿# How to add a field to an existing entity
+# How to add a field to an existing entity
 
 Step-by-step checklist for a focused change to a single endpoint.
 

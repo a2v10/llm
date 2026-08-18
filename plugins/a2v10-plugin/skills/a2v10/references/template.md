@@ -1,4 +1,4 @@
-﻿# Template Conventions
+# Template Conventions
 
 **Full docs — [template.md](https://docs-llm.a2v10.com/template.md) (per-key authoring) and
 [client.md](https://docs-llm.a2v10.com/client.md) (the `$`-members, the controller, `std:utils`).**

@@ -1,4 +1,4 @@
-﻿# SQL ↔ runtime rules — markers & bindings
+# SQL ↔ runtime rules — markers & bindings
 
 **Full docs — [docs-llm.a2v10.com/sql.md](https://docs-llm.a2v10.com/sql.md).** The tables below are
 the *index* of markers — what exists and what each one is for; the per-marker page linked in the row

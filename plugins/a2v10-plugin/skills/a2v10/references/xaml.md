@@ -1,4 +1,4 @@
-﻿# XAML Conventions
+# XAML Conventions
 
 **Full docs — [docs-llm.a2v10.com/xaml.md](https://docs-llm.a2v10.com/xaml.md).** That hub lists
 every control and layout page with a one-line description. Element names, properties, syntax —

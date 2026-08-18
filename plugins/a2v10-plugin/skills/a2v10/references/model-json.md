@@ -1,4 +1,4 @@
-﻿# model.json
+# model.json
 
 **Full docs — [docs-llm.a2v10.com/model.md](https://docs-llm.a2v10.com/model.md).** A page per
 section (overview, actions, dialogs, popups, commands, reports, files), every property with its type

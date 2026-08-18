@@ -1,4 +1,4 @@
-﻿# CLI — principles (LLM-first)
+# CLI — principles (LLM-first)
 
 ## Working directory
 
