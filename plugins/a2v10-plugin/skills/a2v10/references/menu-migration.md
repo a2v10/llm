@@ -1,4 +1,4 @@
-# Migrate the menu: DB → menu.json
+﻿# Migrate the menu: DB → menu.json
 
 Move an existing project's navigation from the legacy `a2ui.Menu` table to `menu.json` (see `menu.md`).
 

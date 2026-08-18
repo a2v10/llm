@@ -1,4 +1,4 @@
-# CLI — principles (LLM-first)
+﻿# CLI — principles (LLM-first)
 
 ## Working directory
 
@@ -19,6 +19,8 @@ The command set grows over time. If `a2` reports an **unknown command or flag** 
 ## Core principle: a CLI for the LLM, not for a human
 
 Every call is isolated. The LLM gets only what the command answers. What it doesn't answer, the LLM doesn't know.
+
+**The tool describes itself, tersely** — `a2 <group> <command> --help` gives the argument spelling and a one-line summary, and it is never out of date: when it and this file disagree about a name or a flag, the help is right and this file is stale. But a one-liner is not a contract. This file carries what does not fit there: the shape of the JSON that comes back, what each field means and what it does *not* prove, what a short phrase in the help actually covers, and the traps.
 
 ## What follows from this
 
@@ -102,6 +104,37 @@ The `prefix`↔`root` mapping exists **only in this config**. The names are unre
 
 The **only** door to a database, by design — read-only inspection. Any other path (any tool, any
 language, any credentials you find) is forbidden; applying SQL is the user's action (SKILL.md §4).
+
+**Every `a2 db …` refuses to run against a system database** — see the guard under `a2 db info`.
+
+### `a2 db info`
+
+Where the connection points — which database every other `db` command reads, and which file to edit when that is the wrong one.
+
+```json
+{
+  "success": true,
+  "data": {
+    "server": "localhost",
+    "database": "StandardModules2",
+    "source": "user secrets (secrets.json)",
+    "exists": true,
+    "platform": true
+  },
+  "error": null
+}
+```
+
+- **`server`**, **`database`** — the target as the config spells it (`localhost`, `.\SQLEXPRESS`). The connection string itself is never printed: it may carry a password.
+- **`source`** — the configuration layer that supplied the string, i.e. **the file to edit**: a path from the project root (`WebApp/appsettings.json`) or `user secrets (secrets.json)`. Never derive this from `hostRoot` — the string may come from secrets, and then `appsettings.json` is the wrong file to send anyone to.
+- **`exists`** — whether that database exists on that server.
+- **`platform`** — it carries the A2v10 schema; `false` on an existing database means it belongs to something else.
+
+Nothing here says the schema is *current*: `platform: true` is not "agrees with your sources".
+
+An unreachable server or a rejected login is **not** `exists: false` but `success: false` — an answer about the database versus no answer at all.
+
+**System-database guard.** `Database=` resolving to `master`, `model`, `msdb` or `tempdb` fails this command and every other `a2 db …`; the error names the same file as `source`.
 
 ### `a2 db tables [schema]`
 
@@ -210,3 +243,19 @@ Renderable — `actions` (page), `dialogs` (modal), and `popups` (popup). **The 
 - **`view`/`template`** — `{ route, file }`: `route` — the same value as the top-level `route` (each block is self-contained), **not the file's folder**; `file` — the real name with extension. `template.file` — the **source to edit** (`.ts`; if absent — `.js`), not the compiled `.js`. There is deliberately no existence check: a missing or misnamed file is surfaced by `build`, not by resolve.
 - **`sqlProcedures`** — verb (lowercase) → the real SQL procedure name the runtime will call, ready for `CREATE OR ALTER` (schema without brackets, like the `cat.[T]` canon). The set depends on the element: `edit` → `load`+`update`, no `index`. Explicit and derived are not distinguished — the name is what's needed, not the origin.
 - **`dataModel.types`** — the type tree the runtime generated from the result-set schema; a 1:1 projection of the platform model description. Each prop has `type` + `len`: `len` = `null`, except for a string with a given length (`"string"`, `len: 100`). Primitives — lowercase (`number`/`string`/…); a named type — `T…`; an array → `{ "item": "T…" }`. `id`/`name` are always present (`null` when absent, as in `TRoot`). This is what you cross-check XAML binds against and what your SQL markers were supposed to return.
+
+## Commands `a2 view`
+
+### `a2 view validate <view-file>`
+
+`a2 view validate --help` lists what it checks and how the argument is spelled. What the help does **not** say:
+
+- **It is the authoring-time check.** Sources only — no database, no build, no deploy — so it answers on the file you have just written, and it is the only command here that does. Run it on every view you write or edit. Everything else in this CLI reports deployed state.
+- **The argument is an endpoint address, not a filesystem path** — the same addressing as everywhere else (SKILL.md §3), with the view file in the last segment: `[$<module>/]<endpoint-path>/<view-file>`. Both `catalog/agent/index.view` and `/$store/catalog/item/edit.dialog` are right; the module folder on disk (`MainApp/catalog/…`, `StoreApp/…`) is not — a source folder never appears here.
+- **The last segment is the file, not the element.** `view:` in `model.json` names that file (`index.view`); the element name (`index`) is what `resolve-*` takes and here it names a different file or none. Not found → the message echoes the path it tried, so you can see which of the two you wrote.
+- **One problem per run** — the first; instantiation stops there. Re-run after each fix.
+- **What the help's short list means exactly.** Malformed markup — the message carries line and position. Unknown element / property / enum value — named with the engine's own type (`Class A2v10.Xaml.Bogus not found`, `Property Border not found in type A2v10.Xaml.Grid`, `Invalid enum value 'Sometimes' for 'CommandBarVisibility'`); so an element, property or enum value you **invented** cannot survive this command (SKILL.md §5, *don't invent platform surface*). "Missing includes" — the `Components` file must resolve, and errors *inside* the dictionaries it pulls in are reported too.
+- **What it stays silent about**, beyond the bindings the help mentions — each still fails silently at runtime:
+  - **attached properties** — `Toolbar.Alignn="Right"` passes; only plain properties are resolved against the type;
+  - **`<Component Name="…"/>`** — the dictionary file is verified, a name missing inside it is not;
+  - **whether an element belongs in that container** — enforced only where the container's child collection is typed narrowly (a `DataGridColumn` under `<Toolbar>` fails the cast); a well-typed but nonsensical child passes, `<ComboBox>` inside `<Toolbar>` included.

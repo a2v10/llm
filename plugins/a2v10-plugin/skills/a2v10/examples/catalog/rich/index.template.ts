@@ -1,4 +1,4 @@
-import { TAgent, TAgentArray, TRoot } from "./index"
+﻿import { TAgent, TAgentArray, TRoot } from "./index"
 
 const template: Template = {
 	options: {

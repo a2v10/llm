@@ -1,4 +1,4 @@
-------------------------------------------------
+﻿------------------------------------------------
 -- FK from cat.Agents (header references)
 ------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CONSTRAINT_NAME = 'FK_Agents_Manager_Employees')

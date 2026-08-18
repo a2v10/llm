@@ -1,4 +1,4 @@
-<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml" Title="@[Invoices]">
+﻿<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml" Title="@[Invoices]">
 	<Page.CollectionView>
 		<CollectionView ItemsSource="{Bind Documents}" RunAt="Server">
 			<CollectionView.Filter>

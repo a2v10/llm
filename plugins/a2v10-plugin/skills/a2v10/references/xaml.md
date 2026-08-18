@@ -1,26 +1,43 @@
-# XAML Conventions
+﻿# XAML Conventions
+
+**Full docs — [docs-llm.a2v10.com/xaml.md](https://docs-llm.a2v10.com/xaml.md).** That hub lists
+every control and layout page with a one-line description. Element names, properties, syntax —
+always there, never guessed. It is a catalogue of what exists, **not** a menu of what to use: an
+element you had no reason to look for is not one your form was missing. Non-obvious entry points —
+where mainline facts hide:
+
+- [base-classes.md](https://docs-llm.a2v10.com/xaml/base-classes.md) — properties inherited by
+  every element (`UIElementBase` / `UIElement` / `Control` / `ValuedControl` / `Container`).
+  Read it before concluding an element lacks a property: most properties are declared here, not
+  on the element's own page. Its list of derived classes is also the fullest inventory of
+  controls in the docs — several of them (`Radio`, `MultiSelect`, `TimePicker`, `PeriodPicker`,
+  `UploadFile`) have no page of their own.
+- [bind.md](https://docs-llm.a2v10.com/xaml/bind.md) — `Bind` / `BindCmd`, all `DataType` and
+  `CommandType` values.
+- [layouts/fieldset.md](https://docs-llm.a2v10.com/xaml/layouts/fieldset.md) — a labeled frame
+  around a group of fields. `Grid` has no `Border`; framing is `FieldSet`'s job.
+- [layouts/sheet.md](https://docs-llm.a2v10.com/xaml/layouts/sheet.md) — spreadsheet-style
+  tables, tree groups, cross columns. For on-screen reports start at [screen-report.md](screen-report.md).
+
+> **A2v10 XAML is a WPF dialect, not WPF.** Names overlap — some elements and properties match
+> WPF, some don't, some differ. Don't trust your WPF prior: verify every element and property
+> name against the docs or the examples.
+
+Working markup — `examples/`. Column → control projection and SQL ⇔ XAML invariants (sortable
+column, `FilterItem` ⇔ procedure parameter, FK ⇔ `Map` ⇔ `SelectorSimple`) — [mapping.md](mapping.md).
+
+The rest of this file is only what the docs structurally don't have: project conventions and
+elements with no doc page.
 
 > File extension on disk follows the project's `XAML naming convention` (`.vxaml` or legacy `.xaml`, CLAUDE.md). Content is identical either way; paths in `view:`/`Components` stay extension-less.
 
-> Document is being filled in. Up-to-date examples — in `examples/`.
->
-> For column → control mapping (Money / FK / Date / Boolean / Enum) and SQL ↔ XAML invariants (sortable column, FilterItem ⇔ procedure parameter, FK ⇔ Map ⇔ SelectorSimple, etc.) see [mapping.md](mapping.md).
+## Root elements → files
 
-## Namespace
-
-```xml
-xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
-```
-
-> **A2v10 XAML is a WPF dialect, not WPF.** Names overlap — some elements and properties match WPF, some don't, some differ. Don't trust your WPF prior: verify every element and property name against the examples or the full docs.
-
-## Root elements
-
-| Element              | Purpose                                  |
-|----------------------|------------------------------------------|
-| `Page`               | Page (index.view, edit.view)             |
-| `Dialog`             | Dialog (edit.dialog, browse.dialog)      |
-| `ComponentDictionary`| File with named XAML fragments           |
+| Element | File |
+|---|---|
+| `Page` | `index.view`, `edit.view` |
+| `Dialog` | `edit.dialog`, `browse.dialog` |
+| `ComponentDictionary` | file of named XAML fragments (no doc page — see below) |
 
 ## ComponentDictionary — reusable components
 
@@ -43,19 +60,12 @@ Using a component in markup:
 
 `Scope` is optional and changes the binding context inside the component.
 
-## SelectorSimple — selecting an FK value
+## Toolbar — aligning the trailing group
 
-Used for reference fields. Opens the related catalog's browse dialog and calls the fetch command for autocomplete.
-
-```xml
-<SelectorSimple Label="@[Category]" Value="{Bind Sample.Category}" Url="/catalog/category" />
-```
-
-| Attribute | Purpose |
-|---|---|
-| `Label` | Field label |
-| `Value` | Binding to the object's FK field |
-| `Url` | Catalog URL (without `/browse` — the platform appends it) |
+Use `<ToolbarAligner/>`: an invisible spacer placed before the trailing elements, which pushes
+them to the right edge. The attached property `Toolbar.Align="Right"` also works but is **no
+longer recommended**; the examples use `ToolbarAligner` throughout
+→ [controls/toolbaraligner.md](https://docs-llm.a2v10.com/xaml/controls/toolbaraligner.md).
 
 ## browse.dialog: column selection
 
@@ -70,91 +80,17 @@ Example: for an agent — `Name`, `Phone`, `Email`; `Address` and `Memo` are not
 
 Set `TabIndex="1"` only on the **first** field of the form. Do not set `TabIndex` on the rest — tab order is determined by element order in the markup. This makes editing easier: rearranging rows is enough; you don't have to renumber indices.
 
-## Index page — structure
+## Index page
 
 Canonical example: [examples/catalog/simple/index.view.xaml](../examples/catalog/simple/index.view.xaml).
 
-Index page skeleton:
-
-```xml
-<Page Title="@[Samples]">
-  <Page.CollectionView>
-    <CollectionView ItemsSource="{Bind Samples}" RunAt="ServerUrl">
-      <CollectionView.Filter>
-        <FilterDescription>
-          <FilterItem Property="Fragment" DataType="String"/>
-          <!-- one FilterItem per non-paging procedure parameter -->
-        </FilterDescription>
-      </CollectionView.Filter>
-    </CollectionView>
-  </Page.CollectionView>
-
-  <Grid Rows="Auto,1*,Auto" Height="100%">
-    <Toolbar>...</Toolbar>
-    <DataGrid ItemsSource="{Bind Parent.ItemsSource}" FixedHeader="True">...</DataGrid>
-    <Pager Source="{Bind Parent.Pager}"/>
-  </Grid>
-</Page>
-```
-
-**`FilterItem` rules** — one per filter parameter of the procedure (other than `@Offset`/`@PageSize`/`@Order`/`@Dir`):
-
-| `DataType` | Procedure parameters | UI control |
-|---|---|---|
-| `Period` | a pair `@From` + `@To` | `<PeriodPicker Value="{Bind Parent.Filter.Period}"/>` |
-| `String` | a single nvarchar (`@Fragment`, `@Status`, `@Category`) | `<SearchBox>` for search, `<ComboBox>` for a flag |
-
-`<Pager>` is mandatory and is bound to `Parent.Pager`. `<DataGrid ItemsSource>` is always `{Bind Parent.ItemsSource}`.
-
-## DataGrid — column conventions
-
-| Column class | Attributes | Example |
-|---|---|---|
-| PK | `Role="Id"` | `<DataGridColumn Content="{Bind Id}" Role="Id"/>` |
-| Date (`date`) | `DataType="Date"`, `Role="Date"` | `<DataGridColumn Content="{Bind Date, DataType=Date}" Role="Date" Sort="True"/>` |
-| DateTime (`datetime2`) | `DataType="DateTime"`, `Role="Date"` | `<DataGridColumn Content="{Bind Modified, DataType=DateTime}" Role="Date"/>` |
-| Money | `{BindSum}`, `Role="Number"` | `<DataGridColumn Content="{BindSum Sum}" Role="Number" Sort="True"/>` |
-| Boolean | `Role="CheckBox"` | `<DataGridColumn Content="{Bind IsActive}" Role="CheckBox"/>` |
-| FK Map | dot notation in Bind | `<DataGridColumn Content="{Bind Agent.Name}" LineClamp="2"/>` |
-| Long text | `LineClamp="2"` or `Fit="True" Wrap="NoWrap"` | `<DataGridColumn Content="{Bind Memo}" LineClamp="2"/>` |
-| Stretcher | empty trailing column | `<DataGridColumn />` |
-
-**Sort rules:**
+**Sorting** — pick one of two modes, depending on the procedure:
 - `<DataGrid Sort="True">` — when **all** columns are sortable (typical for catalogs).
-- `<DataGrid Sort="False">` + `Sort="True"` on individual columns — when only some columns have a branch in the procedure's `case @Order when N'...'` (typical for documents/journals). A column without `Sort="True"` is shown but cannot be sorted.
+- `<DataGrid Sort="False">` + `Sort="True"` on individual columns — when only some columns have
+  a branch in the procedure's `case @Order when N'...'` (typical for documents/journals). A
+  column without `Sort="True"` is shown but cannot be sorted.
 
-FK Map (`{Bind Agent.Name}`) works because the procedure's SELECT contains `[Agent!TAgent!RefId] = d.Agent` + a Map result set — the platform automatically resolves `Agent.Name` via Id.
-
-## Taskpad — sidebar of filters
-
-An alternative layout to filters-above-grid: place filters in `<Page.Taskpad>` to the right of the grid.
-
-```xml
-<Page.Taskpad>
-  <Taskpad>
-    <Panel Header="@[Filters]">
-      <PeriodPicker Label="@[Period]" Value="{Bind Parent.Filter.Period}" Placement="BottomRight"/>
-      <ComboBox Label="@[Status]" Value="{Bind Parent.Filter.Status}">
-        <ComboBoxItem Value="all"    Content="@[All]"/>
-        <ComboBoxItem Value="active" Content="@[Active]"/>
-        <ComboBoxItem Value="closed" Content="@[Closed]"/>
-      </ComboBox>
-    </Panel>
-  </Taskpad>
-</Page.Taskpad>
-```
-
-**When Taskpad, when inline:**
-- **Taskpad** — when there are **3+** filters (period + statuses + categories), to avoid eating vertical space above the grid.
+**Filters — Taskpad or inline:**
+- **Taskpad** (`<Page.Taskpad>`, to the right of the grid) — when there are **3+** filters
+  (period + statuses + categories), to avoid eating vertical space above the grid.
 - **Inline `StackPanel`** above the grid — when there are 1–2 filters (period or fragment).
-
-A ComboBox filter requires an nvarchar parameter in the procedure with a default value of `'all'` and a branch:
-```sql
-@Status nvarchar(32) = N'all'
--- ...
-and (@Status = N'all' or s.[Status] = @Status)
-```
-Plus `<FilterItem Property="Status" DataType="String"/>` in `FilterDescription`.
-
----
-> Full documentation: [xaml.md](https://docs-llm.a2v10.com/xaml.md)

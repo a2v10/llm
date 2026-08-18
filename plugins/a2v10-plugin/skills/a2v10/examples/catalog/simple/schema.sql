@@ -1,4 +1,4 @@
-------------------------------------------------
+﻿------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.SEQUENCES where SEQUENCE_SCHEMA = 'cat' and SEQUENCE_NAME = 'SQ_Samples')
 	create sequence cat.SQ_Samples as bigint start with 100 increment by 1;
 go

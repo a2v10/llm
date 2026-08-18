@@ -1,4 +1,4 @@
-# Example: catalog.simple
+﻿# Example: catalog.simple
 
 A simple flat catalog without FKs or detail tables. Fields: `Name`, `Memo`.
 

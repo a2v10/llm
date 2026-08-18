@@ -1,4 +1,4 @@
-
+﻿
 export interface TSample extends IElement {
 	readonly Id: number;
 	Name: string;

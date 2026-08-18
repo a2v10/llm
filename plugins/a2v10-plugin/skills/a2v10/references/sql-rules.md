@@ -1,4 +1,8 @@
-# SQL ↔ runtime rules — markers & bindings
+﻿# SQL ↔ runtime rules — markers & bindings
+
+**Full docs — [docs-llm.a2v10.com/sql.md](https://docs-llm.a2v10.com/sql.md).** The tables below are
+the *index* of markers — what exists and what each one is for; the per-marker page linked in the row
+is where its syntax and examples live.
 
 The **platform contract**: how a stored procedure's output binds to the client model.
 This is not stylistic — break a marker and the runtime mis-binds, duplicates, or drops
@@ -39,7 +43,8 @@ the engine recognises the field as the recordset descriptor rather than data.
 | Marker        | Purpose                                                    |
 |---------------|------------------------------------------------------------|
 | `!Object`     | Single object. → [sql/object.md](https://docs-llm.a2v10.com/sql/object.md) |
-| `!Array`      | Collection (rows)                                          |
+| `!Array`      | Collection (rows). → [sql/array.md](https://docs-llm.a2v10.com/sql/array.md) |
+| `!LazyArray`  | Same, but the rows are **not** loaded with the model — fetched on demand. → [sql/array.md](https://docs-llm.a2v10.com/sql/array.md) |
 | `!Map`        | Lookup map, resolved by `Id`. Exists only to serve `!RefId`. → [sql/object.md](https://docs-llm.a2v10.com/sql/object.md) |
 | `!Tree`       | Hierarchical result (static via recursive CTE + `!ParentId`, or dynamic with an `.Expand` proc). → [sql/tree.md](https://docs-llm.a2v10.com/sql/tree.md) |
 | `!Group`      | Grouped/subtotal hierarchy from `GROUP BY ROLLUP` (not explicit parent ids). Rows sorted so subtotals precede details; nests via `!Items`. → [sql/grouping.md](https://docs-llm.a2v10.com/sql/grouping.md) |
@@ -112,5 +117,3 @@ FK projection; parent-child Array; TableType ⇔ MERGE) live in [mapping.md](map
 §2 as named pairs, each with its failure mode. Use them as a post-generation
 sanity-check.
 
----
-> Full documentation: [sql.md](https://docs-llm.a2v10.com/sql.md)

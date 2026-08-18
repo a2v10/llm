@@ -1,4 +1,4 @@
-# SQL Procedures — slot-filling templates
+﻿# SQL Procedures — slot-filling templates
 
 Each procedure is a fixed sequence of slots. Fill each slot from the endpoint specification; skip a slot only when explicitly marked optional.
 

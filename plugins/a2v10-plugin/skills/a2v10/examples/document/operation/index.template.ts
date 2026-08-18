@@ -1,4 +1,4 @@
-import { TDocument, TDocumentArray, TRoot } from "./index";
+﻿import { TDocument, TDocumentArray, TRoot } from "./index";
 
 const template: Template = {
 	options: {

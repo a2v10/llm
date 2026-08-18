@@ -1,4 +1,4 @@
-# Orientation — the turn has no task yet
+﻿# Orientation — the turn has no task yet
 
 Reached from SKILL.md §6 when the user asks *what this is / what can I do / where do I start*
 instead of naming work. **Write nothing here** — no scaffold, no `CLAUDE.md`, no endpoint — until
@@ -11,8 +11,9 @@ onboarding (§6) still runs once, later, when the first real task arrives.
 - `a2 --version` → the CLI; missing → install it (`cli.md`) before the checks below.
 - `dotnet --version` → the SDK; needed to build. Report its absence, don't install it.
 
-The database is checked where it matters, not here: an existing app — `a2 db tables` (an error =
-not deployed / not reachable); a new one — at the scaffold step, which is the user's action anyway.
+The database is checked where it matters, not here: an existing app — `a2 db info` (`exists`/`platform`
+say whether it is deployed, `success: false` that it is unreachable); a new one — at the scaffold step,
+which is the user's action anyway.
 
 ## 2. Say what A2v10 is
 
@@ -24,8 +25,8 @@ The user has no priors and neither do you outside this skill — **state only wh
 > endpoints in `model.json`, views in XAML, behavior in TypeScript, data in stored procedures.
 > The runtime routes URLs, renders the UI and moves the data; it has no opinion about what your
 > entities mean — kinds, columns and names are the app's. There is no ORM, no migrations, no
-> ad-hoc SQL: every read and write goes through a procedure. Files are read live — no build step
-> for views or templates.
+> ad-hoc SQL: every read and write goes through a procedure. Views and endpoints are read live; a build
+> is needed only to bundle the SQL and compile the TypeScript.
 
 Anything the skill doesn't cover → the full docs: https://docs-llm.a2v10.com
 

@@ -1,4 +1,4 @@
-# How to add a field to an existing entity
+﻿# How to add a field to an existing entity
 
 Step-by-step checklist for a focused change to a single endpoint.
 
@@ -19,6 +19,14 @@ Step-by-step checklist for a focused change to a single endpoint.
 | Localization | `_localization/*.txt` | Field/column label |
 
 Not every layer is required — depends on the field type.
+
+**The column goes in the `schema.sql` that owns the table — never in another one.** Owner = the
+file that holds this table's `create table`. Adding a field to a table your endpoint only *uses*
+means editing that other folder's `schema.sql`, not opening a convenient one of your own. Reason,
+not tidiness: fragments matched by the same mask are concatenated in **unspecified** order
+(→ [sql-discipline.md](sql-discipline.md)), so a stray `alter` can run before the `create` — the
+guard finds no column, the `alter` hits a table that does not exist yet, and the user's apply
+stops there with the rest of the script unapplied.
 
 > XAML files above are named `.xaml` for brevity; on disk they carry the project's `XAML naming convention` extension (`.vxaml` or `.xaml`, CLAUDE.md). When locating a file to edit, match the base name (`edit.view.*`) — don't assume the extension.
 
@@ -128,5 +136,8 @@ d.ts: `IsActive: boolean`.
 - [ ] `TableType` updated.
 - [ ] `Update` MERGE: field in `SET` **and** in `INSERT`.
 - [ ] `Index`: field in SELECT + Map (for FK) + temp table (for FK) + parameter + `$System` (if filtered).
+- [ ] Field shown as a grid column → it is in **`Load`** as well. The list refreshes the edited row
+      from `Update`→`Load`, so a column only `Index` produces goes blank after the first save
+      (→ `mapping.md` Pair 11).
 - [ ] `edit.d.ts`: if the file exists — update the type. If not — do not create it.
 - [ ] `TabIndex="1"` — only on the first field of the form; do not set it on the rest.

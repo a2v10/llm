@@ -1,4 +1,4 @@
-export interface TAgent extends IElement {
+﻿export interface TAgent extends IElement {
 	readonly Id: number;
 	Name: string;
 }

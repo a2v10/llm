@@ -1,4 +1,4 @@
-------------------------------------------------
+﻿------------------------------------------------
 -- Stub reference catalogs (FK targets for cat.Agents).
 -- Minimal by design: in a real project each is a full catalog of its own
 -- (own model.json, views, procedures). Here they exist only so Agent's FKs,

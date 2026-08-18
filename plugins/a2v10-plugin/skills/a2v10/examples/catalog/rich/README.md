@@ -1,4 +1,4 @@
-# Example: catalog.rich
+﻿# Example: catalog.rich
 
 A rich catalog (`cat.Agents` — контрагент) that shows, in **one model / one endpoint**, the
 full range a reference entity reaches in practice:

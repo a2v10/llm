@@ -1,4 +1,4 @@
-import { TAgent, TWarehouse } from './edit';
+﻿import { TAgent, TWarehouse } from './edit';
 
 export interface TDocument extends IArrayElement {
 	readonly Id: number;

@@ -1,4 +1,4 @@
--- Agent logic (rich catalog)
+﻿-- Agent logic (rich catalog)
 ------------------------------------------------
 create or alter procedure cat.[Agent.Index]
 @UserId bigint,

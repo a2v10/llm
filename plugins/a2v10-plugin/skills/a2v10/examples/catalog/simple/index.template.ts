@@ -1,4 +1,4 @@
-import { TSample, TSampleArray, TRoot } from "./index"
+﻿import { TSample, TSampleArray, TRoot } from "./index"
 
 const template: Template = {
 	options: {

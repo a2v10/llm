@@ -1,4 +1,4 @@
-# On-screen reports
+﻿# On-screen reports
 
 An **on-screen report** is an interactive, filterable page that renders a `Sheet` —
 the default meaning of "report" (звіт) in this skill. It is an **`action`** (Renderable),
@@ -10,7 +10,8 @@ not the `reports` section.
 > A task that says "report" without naming a file/format means this one.
 
 Working example (clone donor) → `examples/report/`. This page is the index and the contract;
-for `Sheet` authoring (cells, styles, spans, tree sections) see the platform docs.
+`Sheet` authoring — sections, row/cell styles, spans, column grammar, tree groups, cross
+columns, Excel export → [xaml/layouts/sheet.md](https://docs-llm.a2v10.com/xaml/layouts/sheet.md).
 
 ## What is infrastructure vs. per-report
 
@@ -68,7 +69,8 @@ lean on two in particular:
 - **Flat list** — `[RepData!TRepData!Array]`.
 - **Drill-down tree** — `[RepData!TRepData!Tree]` with a self `ParentId`, rendered by a
   `SheetTreeSection`. Levels with colliding ids are kept distinct with a synthetic id
-  (`<realId, level>`). Authoring detail → platform docs.
+  (`<realId, level>`). `SheetTreeSection` authoring, with a working drill-down example →
+  [xaml/layouts/sheet.md](https://docs-llm.a2v10.com/xaml/layouts/sheet.md).
 - **Lookups** — `[<X>!T..!RefId]` in the rows + a `[!T..!Map]` result that supplies each
   referenced object once, instead of joining per row.
 

@@ -1,4 +1,4 @@
-# Existing project — discover the semantics
+﻿# Existing project — discover the semantics
 
 **Guard — confirm there is an app first.** No `model.json` anywhere in the tree → there is no
 A2v10 app here yet; this is the *new-project* path (SKILL.md §6 → `new-project.md`), not this one.
@@ -19,6 +19,7 @@ are only the *exposed surface* (what is used, and the path); the link endpoint�
 **Front-load only what the skeleton consumes** (a handful of cheap calls). Cheap alone doesn't qualify — `a2 endpoint list` is cheap too, but setup consumes nothing from it; it serves task time:
 
 - `a2 app config` — `modules`; scope discovery to modules with `root != null`.
+- `a2 db info` — where the connection points, before asking the database anything. `exists: false` or `platform: false` → the `db` questions below have no answer to give: say so and ask the user, never edit their config yourself.
 - `a2 db tables` — which schemas are in use; sample a few tables for the conventions and for tenancy.
 
 **Depth is per entity, on touch — never bulk.** Do **not** `resolve` 150–200 endpoints or read their

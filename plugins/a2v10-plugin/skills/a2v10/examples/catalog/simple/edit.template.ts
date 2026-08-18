@@ -1,4 +1,4 @@
-import { TRoot, TSample } from "./edit";
+﻿import { TRoot, TSample } from "./edit";
 
 const template: Template = {
 	validators: {

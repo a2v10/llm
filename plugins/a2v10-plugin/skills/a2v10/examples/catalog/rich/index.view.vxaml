@@ -1,4 +1,4 @@
-<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml" Title="@[Agents]">
+﻿<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml" Title="@[Agents]">
 	<Page.CollectionView>
 		<CollectionView ItemsSource="{Bind Agents}" RunAt="Server">
 			<CollectionView.Filter>

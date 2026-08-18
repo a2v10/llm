@@ -1,4 +1,4 @@
-import { TDocument, TRow, TRoot } from "./edit";
+﻿import { TDocument, TRow, TRoot } from "./edit";
 
 const utils: Utils = require('std:utils');
 

@@ -1,4 +1,4 @@
-# Platform behavior — priors the runtime handles for you
+﻿# Platform behavior — priors the runtime handles for you
 
 The runtime honors some **behavioral** priors automatically. Against those, hand-rolled
 defensive scaffolding is duplication, not safety. And **whether** the platform handles a

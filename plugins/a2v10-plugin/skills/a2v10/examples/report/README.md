@@ -1,8 +1,9 @@
-# Example: report.list — on-screen report (flat list)
+﻿# Example: report.list — on-screen report (flat list)
 
 The minimal **on-screen report**: a period (+ optional agent) filter, a flat list of
-documents, a total. Use it as the clone donor for screen reports; for trees,
-drill-down and nested arrays see the platform docs.
+documents, a total. Use it as the clone donor for screen reports; for trees and drill-down
+(`SheetTreeSection`, with a working example) →
+[xaml/layouts/sheet.md](https://docs-llm.a2v10.com/xaml/layouts/sheet.md).
 
 > "Report" here means **on-screen** — an `action` rendering a `Sheet`, the common case.
 > A report exported **to a file** (PDF/xlsx) is a different thing — the `reports` section

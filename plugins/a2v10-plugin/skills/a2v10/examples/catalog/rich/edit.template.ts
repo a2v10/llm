@@ -1,4 +1,4 @@
-import { TRoot, TAgent, TTagArray } from "./edit";
+﻿import { TRoot, TAgent, TTagArray } from "./edit";
 
 const template: Template = {
 	properties: {

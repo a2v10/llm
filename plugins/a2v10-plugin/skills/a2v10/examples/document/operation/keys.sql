@@ -1,4 +1,4 @@
-------------------------------------------------
+﻿------------------------------------------------
 -- FK від doc.Documents до doc.Operations
 ------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CONSTRAINT_NAME = 'FK_Documents_Operation_Operations')

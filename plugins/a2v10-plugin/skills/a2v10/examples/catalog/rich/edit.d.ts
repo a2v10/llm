@@ -1,4 +1,4 @@
-// Reference (FK) targets — each is {Id, Name}, resolved via a Map result set.
+﻿// Reference (FK) targets — each is {Id, Name}, resolved via a Map result set.
 export interface TEmployee extends IElement {
 	readonly Id: number;
 	Name: string;

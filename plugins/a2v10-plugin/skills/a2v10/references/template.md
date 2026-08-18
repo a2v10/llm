@@ -1,4 +1,8 @@
-# Template Conventions
+﻿# Template Conventions
+
+**Full docs — [template.md](https://docs-llm.a2v10.com/template.md) (per-key authoring) and
+[client.md](https://docs-llm.a2v10.com/client.md) (the `$`-members, the controller, `std:utils`).**
+This file is the key index and the choices the docs don't make for you.
 
 Templates describe page and dialog behavior on the client side.
 The file has the `.template` extension and contains TypeScript.
@@ -104,5 +108,3 @@ If the endpoint needs no changes, skip the template — `model.json` references 
   $emitGlobal hits the emitter too → guard by Id.
 -->
 
----
-> Full documentation: [template](https://docs-llm.a2v10.com/template.md) · [client API](https://docs-llm.a2v10.com/client.md) — https://docs-llm.a2v10.com

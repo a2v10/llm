@@ -1,4 +1,4 @@
-------------------------------------------------
+﻿------------------------------------------------
 -- doc.Operations — довідник видів операцій
 ------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'doc' and TABLE_NAME = 'Operations')

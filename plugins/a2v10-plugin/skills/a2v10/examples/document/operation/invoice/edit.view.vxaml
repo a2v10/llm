@@ -1,4 +1,4 @@
-<!-- Edit Invoice — Page -->
+﻿<!-- Edit Invoice — Page -->
 <Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
 	  Title="{Bind Document.Id, Format='@[Invoice] [{0}]'}"
 	  Components="{Components '../_components/_common'}">

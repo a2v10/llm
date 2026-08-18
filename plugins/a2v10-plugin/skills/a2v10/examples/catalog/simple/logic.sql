@@ -1,4 +1,4 @@
--- Sample logic
+﻿-- Sample logic
 ------------------------------------------------
 create or alter procedure cat.[Sample.Index]
 @UserId bigint,

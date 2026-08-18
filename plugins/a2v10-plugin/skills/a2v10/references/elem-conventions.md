@@ -1,4 +1,4 @@
-# Element conventions — the exceptions to "names are free"
+﻿# Element conventions — the exceptions to "names are free"
 
 The engine treats element and property names as **free**: it derives nothing from
 them (see SKILL.md §3). This file catalogs the **few exceptions** — mostly

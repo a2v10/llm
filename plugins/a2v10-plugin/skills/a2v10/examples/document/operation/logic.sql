@@ -1,4 +1,4 @@
--- Document logic (operation)
+﻿-- Document logic (operation)
 -------------------------------------------------
 drop procedure if exists doc.[Document.Map];
 drop type if exists doc.[Document.Map.TableType];

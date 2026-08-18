@@ -1,4 +1,4 @@
-# Mapping — semantic types and cross-layer pairs
+﻿# Mapping — semantic types and cross-layer pairs
 
 Two reference tables in one document. Use **Section 1** as the projection lookup when generating an endpoint from a SQL schema; use **Section 2** as a sanity-check after generation.
 
@@ -30,6 +30,7 @@ Output: full row of artifacts.
 **Notes:**
 - `Money` with `decimal(10,4)` keeps 4 fractional digits for intermediate math; round on display. `money` is legacy — prefer `decimal` in new tables.
 - FK URL is derived from the target schema: `cat → /catalog/<endpoint>`, `doc → /document/<endpoint>`, `jrn → /journal/<endpoint>`. If the target endpoint does not yet exist in the project, flag and decide before linking.
+- `SelectorSimple` takes the bare endpoint URL and appends the suffixes itself: `Url + '/fetch'` for autocomplete, `Url + '/browse'` for the picker. **The target endpoint must therefore declare both a `fetch` command and a `browse` dialog** — otherwise the field renders but picking silently does nothing. Properties (`Data`, `Folder`, …) → [controls/selectorsimple.md](https://docs-llm.a2v10.com/xaml/controls/selectorsimple.md).
 - `Name`, `Memo` are not really semantics — they're standard column names (see `semantic.md → Standard columns`). Listed here for projection completeness.
 
 ---
@@ -117,6 +118,21 @@ All three must agree (minus identity / default-only fields excluded by design).
 **SQL** `[!<Entities>.<Field>!Filter] = @<Field>` in the `$System` result set ⇔ **XAML** `FilterItem` reading the same name back.
 
 *Failure:* on refresh, the form drops the user's filter values.
+
+### Pair 11 — every column the list shows is also returned by `Load`
+
+**SQL** each field bound in the index grid ⇔ **SQL** the same field present in `<Model>.Load`'s
+object — including a `!Map` set for each `!RefId` among them (Pair 5).
+
+Unlike the pairs above, this one is **not visible by reading two files side by side** — it comes
+from the runtime's save cycle. Saving from the edit dialog calls `.Update`, `.Update` ends by calling
+`.Load` (that is the contract, → [sql/update-model.md](https://docs-llm.a2v10.com/sql/update-model.md)),
+and the list refreshes the edited row **from that returned model**. So a value the `Index` procedure
+produces on its own — a joined lookup name, a computed flag, a formatted total — and `Load` does not,
+exists in the row only until the record is saved.
+
+*Failure:* the column fills correctly, the user edits that record, and the cell goes blank —
+returning on a page reload. Reads like a UI glitch; it is a missing column in `Load`.
 
 ---
 

@@ -1,4 +1,4 @@
-# New project — scaffold, then fill the domain if the request names one
+﻿# New project — scaffold, then fill the domain if the request names one
 
 A new A2v10 project starts as a bare runnable shell with no meaning. **Decide first**
 which of two cases you are in:
@@ -58,7 +58,9 @@ file** `AppName.slnx` → `<AppName>.slnx`.
 
 Bring the shell up:
 
-1. `dotnet build <AppName>.slnx` — compiles and generates `MainApp/_sqlscripts/main.sql`.
+1. `dotnet build <AppName>.slnx` — **the one time the host is built**; it also generates
+   `MainApp/_sqlscripts/main.sql`. From here on the dev loop rebuilds `MainApp` alone
+   (SKILL.md §4) and the solution is never built again.
 2. Hand the database to the user: *"create the database `<AppName>`, apply
    `MainApp/_sqlscripts/main.sql`, and tell me when it's done."* The database name and server
    live in the `Default` connection string in `WebApp/appsettings.json` — point the user there

@@ -1,4 +1,4 @@
-export interface TSample extends IArrayElement {
+﻿export interface TSample extends IArrayElement {
 	readonly Id: number;
 	Name: string;
 	Memo: string;

@@ -1,4 +1,4 @@
-import { TEmployee, TAgentState, TTagArray } from "./edit";
+﻿import { TEmployee, TAgentState, TTagArray } from "./edit";
 
 export interface TAgent extends IArrayElement {
 	readonly Id: number;

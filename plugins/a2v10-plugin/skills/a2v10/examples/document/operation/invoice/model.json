@@ -1,4 +1,4 @@
-{
+﻿{
 "$schema": "../../../@schemas/model-json-schema.json#",
 "description": "document.operation",
 "schema": "doc",

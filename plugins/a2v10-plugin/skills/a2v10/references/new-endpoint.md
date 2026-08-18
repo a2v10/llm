@@ -1,4 +1,4 @@
-# How to add a new endpoint to an existing entity
+﻿# How to add a new endpoint to an existing entity
 
 Step-by-step checklist for a focused create  a single endpoint.
 
@@ -11,6 +11,13 @@ An endpoint is a folder with `model.json`. Its location depends on the module �
 - **`root: null`** → no local folder exists; you cannot add an endpoint there.
 
 `prefix` and `root` are unrelated names mapped **only by `app config`** — never guess the folder from the prefix (or a prefix from a folder name), and never create a `$`-named folder on disk.
+
+## A schema beyond the four
+
+Tables live in a schema — `cat` / `doc` / `jrn` / `rep`, created by `_sql/_schemas.sql` in the
+scaffold. An endpoint that introduces any **other** schema must add a guarded block to that file
+first: nothing creates a schema implicitly, and a `schema.sql` whose schema is missing fails the
+whole deploy.
 
 ## Make it reachable
 

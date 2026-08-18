@@ -1,4 +1,4 @@
----
+﻿---
 name: a2v10
 description: >
   Work with the A2v10 platform: endpoints (model.json), XAML/HTML views, SQL
@@ -26,7 +26,7 @@ not from here (see **§6 Workflow**).
 
 ## 2. Tooling
 
-A read-only CLI named **`a2`** inspects a project for you — its config (`a2 app config` — tenancy, modules, …) and database (tables, columns, references), as JSON. It is the standard way to learn an existing project, and the tool that every *use the `a2` CLI to …* in this skill refers to. The command set grows over time.
+A read-only CLI named **`a2`** inspects a project for you — its config (`a2 app config` — tenancy, modules, …) and database (tables, columns, references), and it loads a view through the engine's own loader (`a2 view validate`), as JSON. It is the standard way to learn an existing project, and the tool that every *use the `a2` CLI to …* in this skill refers to. The command set grows over time.
 
 **Ensure it's available first** — if `a2` is not installed, install it from NuGet ([A2v10.CLI](https://www.nuget.org/packages/A2v10.CLI)) or ask the user how. Commands and output shapes → `cli.md`.
 
@@ -53,7 +53,7 @@ The elements come in two kinds:
 | **Renderable** | `actions` (page), `dialogs` (modal), `popups` | Has UI: binds `view`+`template`, the runtime renders it, the user interacts and posts the model back. |
 | **Callable** | `commands`, `reports` (**file export only** — see below), `files` | No UI: invoked, runs once, returns data / a file / an effect. |
 
-*(Full catalog of sections and their options → `references/model-json.md`.)*
+*(Sections, their options and the bans that go with them → `references/model-json.md`.)*
 
 **"Report" defaults to on-screen.** Bare *report* (звіт) means an **on-screen report** — an `action` that renders a `Sheet`: an interactive, filterable page (the common case). The word means a **file** only inside the `reports` *section*, which is **file-export only** (PDF/xlsx/xml/json, rendered by the server). Decision rule: a task says "report" and does **not** name a file/format (PDF, Excel, xlsx, export, download) → on-screen report (→ `references/screen-report.md`); names a file → `reports` section (→ `references/model-json.md`).
 
@@ -76,7 +76,8 @@ The elements come in two kinds:
 
 ### Must — break it and it does not work (engine contract)
 
-- **The database is not yours — never connect to it yourself.** No DDL, no DML, not even `select`; with any tool, from any language, under any credentials you find — found credentials are not permission. The single door, by design: the read-only `a2` CLI (`a2 db …`). Applying SQL to a database is always the **user's** action — say *"rebuild the module so its SQL bundle (`sql.json` → `outputFile`) regenerates, apply it, and tell me when done"*, and continue only after they confirm.
+- **The database is not yours — never connect to it yourself.** No DDL, no DML, not even `select`; with any tool, from any language, under any credentials you find — found credentials are not permission. The single door, by design: the read-only `a2` CLI (`a2 db …`). Applying SQL to a database is always the **user's** action — regenerate the bundle yourself (next bullet), then say *"apply `<outputFile>` to database `<database>` on `<server>`, and tell me when done"* — **all three resolved**, the path from `sql.json`, the other two from one `a2 db info` — and continue only after they confirm.
+- **The build has exactly two outputs: the SQL bundle and the compiled `.js`.** What you write — `.sql` fragments, `.template.ts` — never reaches its consumer as written: `sql.json` collects the fragments into `outputFile` (that file, not your `.sql`, is what gets applied to the database), and TypeScript compiles each `.ts` into the `.js` beside it (that file, not your `.ts`, is what the runtime loads). Everything else — xaml, `model.json`, `menu.json`, localization — is read live and takes effect on save. Touched a fragment or a `.ts` → build the csproj sitting beside `sql.json` (`dotnet build <that>.csproj`). **That project only** — the host is built once, at setup, and never again. The build is **yours**; applying the SQL stays the user's.
 - Access data only through stored procedures; never raw SQL.
 - Procedures must exist under the **exact** name — either the one the runtime **derives** from `model` (`<schema>.[<model>.<Verb>]`) or the one a `command` names **explicitly** (`procedure`). A misnamed proc is simply not found.
 - Follow the result-set marker grammar; keep cross-layer names in agreement (TVP column = client property; marker ↔ d.ts ↔ XAML).
@@ -92,11 +93,12 @@ These are things the engine *allows* and the model is *naturally pulled toward*.
 
 ## 5. Discipline — operator error, orthogonal to the engine
 
-§4 is the engine's contract; this is *your* contract — the priors and copy-habits you bring. A2v10 has **no build step**: none of these fail loudly. Code just silently doesn't bind, or quietly diverges.
+§4 is the engine's contract; this is *your* contract — the priors and copy-habits you bring. **Nothing checks your names** — the build only bundles SQL and compiles TypeScript (§4), it never looks at a binding — so none of these fail loudly. Code just silently doesn't bind, or quietly diverges.
 
 - **Clone-and-mutate: copied is guilty until verified.** The workflow is example → clone → mutate, and the trap is carrying the donor's names into the new entity. After cloning, sweep **every** inherited name — markers, TVP columns, d.ts properties, XAML bindings, proc body, comments — against the new entity. Cross-layer names must agree (§4); a clone is exactly where they silently stop.
+- **Every file you write is UTF-8 with BOM — no exceptions.** `.sql`, `.vxaml`, `.ts`, `.json`, localization `.txt`, all of them, new or edited. The content is Cyrillic; without a BOM each consumer (bundler, compiler, SSMS, the editor) is left guessing the encoding, and a wrong guess corrupts text silently instead of failing. The rule is absolute precisely so there is never a per-file question — the examples and scaffold here are all written this way.
 - **Comments are load-bearing — true-or-delete.** A stale comment is cloned with the code and propagates, so fix or cut it, never leave a wrong one. Site-local invariants and "don't do X here" → a comment at the site; cross-cutting meaning → the project docs — `CLAUDE.md` (skeleton) or `DOMAIN.md` (per-entity), per `semantic.md`. A comment on a seam is part of the contract, not optional prose.
-- **Don't invent platform surface.** Not in the references or an existing example → it does not exist. The surface is small and names are free — which tempts confabulated keys, markers, attributes. Go to the docs or ask; never invent.
+- **Don't invent platform surface.** Not in the references or an existing example → it does not exist. The surface is small and names are free — which tempts confabulated keys, markers, attributes. Go to the docs or ask; never invent. **In a view you can settle it: `a2 view validate <view-file>`** (the file `view:` names — `catalog/agent/index.view`, not the element name) instantiates the file the way the server will and names an invented element, property or enum value instead of dropping it silently. Run it on every view you write or edit — no database needed. It does **not** check binds against the model (`cli.md`), so the rule still holds everywhere else.
 - **Don't carry framework priors.** A2v10 is not MVC/ORM. Resist the pull toward ad-hoc SQL, an ORM, migrations — data is **only** through procedures, files interpreted live. What you "know" from Rails/Django/EF is wrong here.
 - **The platform honors some behavioral priors for you — don't hand-roll them, don't invent them.** The runtime handles certain robustness defaults itself (→ `references/platform-behavior.md`); against those, defensive scaffolding is duplication, not safety. But **whether** it handles a given case is a platform fact — read the catalogue or ask; never infer "I must defend against X" from a generic prior. Reaching for defensive wrapping by default is the tell you're reasoning from priors, not the platform.
 - **Reuse before create.** Before adding a localization key, a base proc, a shared template — check it doesn't already exist. A second way to do one thing is the defect, not a feature.

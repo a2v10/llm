@@ -1,4 +1,4 @@
-# SQL authoring discipline
+﻿# SQL authoring discipline
 
 Conventions for **tidy, re-runnable SQL**. None of it is a platform requirement — the
 engine ignores constraint names, table/model spelling, and re-run guards. Rename or drop
@@ -33,10 +33,11 @@ Guard catalog:
 
 | DDL              | Guard                                                                  |
 |------------------|------------------------------------------------------------------------|
+| `CREATE SCHEMA`  | `sys.schemas` (`name`) — **and the statement goes through `exec sp_executesql`**: `create schema` must be the first statement in its batch, so it cannot sit under `if` directly. Scaffold ships `cat`/`doc`/`jrn`/`rep` in `_sql/_schemas.sql` |
 | `CREATE TABLE`   | `INFORMATION_SCHEMA.TABLES`                                            |
 | `ADD COLUMN`     | `INFORMATION_SCHEMA.COLUMNS` (`TABLE_SCHEMA`+`TABLE_NAME`+`COLUMN_NAME`)|
 | `ADD CONSTRAINT` | `sys.objects WHERE type IN ('F','C','UQ','D')`                         |
-| `CREATE INDEX`   | `sys.indexes`                                                          |
+| `CREATE INDEX`   | `sys.indexes` — key is `object_id(N'<schema>.<table>')` **+** `name`. Index names are unique per **table**, not per database: a `name`-only guard is satisfied by a same-named index on another table and the index is then silently never created |
 | `CREATE SEQUENCE`| `INFORMATION_SCHEMA.SEQUENCES`                                         |
 
 ```sql
@@ -61,6 +62,27 @@ drop procedure if exists cat.[Sample.Update];
 drop type      if exists cat.[Sample.TableType];
 go
 ```
+
+## How the bundle is assembled — the one thing here that is *not* a convention
+
+Your `.sql` files never reach the database as written: `sql.json` concatenates them into one
+`outputFile` (SKILL.md §4), and that script is what gets applied. Two properties of the
+concatenation decide where a statement may live.
+
+- **Across masks — guaranteed.** `inputFiles` is an explicit ordered list, and the build follows
+  it exactly: platform base → `_sql/_schemas.sql` → `/**/schema.sql` → `/**/keys.sql` →
+  `/**/logic.sql` → `/**/init.sql`. This is why every table exists before any FK, and every table
+  before any procedure — the guarantee comes from the array, not from any cleverness.
+- **Within one mask — none.** The fragments arrive in filesystem enumeration order: not
+  alphabetical, not creation order, and `_`-prefixed folders (`_home`, `_components`) are **in**,
+  they sort after the letters. Treat the order as unspecified: **no fragment may depend on another
+  fragment collected by the same mask.**
+
+Consequence, and the reason for the ownership rule below: a table's whole DDL — the `create table`
+and every `alter table … add` — belongs to the single `schema.sql` that owns the table. Put an
+`alter` in another folder's `schema.sql` and it may run *before* the `create`; the guard sees no
+column, fires the `alter`, SQL Server rejects it as an unknown object, and the apply stops there
+with the rest of the bundle unapplied.
 
 ## Schema evolution — no separate migrations
 

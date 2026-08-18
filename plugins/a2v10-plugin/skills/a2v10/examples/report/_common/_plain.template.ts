@@ -1,4 +1,4 @@
-// Shared engine for on-screen reports (lifecycle + generate). See references/screen-report.md.
+﻿// Shared engine for on-screen reports (lifecycle + generate). See references/screen-report.md.
 const utils: Utils = require('std:utils');
 
 const template: Template = {

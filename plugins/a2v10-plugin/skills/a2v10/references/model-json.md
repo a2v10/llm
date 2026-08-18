@@ -1,40 +1,45 @@
-# model.json
+﻿# model.json
 
-The `model.json` file describes the configuration of A2v10 application endpoints: actions, dialogs, popups, commands, reports, and files.
+**Full docs — [docs-llm.a2v10.com/model.md](https://docs-llm.a2v10.com/model.md).** A page per
+section (overview, actions, dialogs, popups, commands, reports, files), every property with its type
+and default. Look a key up there; never guess one.
 
-## Inheritance
+**Read that hub as a catalogue of what the platform *can* do, not as a menu of what to use.** It is
+exhaustive by design — it carries legacy keys and features written for one application in a
+thousand. Presence on the page is not a recommendation, and a key you have never needed is not a key
+you were missing.
 
-The properties `source`, `schema`, `model` defined at the top level of the file are inherited by all sections (`actions`, `dialogs`, `popups`, `commands`, `reports`, `files`). A value set inside a section or element overrides the parent.
+## The keys you actually write
 
-```json
-{
-  "source": "default",
-  "model": "MyModel",
-  "actions": {
-    "browse": {
-      "model": "BrowseModel"
-    }
-  }
-}
-```
+This is the whole mainline — the examples in this skill use nothing beyond it:
 
----
+| Level | Keys |
+|---|---|
+| endpoint (top) | `$schema`, `description`, `schema`, `model` |
+| `actions` / `dialogs` element | `view`, `template`, `index: true` (calls `.Index` instead of `.Load`), `parameters` |
+| `commands` element | `type: "sql"`, `procedure` |
 
-## Top level
+Anything else you meet on those pages — additional element keys, the other command types, the older
+spellings — is long tail. Don't reach for one because you saw it listed. A task that genuinely needs
+one describes the need in its own words first; *then* open the page.
 
-| Property      | Type   | Description                                    |
-|---------------|--------|------------------------------------------------|
-| `$schema`     | string | Reference to JSON Schema                       |
-| `description` | string | Endpoint archetype, e.g. `catalog.simple`      |
-| `source`      | string | Default data source (inherited)                |
-| `model`       | string | Default model (inherited)                      |
-| `schema`      | string | Default DB schema (inherited)                  |
+Which section makes an element Renderable or Callable, and why one `model.json` keeps **one** `model`
+→ SKILL.md §3 and §4. What the runtime derives from `model` (the `<schema>.[<model>.<Verb>]` proc
+name) → `sql-procedures.md`.
 
----
+## reports — file export ONLY
+
+> ⚠️ The `reports` section is **only** for reports rendered **to a file** by the server.
+> An **on-screen report is NOT here** — an interactive `Sheet` page is an `action`
+> (→ `screen-report.md`). Shown on screen instead of downloaded → wrong section.
+
+The decision rule (does the task name a file or a format?) lives in SKILL.md §3; this is the ban at
+the point where the section is about to be written.
 
 ## permissions
 
-An object with arbitrary key names. Each value is one of:
+Absent from the docs entirely, so it is written here. Accepted at the top level and on any element of
+any section; an object with **arbitrary key names**, each value one of:
 
 `view` | `edit` | `delete` | `apply` | `create` | `unapply` | `flag64` | `flag128` | `flag256`
 
@@ -45,148 +50,12 @@ An object with arbitrary key names. Each value is one of:
 }
 ```
 
----
+The same bits are what a procedure returns per row as the `!Permissions` bitmask
+(→ [sql-rules.md](sql-rules.md)): `CanView` 1 + `CanEdit` 2 + `CanDelete` 4 + `CanApply` 8.
 
-## actions / dialogs / popups
+## description — this skill's convention, not a platform key
 
-An object with arbitrary key names. Each element is a configuration object.
-
-### Common properties
-
-| Property      | Type    | A | D | P | Description                                     |
-|---------------|---------|---|---|---|-------------------------------------------------|
-| `index`       | boolean | + | + | — | Index endpoint (calls `.Index`)                 |
-| `copy`        | boolean | + | + | — | Record copy mode (calls `.Copy`)                |
-| `source`      | string  | + | + | + | Data source (overrides top-level)               |
-| `schema`      | string  | + | + | + | DB schema (overrides top-level)                 |
-| `model`       | string  | + | + | + | Model (overrides top-level)                     |
-| `view`        | string  | + | + | + | View file name                                  |
-| `template`    | string  | + | + | + | Template                                        |
-| `signal`      | boolean | + | + | — | Action may emit a SignalR message to the user   |
-| `parameters`  | object  | + | + | + | Default parameters                              |
-| `permissions` | object  | + | + | + | Access rights (see [permissions](#permissions)) |
-
-> **A** = actions, **D** = dialogs, **P** = popups.
-> `index` and `copy` are mutually exclusive.
-
-### Properties for actions only
-
-| Property        | Type     | Description                                       |
-|-----------------|----------|---------------------------------------------------|
-| `skipDataStack` | boolean  | Skip the data stack                               |
-| `plain`         | boolean  | Plain (non-model) response                        |
-
-## commands
-
-An object with arbitrary key names. Each element describes a command.
-
-### type
-
-| Value            | Description                                       |
-|------------------|---------------------------------------------------|
-| `sql`            | Stored procedure call                             |
-| `clr`            | .NET CLR type call (implements `IInvokeTarget`)   |
-| `file`           | Returns a file for download                       |
-
-### Command properties
-
-| Property     | Type    | Description                                                  |
-|--------------|---------|--------------------------------------------------------------|
-| `source`     | string  | Data source                                                  |
-| `schema`     | string  | DB schema                                                    |
-| `model`      | string  | Model                                                        |
-| `command`    | string  | Command name                                                 |
-| `procedure`  | string  | Stored procedure name (for `sql`)                            |
-| `target`     | string  | Target in `Object.Method` format                             |
-| `clrType`    | string  | CLR type (format: `clr-type:My.Type;assembly=MyAssembly`)    |
-| `async`      | boolean | Asynchronous execution                                       |
-| `parameters` | object  | Default parameters                                           |
-| `debugOnly`  | boolean | Debug mode only                                              |
-| `signal`     | boolean | Command may emit a SignalR message to the user               |
-| `permissions`| object  | Access rights (see [permissions](#permissions))              |
-
----
-
-## reports — file reports ONLY
-
-> ⚠️ This section is **only** for reports rendered **to a file** (PDF/xlsx/xml/json), produced by the server.
-> An **on-screen report is NOT here** — an interactive `Sheet` page is an `action` (→ `references/screen-report.md`).
-> Shown on screen instead of downloaded as a file → wrong section.
-
-An object with arbitrary key names.
-
-### type
-
-| Value    | Description    |
-|----------|----------------|
-| `xml`    | XML report     |
-| `json`   | JSON report    |
-| `pdf`    | PDF document   |
-| `xlsx`   | Excel spreadsheet |
-
-### Report properties
-
-| Property     | Type     | Description                                                           |
-|--------------|----------|-----------------------------------------------------------------------|
-| `source`     | string   | Data source                                                           |
-| `schema`     | string   | DB schema                                                             |
-| `model`      | string   | Model                                                                 |
-| `procedure`  | string   | Stored procedure name (defaults to `[model].Report`)                  |
-| `name`       | string   | Download file name; supports `{{Property.Path}}` macros               |
-| `encoding`   | string   | Encoding (`utf-8`, `utf-16`, `windows-1251`)                          |
-| `xmlSchemas` | string[] | XML schemas for validation                                            |
-| `permissions`| object   | Access rights (see [permissions](#permissions))                       |
-
----
-
-## files
-
-An object with arbitrary key names. Describes uploaded file handling.
-
-### type
-
-| Value         | Description                  |
-|---------------|------------------------------|
-| `parse`       | File parsing                 |
-| `clr`         | Handled by a .NET CLR type   |
-| `sql`         | Handled by SQL               |
-| `azureBlob`   | Azure Blob Storage           |
-| `blobStorage` | Blob storage                 |
-| `json`        | JSON file                    |
-| `excel`       | Excel file                   |
-| `text`        | Text file                    |
-
-### parse
-
-| Value    | Format           |
-|----------|------------------|
-| `excel`  | Excel (auto)     |
-| `xlsx`   | Excel 2007+      |
-| `xls`    | Excel 97-2003    |
-| `csv`    | CSV              |
-| `dbf`    | DBF              |
-| `xml`    | XML              |
-| `auto`   | Auto-detect      |
-| `json`   | JSON             |
-
-### File properties
-
-| Property         | Type    | Description                                                  |
-|------------------|---------|--------------------------------------------------------------|
-| `source`         | string  | Data source                                                  |
-| `schema`         | string  | DB schema                                                    |
-| `model`          | string  | Model                                                        |
-| `async`          | boolean | Asynchronous processing                                      |
-| `clrType`        | string  | CLR type (format: `clr-type:My.Type;assembly=MyAssembly`)    |
-| `locale`         | string  | Locale for parsing data                                      |
-| `container`      | string  | Container name (for blob)                                    |
-| `outputFileName` | string  | Output file name                                             |
-| `zip`            | boolean | Archive the result                                           |
-| `azureSource`    | string  | Azure connection string                                      |
-| `blobSource`     | string  | Blob source                                                  |
-| `blobStorage`    | string  | Blob storage                                                 |
-| `key`            | string  | Key                                                          |
-| `permissions`    | object  | Access rights (see [permissions](#permissions))              |
-
----
-> Full documentation: [model.md](https://docs-llm.a2v10.com/model.md)
+Top-level `"description"` names the endpoint's **archetype** — `catalog.simple`, `catalog.rich`,
+`document.operation`. The runtime ignores it; it tells the next reader (human or model) which example
+this endpoint was cloned from, so the clone can be swept against that donor. Every example here
+carries one.

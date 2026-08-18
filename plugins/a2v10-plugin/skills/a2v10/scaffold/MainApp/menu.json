@@ -1,4 +1,4 @@
-{
+﻿{
 	"$schema": "@schemas/menu-json-schema.json#",
 	"appTitle": "Application Title Here",
 	"menu": []
