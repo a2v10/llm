@@ -16,4 +16,5 @@ export declare type TAgentArray = IElementArray<TAgent>;
 
 export interface TRoot {
 	readonly Agents: TAgentArray;
+	readonly Tags: TTagArray; // ItemsSource pool for TagsFilter
 }

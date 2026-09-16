@@ -1,0 +1,81 @@
+{
+  "Model": {
+    "Document": [
+      "Number", "Date", "Total",
+      { "Agent": [ "FullName", "TaxId" ] },
+      { "StoreFrom": [ "Name" ] },
+      { "Rows[]": [ "Qty", "Price", "Sum",
+          { "Item": [ "Article", "Name" ] },
+          { "Unit": [ "Short" ] } ] }
+    ]
+  },
+
+  "Workbook": {
+    "RowCount": 12,
+    "ColumnCount": 6,
+    "Columns": {
+      "A": { "Width": 70 },
+      "B": { "Width": 210 },
+      "C": { "Width": 45 },
+      "D": { "Width": 55 },
+      "E": { "Width": 65 },
+      "F": { "Width": 75 }
+    },
+    "Rows": {
+      "1": { "Height": 22 }
+    },
+    "Cells": {
+      "A1": { "Value": "Видаткова накладна № {Document.Number}", "ColSpan": 6, "Style": "S1" },
+      "A2": { "Value": "{Document.Date}", "ColSpan": 6, "Style": "S2" },
+
+      "A4": { "Value": "Покупець:",   "Style": "S3" },
+      "B4": { "Value": "{Document.Agent.FullName}", "ColSpan": 5, "Style": "S4" },
+      "A5": { "Value": "Код ЄДРПОУ:", "Style": "S3" },
+      "B5": { "Value": "{Document.Agent.TaxId}",    "ColSpan": 5, "Style": "S4" },
+      "A6": { "Value": "Склад:",      "Style": "S3" },
+      "B6": { "Value": "{Document.StoreFrom.Name}", "ColSpan": 5, "Style": "S4" },
+
+      "A8": { "Value": "Артикул", "Style": "S5" },
+      "B8": { "Value": "Товар",   "Style": "S5" },
+      "C8": { "Value": "Од.",     "Style": "S5" },
+      "D8": { "Value": "К-сть",   "Style": "S5" },
+      "E8": { "Value": "Ціна",    "Style": "S5" },
+      "F8": { "Value": "Сума",    "Style": "S5" },
+
+      "A9": { "Value": "{Item.Article}", "Style": "S6" },
+      "B9": { "Value": "{Item.Name}",    "Style": "S7" },
+      "C9": { "Value": "{Unit.Short}",   "Style": "S6" },
+      "D9": { "Value": "{Qty}",          "Style": "S8" },
+      "E9": { "Value": "{Price}",        "Style": "S9" },
+      "F9": { "Value": "{Sum}",          "Style": "S9" },
+
+      "E10": { "Value": "Разом:",           "Style": "S10" },
+      "F10": { "Value": "{Document.Total}", "Style": "S11" },
+
+      "A12": { "Value": "Відпустив _______________", "ColSpan": 3, "Style": "S12" },
+      "D12": { "Value": "Отримав _______________",   "ColSpan": 3, "Style": "S12" }
+    },
+    "Ranges": [
+      { "Value": "{Document.Rows}", "Start": 9, "End": 9 }
+    ],
+    "Styles": {
+      "S1":  { "FontSize": 14, "Bold": true, "Align": "Center" },
+      "S2":  { "Align": "Center", "Format": "dd/MM/yyyy" },
+      "S3":  { "Align": "Right" },
+      "S4":  { "Bold": true },
+      "S5":  { "Align": "Center", "VAlign": "Middle", "Bold": true, "Border": "0.2" },
+      "S6":  { "Align": "Center", "VAlign": "Middle", "Border": "0.2" },
+      "S7":  { "VAlign": "Middle", "Border": "0.2" },
+      "S8":  { "Align": "Right", "VAlign": "Middle", "Border": "0.2", "Format": "#,##0.###" },
+      "S9":  { "Align": "Right", "VAlign": "Middle", "Border": "0.2", "Format": "#,##0.00" },
+      "S10": { "Align": "Right", "Bold": true },
+      "S11": { "Align": "Right", "Bold": true, "Format": "#,##0.00" },
+      "S12": { "Align": "Center" }
+    }
+  },
+
+  "FontFamily": "Calibri",
+  "FontSize": 10,
+  "Orientation": "Portrait",
+  "Margin": "54,18"
+}

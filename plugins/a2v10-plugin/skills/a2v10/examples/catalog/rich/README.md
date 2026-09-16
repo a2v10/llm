@@ -23,7 +23,7 @@ Same header `cat.Agents` that `document/operation` references — this example d
 | `index.template.ts`   | List template; shared by index and browse                |
 | `edit.d.ts`           | Type definitions for the edit form (header + 3 arrays)   |
 | `edit.template.ts`    | Edit form template (`$$Tab`, `Name` validator, `tagSettings` delegate) |
-| `index.view.vxaml`    | List page (State badge, tags via `<TagsList>`, State filter) |
+| `index.view.vxaml`    | List page (State badge, tags via `<TagsList>`, State + Tags filters) |
 | `edit.dialog.vxaml`   | Edit dialog (form + tabbed table parts; Taskpad = Manager, Tags) |
 | `browse.dialog.vxaml` | Pick-record dialog                                       |
 | localization *(append)* | Entity keys: `@Agent`, `@Agents`, `@Browse.Agent`, plus field keys below |
@@ -32,7 +32,7 @@ Same header `cat.Agents` that `document/operation` references — this example d
 
 | Procedure         | Purpose                                        |
 |-------------------|------------------------------------------------|
-| `Agent.Index`     | Paginated list; filters `Fragment` + `State`   |
+| `Agent.Index`     | Paginated list; filters `Fragment` + `State` + `Tags` |
 | `Agent.Load`      | Header + 3 arrays + Map result sets            |
 | `Agent.Metadata`  | Edit form metadata (header + 3 table types)    |
 | `Agent.Update`    | Save — one header + 3 children (see below)     |

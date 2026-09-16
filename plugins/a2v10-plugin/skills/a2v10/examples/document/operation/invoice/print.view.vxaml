@@ -1,0 +1,13 @@
+﻿<!-- Invoice — printed form preview -->
+<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
+		Title="{Bind Document.No, Format='Рахунок {0}'}">
+	<Page.Toolbar>
+		<Toolbar>
+			<Button Content="Друкувати" Icon="Print"
+				Command="{BindCmd Report, Report=print, Url='/document/invoice', Argument={Bind Document}, Print=True}"/>
+			<Button Content="Завантажити" Icon="Download"
+				Command="{BindCmd Report, Report=print, Url='/document/invoice', Argument={Bind Document}, Export=True}"/>
+		</Toolbar>
+	</Page.Toolbar>
+	<PdfReportViewer Url="/document/invoice" Report="print" Argument="{Bind Document}"/>
+</Page>

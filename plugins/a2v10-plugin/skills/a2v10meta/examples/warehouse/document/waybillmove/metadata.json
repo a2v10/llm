@@ -1,0 +1,42 @@
+{
+  "$schema": "../../@schemas/metadata-endpoint-json-schema.json#",
+  "storage": "document",
+  "autonum": "waybill",
+
+  "initialValues": {
+    "Date": { "source": "context", "value": "today" }
+  },
+
+  "rules": {
+    "required": [ "StoreFrom", "StoreTo" ]
+  },
+
+  "post": [
+    {
+      "journal":  "/journal/stock",
+      "dir":      "out",
+      "each":     { "details": "Rows" },
+      "document": { "Store": "StoreFrom" }
+    },
+    {
+      "journal":  "/journal/stock",
+      "dir":      "in",
+      "each":     { "details": "Rows" },
+      "document": { "Store": "StoreTo" }
+    }
+  ],
+
+  "forms": {
+    "edit": {
+      "is": "page", "scope": "Document",
+      "body": [
+        { "is": "group", "axis": "rows", "labelAt": "left", "fields": [ "Operation", "Number", "Date" ] },
+        { "is": "group", "axis": "rows", "fields": [ "StoreFrom", "StoreTo" ] },
+        { "is": "tabs", "elements": [
+          { "is": "tab", "scope": "Rows", "fields": [ "Item", "Unit", "VatRate", "Qty", "Price", "Sum" ] }
+        ] },
+        { "is": "group", "fields": [ "Total" ] }
+      ]
+    }
+  }
+}

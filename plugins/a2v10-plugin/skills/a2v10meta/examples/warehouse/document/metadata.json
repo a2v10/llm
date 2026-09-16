@@ -1,0 +1,41 @@
+{
+  "$schema": "../@schemas/metadata-endpoint-json-schema.json#",
+  "table": "StockDocuments",
+  "model": "Document",
+
+  "fields": {
+    "Operation": { "type": "operation" },
+    "Number":    { "type": "autonum" },
+    "ExtNumber": { "type": "string", "length": 32 },
+    "Agent":     { "type": "ref", "target": "/catalog/agent" },
+    "StoreFrom": { "type": "ref", "target": "/catalog/store" },
+    "StoreTo":   { "type": "ref", "target": "/catalog/store" },
+    "Total":     { "type": "amount" }
+  },
+
+  "rules": {
+    "computed": { "Total": "this.Rows.$sum(r => r.Sum)" }
+  },
+
+  "details": {
+    "Rows": {
+      "model": "Row",
+      "fields": {
+        "Item":  { "type": "ref", "target": "/catalog/item" },
+        "Unit":  { "type": "ref", "target": "/catalog/unit" },
+        "Qty":     { "type": "qty" },
+        "Price":   { "type": "price" },
+        "Sum":     { "type": "amount" },
+        "VatRate": { "type": "enum", "target": "/enum/vatrate" }
+      },
+      "rules": {
+        "inherit":  {
+          "Unit":    { "ref": "Item", "field": "Unit" },
+          "VatRate": { "ref": "Item", "field": "VatRate" }
+        },
+        "computed": { "Sum": "this.Qty * this.Price" },
+        "required": [ "Item", "Qty", "Price" ]
+      }
+    }
+  }
+}

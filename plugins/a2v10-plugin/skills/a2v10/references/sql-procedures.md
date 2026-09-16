@@ -2,6 +2,18 @@
 
 Each procedure is a fixed sequence of slots. Fill each slot from the endpoint specification; skip a slot only when explicitly marked optional.
 
+- [Common rules](#common-rules)
+- [Business errors — `throw` with `UI:` prefix](#business-errors--throw-with-ui-prefix)
+- [TenantId — multi-tenant plumbing](#tenantid--multi-tenant-plumbing)
+- [Index — paginated list](#index--paginated-list)
+- [Load — single object by Id](#load--single-object-by-id)
+- [Update — MERGE + Load](#update--merge--load)
+  - [FK columns in the TableType — RefId naming](#fk-columns-in-the-tabletype--refid-naming)
+  - [Variant: bulk parents + children via GUID/ParentGUID](#variant-bulk-parents--children-via-guidparentguid)
+- [Metadata — empty TableType](#metadata--empty-tabletype)
+- [Fetch — quick search for browse dialog](#fetch--quick-search-for-browse-dialog)
+- [Delete — soft delete](#delete--soft-delete)
+
 ## Common rules
 
 - Naming: `<schema>.[<Model>.<Action>]` — e.g. `cat.[Sample.Index]`.
@@ -242,7 +254,7 @@ Decision: leave the second result set **unnamed**. Naming it (`[Rows!TRow!Array]
 - `@TenantId int = 1` *(multi-tenant only)*
 - `@UserId bigint`
 - `@<Entity> <schema>.[<Entity>.TableType] readonly`
-- `@<Entity>.Rows <schema>.[<Entity>.Row.TableType] readonly` *(if detail rows)*
+- `@Rows <schema>.[<Entity>.Row.TableType] readonly` *(if detail rows)*
 
 ### Slots
 
@@ -277,7 +289,7 @@ select @id = id from @rtable;
 **Slot 4 — child rows MERGE.** *(if detail rows)*
 ```sql
 merge <schema>.<details> as t
-using @<Entity>.Rows as s on t.Id = s.Id and t.<parent_fk> = @id
+using @Rows as s on t.Id = s.Id and t.<parent_fk> = @id
 when matched then update set
     t.Qty = s.Qty, t.Price = s.Price /* ... */
 when not matched by target then insert
@@ -296,30 +308,14 @@ exec <schema>.[<Entity>.Load]
 
 ### FK columns in the TableType — RefId naming
 
-When a field is exposed in `Load` via `!RefId` (e.g. `[Agent!TAgent!RefId] = e.AgentId`), the client receives an **object** named without the `Id` suffix (`Agent`, not `AgentId`). The runtime maps that object's `Id` to the TVP column **by property-name equality**, so the TVP column must match the client property name:
+When a field is exposed in `Load` via `!RefId` (e.g. `[Agent!TAgent!RefId] = e.Agent`), the client receives an **object** `Agent`. The runtime maps that object's `Id` to the TVP column **by property-name equality**, so the TVP column must match the client property name:
 
 | Table column | Load marker | Client property | TVP column |
 |---|---|---|---|
-| `AgentId bigint` | `[Agent!TAgent!RefId]` | `Agent` (object) | `Agent bigint` |
-| `WarehouseId bigint` | `[Warehouse!TWarehouse!RefId]` | `Warehouse` (object) | `Warehouse bigint` |
+| `Agent bigint` | `[Agent!TAgent!RefId]` | `Agent` (object) | `Agent bigint` |
+| `Warehouse bigint` | `[Warehouse!TWarehouse!RefId]` | `Warehouse` (object) | `Warehouse bigint` |
 
-```sql
-create type <schema>.[<Entity>.TableType] as table(
-    Id     <pk_type>,
-    [Name] nvarchar(255),
-    Agent  bigint,        -- TVP column = client property (no Id suffix)
-    ...
-);
-```
-
-In `MERGE`, map the TVP column explicitly to the table column:
-```sql
-when matched then update set
-    t.AgentId = s.Agent,            -- TVP "Agent" → table "AgentId"
-    t.WarehouseId = s.Warehouse
-```
-
-> Rule: **TVP column name = client property name** (no `Id` suffix for RefId references); the `…Id` lives only on the physical table column.
+> Rule: **table column = TVP column = client property name** — no `Id` suffix on an FK column anywhere (→ [sql-discipline.md](sql-discipline.md)). Platform-reserved names (`GUID`, `ParentGUID`, `RowNumber`, `ParentId`, … — full list in [sql-rules.md](sql-rules.md#reserved-property-names)) are the exception: they are the platform's own columns, filled before `.Update`, and never your fields.
 
 ### Variant: bulk parents + children via GUID/ParentGUID
 
@@ -355,7 +351,7 @@ Children join `@rtable` by GUID:
 ```sql
 with T as (
     select r.*, [Parent] = t.id
-    from @<Entity>.Rows r
+    from @Rows r
         inner join @rtable t on t.[guid] = r.ParentGUID
 )
 merge <schema>.<details> as t
@@ -388,12 +384,12 @@ One metadata result set **per TVP parameter** of `Update` (excluding `@UserId` /
 
 ```sql
 declare @<Entity>      <schema>.[<Entity>.TableType];
-declare @<Entity>.Rows <schema>.[<Entity>.Row.TableType];
+declare @Rows <schema>.[<Entity>.Row.TableType];
 
 -- header: param @<Entity>, model path <Entity>
 select [<Entity>!<Entity>!Metadata] = null, * from @<Entity>;
 -- rows: param @Rows, model path <Entity>.Rows  ← path, not the type name
-select [Rows!<Entity>.Rows!Metadata] = null, * from @<Entity>.Rows;
+select [Rows!<Entity>.Rows!Metadata] = null, * from @Rows;
 ```
 
 > ⚠️ The second element is the model path (`Invoice.Rows`), **not** the TVP type (`InvoiceRow`).
@@ -422,7 +418,7 @@ where e.Void = 0
 order by e.[Name];
 ```
 
-Decision: the column list **must match** `browse.dialog.xaml`. Identifying fields only (Name + phone/email/code/SKU). Do not include descriptive fields like `Address` or `Memo`.
+Decision: the column list **must match** `browse.dialog`. Identifying fields only (Name + phone/email/code/SKU). Do not include descriptive fields like `Address` or `Memo`.
 
 ---
 

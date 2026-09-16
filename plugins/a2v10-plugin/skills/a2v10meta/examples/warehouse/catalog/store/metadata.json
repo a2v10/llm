@@ -1,0 +1,8 @@
+{
+  "$schema": "../../@schemas/metadata-endpoint-json-schema.json#",
+  "table": "Stores",
+
+  "rules": {
+    "required": [ "Name" ]
+  }
+}

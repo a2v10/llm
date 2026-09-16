@@ -5,6 +5,7 @@
 				<FilterDescription>
 					<FilterItem Property="Fragment" DataType="String"/>
 					<FilterItem Property="State" DataType="Object"/>
+					<FilterItem Property="Tags" DataType="String"/>
 				</FilterDescription>
 			</CollectionView.Filter>
 		</CollectionView>
@@ -57,6 +58,8 @@
 			<Panel Header="@[Filters]">
 				<SelectorSimple Label="@[State]" Value="{Bind Parent.Filter.State}" Url="/catalog/agentstate"
 					Placeholder="@[All]" ShowClear="True"/>
+				<TagsFilter Value="{Bind Parent.Filter.Tags}" Label="@[Tags]" ItemsSource="{Bind Tags}"
+					Placeholder="Всі теги"/>
 			</Panel>
 		</Taskpad>
 	</Page.Taskpad>

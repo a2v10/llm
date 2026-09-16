@@ -1,0 +1,9 @@
+﻿{
+	"$schema": "../@schemas/model-json-schema.json#",
+	"model": "",
+	"actions": {
+		"index": {
+			"view": "index.view"
+		}
+	}
+}

@@ -1,6 +1,7 @@
 ﻿<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
 	  Title="@[Report.Documents]"
-	  Components="{Components ../_components/report.components}">
+	  Components="{Components ../_components/report.components}"
+	  Background="White" Padding="1rem">
 	<Page.Toolbar>
 		<Component Name="ReportToolbar" />
 	</Page.Toolbar>

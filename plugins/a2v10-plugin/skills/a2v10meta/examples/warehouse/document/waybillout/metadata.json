@@ -1,0 +1,44 @@
+{
+  "$schema": "../../@schemas/metadata-endpoint-json-schema.json#",
+  "storage": "document",
+  "autonum": "waybill",
+
+  "initialValues": {
+    "Date": { "source": "context", "value": "today" }
+  },
+
+  "rules": {
+    "required": [ "Agent", "StoreFrom" ]
+  },
+
+  "post": [
+    {
+      "journal":  "/journal/stock",
+      "dir":      "out",
+      "each":     { "details": "Rows" },
+      "document": { "Store": "StoreFrom" }
+    }
+  ],
+
+  "forms": {
+    "edit": {
+      "is": "page", "scope": "Document",
+      "body": [
+        { "is": "group", "axis": "rows", "labelAt": "left", "fields": [ "Operation", "Number", "Date", "ExtNumber" ] },
+        { "is": "group", "axis": "rows", "fields": [ "Agent", "StoreFrom" ] },
+        { "is": "tabs", "elements": [
+          { "is": "tab", "scope": "Rows", "fields": [ "Item", "Unit", "VatRate", "Qty", "Price", "Sum" ] }
+        ] },
+        { "is": "group", "fields": [ "Total" ] }
+      ]
+    }
+  },
+
+  "printForms": [
+    {
+      "path": "print/waybill",
+      "title": "Видаткова накладна",
+      "header": "Видаткова накладна № {Document.Number} від {Document.Date}"
+    }
+  ]
+}

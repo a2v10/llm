@@ -8,11 +8,11 @@
 		{
 			"name": "a2v10",
 			"source": "./plugins/a2v10-plugin",
-			"description": "A2v10 Platform development",
+			"description": "A2v10 Platform development: classic endpoints, metadata-driven endpoints, 1C migration",
 			"license": "MIT",
 			"homepage": "https://github.com/a2v10/llm",
 			"repository": "https://github.com/a2v10/llm",
-			"keywords": [ "a2v10" ],
+			"keywords": [ "a2v10", "metadata", "1c", "migration" ],
 			"category": "productivity"
 		}
 	]

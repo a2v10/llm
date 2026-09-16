@@ -87,6 +87,23 @@ parent. (Concrete parent-child invariants → [mapping.md](mapping.md) §2, Pair
 | `!Filter`      | Echo of a filter parameter back to the form (in `$System`); several written forms per filter kind. → [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md) |
 | `!Json`        | Text column holding valid JSON; deserialized into an object in the model (not a string). **The object is NOT reactive.** |
 
+## Reserved property names
+
+These names belong to the platform and **cannot be a property name** — the part of a marker
+**left of the first `!`** — in any result set. The loader refuses the model with
+`PropertyName '<name>' is a reserved word`:
+
+`Parent` · `Root` · `Context` · `ParentId` · `ParentKey` · `ParentGUID` · `ParentRowNumber` ·
+`RowNumber` · `GUID` · `CurrentKey` · `Prop`
+
+Only the name is banned, not the **role token**: a row ordinal is `[RowNo!!RowNumber]` —
+reserved word as the role, your own name as the property.
+
+In a **TVP** these same names are the platform's own columns — it writes them into every
+element itself before `.Update`. Declare them where the mechanism calls for them
+(`GUID`/`ParentGUID` in bulk upsert → [sql-procedures.md](sql-procedures.md)); never put your
+own meaning in one.
+
 ## System recordsets — `$`-prefixed type token
 
 Besides the sets that *form* the model, a procedure may return **system** sets: they steer

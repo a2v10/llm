@@ -125,6 +125,7 @@ begin
 	select [!TRow!Array] = null,
 		[Id!!Id] = r.Id,
 		[RowNo!!RowNumber] = r.RowNo,
+		[Item!TItem!RefId] = r.Item,
 		r.Qty, r.Price, r.[Sum],
 		[!TDocument.Rows!ParentId] = r.Document
 	from doc.DocDetails r
@@ -244,5 +245,21 @@ begin
 	set transaction isolation level read committed;
 
 	update doc.Documents set Void = 1 where Id = @Id;
+end
+go
+------------------------------------------------
+-- printed form: the same model the edit form loads
+create or alter procedure doc.[Document.Report]
+@UserId bigint,
+@Id bigint
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	declare @operation nvarchar(20);
+	select @operation = Operation from doc.Documents where Id = @Id;
+
+	exec doc.[Document.Load] @UserId = @UserId, @Id = @Id, @Operation = @operation;
 end
 go

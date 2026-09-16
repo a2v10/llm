@@ -1,0 +1,6 @@
+{
+  "$schema": "../@schemas/metadata-autonum-json-schema.json#",
+  "autonums": {
+    "waybill": { "name": "Накладні", "pattern": "Н-{yyyy}/{nnnnn}", "period": "year" }
+  }
+}

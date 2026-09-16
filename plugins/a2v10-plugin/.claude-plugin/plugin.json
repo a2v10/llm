@@ -1,11 +1,11 @@
 {
 	"name": "a2v10",
-	"description": "A2v10 Platform development",
-	"version": "10.1.1010",
+	"description": "A2v10 Platform development: classic endpoints, metadata-driven endpoints, 1C migration",
+	"version": "10.1.1011",
 	"author": {
 		"name": "Oleksandr Kukhtin"
 	},
 	"license": "MIT",
 	"repository": "https://github.com/a2v10/llm",
-	"keywords": [ "a2v10" ]
+	"keywords": [ "a2v10", "metadata", "1c", "migration" ]
 }

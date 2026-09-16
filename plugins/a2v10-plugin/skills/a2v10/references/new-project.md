@@ -59,8 +59,8 @@ file** `AppName.slnx` → `<AppName>.slnx`.
 Bring the shell up:
 
 1. `dotnet build <AppName>.slnx` — **the one time the host is built**; it also generates
-   `MainApp/_sqlscripts/main.sql`. From here on the dev loop rebuilds `MainApp` alone
-   (SKILL.md §4) and the solution is never built again.
+   `MainApp/_sqlscripts/main.sql`. From here on you rebuild `MainApp` alone; the host
+   is rebuilt only by the user, when C# changes (SKILL.md §4).
 2. Hand the database to the user: *"create the database `<AppName>`, apply
    `MainApp/_sqlscripts/main.sql`, and tell me when it's done."* The database name and server
    live in the `Default` connection string in `WebApp/appsettings.json` — point the user there

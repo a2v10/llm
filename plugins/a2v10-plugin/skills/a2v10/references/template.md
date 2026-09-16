@@ -7,14 +7,14 @@ This file is the key index and the choices the docs don't make for you.
 Templates describe page and dialog behavior on the client side.
 The file has the `.template` extension and contains TypeScript.
 
-`.template.ts` is the file you write; a same-named `.js` beside it is a generated build artifact — never hand-write or edit it. Need it compiled — run `npx tsc` from the module root (picks up the project `tsconfig`): cheap and in place. A full `dotnet build` is not needed just for a template.
+`.template.ts` is the file you write; a same-named `.js` beside it is a generated build artifact — never hand-write or edit it. Building the module's csproj (SKILL.md §4) compiles it — TypeScript is a step of that build. To compile the templates alone, run `npx -p typescript@<version> tsc` from the module root, `<version>` = the `Microsoft.TypeScript.MSBuild` version in that csproj (it picks up the project `tsconfig`).
 
 The shape is the `Template` interface declared in `platform.d.ts`. You assign `const template: Template = { … }` and `export default` it.
 
 ## Relation to SQL result sets
 
 Collection names in the template correspond to array names in SQL result sets.
-The collection name is always the **plural form of the model**: `[Samples!TSample!Array]` → `"Samples"`.
+The collection name is the one the marker declares — by convention the plural of the model: `[Samples!TSample!Array]` → `"Samples"`.
 
 ## Template keys
 
@@ -81,7 +81,7 @@ An action that changes an entity also open in another tab/view leaves that view 
 
 - Subscribe **via the `events` map by name** — **never `EventBus` (`std:eventBus`)**: it has no auto-`$off` on page close, so the handler outlives the view and leaks.
 - `$emitGlobal(name, data?)` broadcasts to **all** views, the emitter included → **guard by `Id`** so the source view doesn't requery itself.
-- `$emitCaller` targets the **caller** (the code/dialog that opened the current view). `$emitParentTab` / `$notifyOwner` / `$requeryNew` and the "owner" notion are **not yet in the docs** — see TODO before preferring one over `$emitGlobal`.
+- `$emitCaller` targets the **caller** (the code/dialog that opened the current view).
 
 ## Template inheritance (mergeTemplate)
 
@@ -99,12 +99,4 @@ export default utils.mergeTemplate(base, template);
 
 `utils.mergeTemplate(base, child)` deep-merges **all** keys; child values win on conflict.
 If the endpoint needs no changes, skip the template — `model.json` references the base directly: `"template": "../base.template"`.
-
-<!-- TODO (deferred — resolve with platform owner; client/controller.md covers $emitCaller + $requery but NOT these):
-  - $notifyOwner(id, toast?) vs $emitCaller — what is "owner" vs "caller"? built-in notify or event-by-name? which channel receives it?
-  - $requeryNew(id) — cross-view ("other tab: requery and select new"), or local "show the just-inserted row"?
-  - $emitParentTab / $emitGlobal — not yet documented; confirm audience before writing a "prefer X" rule.
-  Grounded: subscribe to global events by name via the `events` map; NOT EventBus (no auto-$off on page close → leak);
-  $emitGlobal hits the emitter too → guard by Id.
--->
 

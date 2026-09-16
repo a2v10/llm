@@ -39,9 +39,11 @@ The mainline is the shape below and nothing else: `title`, `icon`, `items`, `url
 
 ## What the docs don't say
 
-- **Links live at the third level.** The tree is section (L1, carries `icon`) → group (L2) → link
-  (L3, carries `url`). A `url` placed on level 1 or 2 renders but **won't open** — levels 1–2 are
-  containers only.
+- **A `url` targets an endpoint's `index` — never another action.** A leaf with no action segment
+  opens `index`. An action such as a screen report is opened from a page (`/reports` lists them),
+  not from the menu.
+- **A `url` on level 1 or 2 renders but won't open** — only the leaf (third) level acts on it;
+  levels 1–2 are containers.
 - **A module endpoint is addressed with that module's `prefix`, which the disk path does not
   contain**: `StoreApp/catalog/store` on disk → url `/$store/catalog/store`, never
   `/catalog/store`. The folder path alone cannot tell you the url — get the prefix from
@@ -49,10 +51,14 @@ The mainline is the shape below and nothing else: `title`, `icon`, `items`, `url
 - **`icon` is a closed dictionary — never guess.** An unknown name silently fails to render at
   runtime (no error, no fallback; the schema catches it only in an editor that validates). Don't
   infer from Font Awesome / Material / Bootstrap or from the label. Copy a name verbatim from the
-  docs list, or omit `icon` — a section without one is valid.
+  full list → [app/menu.md#icons](https://docs-llm.a2v10.com/app/menu.md#icons).
+- **`icon` belongs on top-level items only, and there it is required.** Without one the sidebar still
+  works, but the section is unrecognizable; on deeper levels an icon is never rendered.
 - Titles use `@[...]` localization (SKILL.md §1).
 
-## Legacy DB menu
+## Menu in the database
 
-Older projects drive navigation from the `a2ui.Menu` table instead of this file; it still works — to
-move such a project onto `menu.json`, see `menu-migration.md`.
+Older projects drive navigation from the `a2ui.Menu` table and have **no** `menu.json`; it still
+works, and everything above then does not apply. **Do not create the file** — nothing would read it,
+the entry silently never appears — and do not write SQL against that table, not even a fragment for
+the user to apply. Say the menu lives in the database and ask the user how to proceed.

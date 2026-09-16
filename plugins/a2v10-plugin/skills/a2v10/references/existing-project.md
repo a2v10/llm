@@ -24,8 +24,13 @@ are only the *exposed surface* (what is used, and the path); the link endpoint�
 
 **Depth is per entity, on touch — never bulk.** Do **not** `resolve` 150–200 endpoints or read their
 procedures up front: that is the context bomb, ROI ~199:1 (you'd pre-load 199 entities to use one).
-A typical task touches one entity; pull its depth then. Depth = `resolve-* <endpoint> <name>` → procedure names →
+A typical task touches one entity; pull its depth then. Depth = `resolve-* <path>/<element>` → procedure names →
 read the named procedure (the **authoritative** table + the residue) → `db table-columns` (`ref` = FK).
+
+**Hand-written files here may not be UTF-8.** Mojibake instead of Cyrillic in a file you read → its
+content never reached you: do not edit it and do not write it back. Ask the user to re-save that file
+as UTF-8, then re-read (SKILL.md §5). Reading it for discovery is still fine — the structure survives,
+only the text is lost.
 
 ## 1. Skeleton → `CLAUDE.md` (once, cheap)
 
@@ -36,8 +41,8 @@ read the named procedure (the **authoritative** table + the residue) → `db tab
 - **`db tables`** → which schemas are present = the **kinds in use**. Sample a few `table-columns`
   → `idType`, the standard-column set, naming (table/model spelling), **tenancy** (a `TenantId`
   column). Record the **reality, including where the app breaks a convention.**
-- **XAML extension** — ask the user (`.vxaml` for VS-2026, else `.xaml`; they may be mid-migration).
-  Record as `XAML naming convention` — that line governs which extension new files get.
+- **XAML extension** — look at the files on disk. Both present = a migration in progress; take `.vxaml`,
+  the direction it runs. Record as `XAML naming convention` — that line governs which extension new files get.
 - Write the skeleton from the template below — every `<...>` is a discovered value, not a token to
   leave in place. `## Semantics` holds the discovered reality: the kinds in use and any difference
   from defaults (per `semantic.md`: record only what differs, don't restate defaults).
@@ -52,7 +57,7 @@ read the named procedure (the **authoritative** table + the residue) → `db tab
 Built on **A2v10** — always use the `a2v10` skill when working with this project.
 Per-entity domain knowledge lives in `DOMAIN.md`.
 
-XAML naming convention: <.vxaml | .xaml — as the user answered>
+XAML naming convention: <.vxaml | .xaml — as found on disk>
 
 ## Semantics
 
@@ -86,11 +91,7 @@ Setup is over once the skeleton is written and the empty `DOMAIN.md` exists. Tel
 substance: *"Conventions, tenancy, modules and kinds are recorded; domain knowledge will accrete
 in `DOMAIN.md` as we touch entities."* Then return to the normal workflow (SKILL.md §6).
 
-Each entity is afterward a normal **Dispatch** task. The first touch (via `new-endpoint.md` /
-`add-field.md` / etc.) reads the procedure — the **authoritative** table binding plus the residue —
+Each entity is afterward a normal **Dispatch** task. The first touch reads the procedure — the **authoritative** table binding plus the residue —
 fills `depends on` from `table-columns` `ref`, and writes the entry **`confirmed at <path>`**.
 That touch-time read is the single act that turns surface into knowledge — there is no separate
 discovery or verification pass.
-
-> Navigation: an existing project may drive the menu from the legacy `a2ui.Menu` table — to move it to
-> `menu.json`, see `menu-migration.md`.

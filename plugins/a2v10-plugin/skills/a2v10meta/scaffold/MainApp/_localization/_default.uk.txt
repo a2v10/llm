@@ -1,0 +1,34 @@
+﻿; Fields
+@Id=#
+@Number=Номер
+@Name=Назва
+@Memo=Примітка
+@Period=Період
+@Short=Скорочення
+@BarCode=Штрихкод
+@Barcode=Штрихкод
+@SKU=Артикул
+@Code=Код
+@Start=Початок
+@Begin=Початок
+@End=Закінчення
+@Phone=Телефон
+@Email=Email
+@Address=Адреса
+
+; Commands
+@Create=Створити
+@SaveAndClose=Зберегти і закрити
+@Cancel=Скасувати
+@Select=Вибрати
+@Post=Провести
+@UnPost=Скасувати проведення
+@AddRow=Додати рядок
+
+; Errors
+@Error.Required=Обов'язкове поле
+@Error.Delete.Used=Неможливо видалити елемент, він використовується в системі
+
+; Confirm
+@Confirm.Delete.Element=Ви впевнені, що бажаєте видалити елемент?
+

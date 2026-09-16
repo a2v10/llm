@@ -14,6 +14,17 @@
 			"template": "edit.template",
 			"view": "edit.view",
 			"parameters": { "Operation": "invoice" }
+		},
+		"print": {
+			"view": "print.view",
+			"parameters": { "Operation": "invoice" }
+		}
+	},
+	"reports": {
+		"print": {
+			"type": "pdf",
+			"report": "invoice.report",
+			"name": "Рахунок {{Document.No}}"
 		}
 	}
 }

@@ -1,0 +1,42 @@
+{
+  "$schema": "@schemas/menu-json-schema.json#",
+  "appTitle": "Склад",
+  "menu": [
+    {
+      "title": "Склад",
+      "icon": "warehouse",
+      "items": [
+        {
+          "title": "Документи",
+          "items": [
+            { "title": "Прибуткові накладні", "url": "/document/waybillin" },
+            { "title": "Видаткові накладні",  "url": "/document/waybillout" },
+            { "title": "Переміщення",         "url": "/document/waybillmove" },
+            { "title": "Журнал запасів",         "url": "/journal/stock" }
+          ]
+        },
+        {
+          "title": "Довідники",
+          "items": [
+            { "title": "Контрагенти", "url": "/catalog/agent" },
+            { "title": "Товари",      "url": "/catalog/item" },
+            { "title": "Склади",      "url": "/catalog/store" },
+            {
+              "title": "Інші довідники",
+              "id": "misc",
+              "items": [
+                { "title": "Одиниці виміру", "url": "/catalog/unit", "category": "Загальні" }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Звіти",
+          "items": [
+            { "title": "Оборотка по складу", "url": "/report/stockturnover" }
+          ]
+        }
+      ]
+    }
+  ]
+}

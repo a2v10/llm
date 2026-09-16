@@ -3,7 +3,7 @@
 -- Runs first in the bundle (see sql.json), before every /**/schema.sql — so tables always
 -- find their schema. `create schema` must be the FIRST statement in its batch, which is why
 -- it cannot sit under `if` directly and goes through sp_executesql instead.
--- A new schema beyond these four → add a block here (references/new-endpoint.md).
+-- A new schema beyond these four → add a block here.
 
 ------------------------------------------------
 -- catalogs

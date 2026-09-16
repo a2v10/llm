@@ -1,0 +1,418 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://a2v10.com/schemas/metadata-endpoint-json-schema.json",
+    "title": "A2v10 metadata.json (endpoint)",
+    "description": "One normal endpoint - catalog, document, journal, and the operations of a document. A report has its own schema (metadata-report-json-schema.json), as do the autonum registry and an enum set. The same file is deserialized twice by the platform - into TableMetadata (the shape) and into DeclarationMetadata (what this endpoint declares over it) - so this schema is the union of the two. Every enum value is written in PascalCase: the loader also accepts other casings, but one spelling is canonical - and command tokens, parsed without ignoreCase, accept nothing else.",
+    "type": "object",
+    "additionalProperties": false,
+    "anyOf": [
+        { "required": [ "table" ] },
+        { "required": [ "storage" ] }
+    ],
+    "allOf": [
+        { "not": { "required": [ "table", "storage" ] } }
+    ],
+    "properties": {
+        "$schema": { "type": "string" },
+        "description": { "type": "string", "description": "For the model, not the platform: nothing reads it - no generator, runtime or deploy. Where the model writes down what it must know about this endpoint - its rules and the reasons for them - so the next session finds them here." },
+
+        "table": {
+            "type": "string",
+            "description": "This endpoint owns the table. No default - a table name is never derived from the folder name."
+        },
+        "storage": {
+            "type": "string",
+            "description": "Path to the endpoint that declares the table this one writes into. Documents only. One hop: it must point at an endpoint that declares 'table'."
+        },
+        "kind": { "$ref": "#/definitions/endpointKind" },
+        "schema": {
+            "type": "string",
+            "description": "Defaults to the folder the endpoint lives in."
+        },
+        "model": {
+            "type": "string",
+            "description": "Base of the generated names (TVP, row type, collection). Defaults to the endpoint folder name in PascalCase."
+        },
+        "presentation": {
+            "type": "string",
+            "description": "The column a row is shown by wherever it is referenced - a column name, not a template. Not written: the Name column, else the autonum one; a catalog or document with neither is refused at load."
+        },
+
+        "fields": { "$ref": "#/definitions/fields" },
+        "details": { "$ref": "#/definitions/details" },
+        "kinds": { "$ref": "#/definitions/kinds" },
+        "traits": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/trait" }
+        },
+        "forms": {
+            "type": "object",
+            "additionalProperties": { "$ref": "#/definitions/form" }
+        },
+        "printForms": {
+            "type": "array",
+            "description": "Print blanks of this endpoint - a flat list, one entry per blank, in menu order. A blank is not a kind: it has no window of its own and is invoked from inside the endpoint. The blank file is addressed by path and need not sit next to the endpoint; its data model ('Model') is declared inside the blank file, not here. A non-empty list is what puts the Print command on the default toolbars - there is no trait for it. Never inherited from 'storage': a blank is paper under one act.",
+            "items": { "$ref": "#/definitions/printForm" }
+        },
+
+        "initialValues": { "$ref": "#/definitions/initialValues" },
+        "rules": { "$ref": "#/definitions/rules" },
+        "post": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/post" }
+        },
+        "autonum": {
+            "type": "string",
+            "description": "Which numbering this endpoint draws from - a key of autonum/metadata.json, refused at load if that file does not declare it. The number lands in the shape's column of type 'autonum', so writing this without such a column is refused too. The other way round is legitimate and is not checked: a column with no 'autonum' is a document numbered by hand. Layered like every other key - an operation with none of its own draws from the storage's. The number is issued when the row is INSERTED and only if it arrived empty, so a document may be renumbered by hand and re-saving never overwrites it."
+        }
+    },
+
+    "definitions": {
+
+        "fields": {
+            "type": "object",
+            "description": "Column name -> column. The key is the name; there is no 'name' inside.",
+            "additionalProperties": { "$ref": "#/definitions/column" }
+        },
+
+        "column": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [ "type" ],
+            "properties": {
+                "type": { "$ref": "#/definitions/columnType" },
+                "target": {
+                    "type": "string",
+                    "description": "For a reference: path of the endpoint it points at, e.g. '/catalog/item'."
+                },
+                "length": {
+                    "type": "integer",
+                    "description": "Characters, not bytes. -1 means max."
+                },
+                "precision": { "type": "integer" },
+                "scale": { "type": "integer" },
+                "unique": { "type": "boolean" }
+            }
+        },
+
+        "details": {
+            "type": "object",
+            "description": "Collection key -> the rows of that collection. The key is what the generated side composes names from.",
+            "additionalProperties": { "$ref": "#/definitions/detail" }
+        },
+
+        "detail": {
+            "type": "object",
+            "description": "A child table. Its schema is the owner's and its name is composed as <owner model><collection key>, so neither is declared here.",
+            "additionalProperties": false,
+            "properties": {
+                "model": { "type": "string" },
+                "fields": { "$ref": "#/definitions/fields" },
+                "details": { "$ref": "#/definitions/details" },
+                "kinds": { "$ref": "#/definitions/kinds" },
+                "initialValues": { "$ref": "#/definitions/initialValues" },
+                "rules": { "$ref": "#/definitions/rules" }
+            }
+        },
+
+        "kinds": {
+            "type": "object",
+            "description": "Row kind key -> what that kind declares. The keys are the value set of the discriminator column; the value carries rules and nothing else.",
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "rules": { "$ref": "#/definitions/rules" }
+                }
+            }
+        },
+
+        "initialValues": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [ "source", "value" ],
+                "properties": {
+                    "source": { "$ref": "#/definitions/initialSource" },
+                    "value": {
+                        "description": "For 'Literal' - the scalar itself, in the JSON type of the receiving domain. For every other source - a name or an expression, so a string.",
+                        "type": [ "string", "number", "boolean", "null" ]
+                    }
+                }
+            }
+        },
+
+        "rules": {
+            "type": "object",
+            "description": "The key is the KIND of rule; field names live inside it. Each kind carries its own shape.",
+            "additionalProperties": false,
+            "properties": {
+                "required": { "$ref": "#/definitions/fieldNames" },
+                "total": { "$ref": "#/definitions/fieldNames" },
+                "visible": { "$ref": "#/definitions/expressions" },
+                "computed": { "$ref": "#/definitions/expressions" },
+                "inherit": { "$ref": "#/definitions/inherits" },
+                "when": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/conditionalRules" }
+                }
+            }
+        },
+
+        "conditionalRules": {
+            "type": "object",
+            "description": "The same rule kinds under a condition. Depth is exactly 1 - there is no 'when' here.",
+            "additionalProperties": false,
+            "required": [ "test" ],
+            "properties": {
+                "test": { "type": "string" },
+                "required": { "$ref": "#/definitions/fieldNames" },
+                "total": { "$ref": "#/definitions/fieldNames" },
+                "visible": { "$ref": "#/definitions/expressions" },
+                "computed": { "$ref": "#/definitions/expressions" },
+                "inherit": { "$ref": "#/definitions/inherits" }
+            }
+        },
+
+        "fieldNames": {
+            "type": "array",
+            "items": { "type": "string" }
+        },
+
+        "expressions": {
+            "type": "object",
+            "description": "Field -> JavaScript expression, written in full with 'this.'.",
+            "additionalProperties": { "type": "string" }
+        },
+
+        "inherits": {
+            "type": "object",
+            "description": "Receiving field -> where the value is taken from when the reference changes.",
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [ "ref", "field" ],
+                "properties": {
+                    "ref": {
+                        "type": "string",
+                        "description": "A Ref field in the same set of fields as the receiver."
+                    },
+                    "field": {
+                        "type": "string",
+                        "description": "A field of the endpoint the reference targets. One hop - chains are not expressible."
+                    }
+                }
+            }
+        },
+
+        "post": {
+            "oneOf": [
+                { "$ref": "#/definitions/postMapped" },
+                { "$ref": "#/definitions/postSql" }
+            ]
+        },
+
+        "postSql": {
+            "type": "object",
+            "description": "Posting done by a stored procedure. It posts the whole document, so it is the only entry of 'post' - the platform maps nothing alongside it.",
+            "additionalProperties": false,
+            "required": [ "sql", "journals" ],
+            "properties": {
+                "sql": {
+                    "type": "object",
+                    "description": "The procedures. Both are called with @Id and @UserId and nothing else, inside a transaction they do not own: they must not commit or roll back, and fail by throwing.",
+                    "additionalProperties": false,
+                    "required": [ "post" ],
+                    "properties": {
+                        "post": { "type": "string" },
+                        "unpost": {
+                            "type": "string",
+                            "description": "Optional. Without it the rows are deleted by provenance, like any other posting; write it only when the inverse is not a delete."
+                        }
+                    }
+                },
+                "journals": {
+                    "type": "array",
+                    "description": "Every journal the procedure writes into. Nothing can read this out of the procedure, and the transactions dialog is built from it - as is the unpost, when it is not declared.",
+                    "minItems": 1,
+                    "items": { "type": "string" }
+                }
+            }
+        },
+
+        "postMapped": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [ "journal" ],
+            "properties": {
+                "journal": {
+                    "type": "string",
+                    "description": "Path of the journal endpoint, e.g. '/journal/stock'."
+                },
+                "dir": { "$ref": "#/definitions/postDirection" },
+                "storno": { "type": "boolean" },
+                "each": {
+                    "type": "object",
+                    "description": "The one collection this posting iterates, and which of its kinds. Name the kinds exactly when the collection declares them - 'all of them' has no spelling.",
+                    "additionalProperties": false,
+                    "required": [ "details" ],
+                    "properties": {
+                        "details": { "type": "string" },
+                        "kinds": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                        }
+                    }
+                },
+                "document": {
+                    "type": "object",
+                    "description": "Journal field -> field of the document header.",
+                    "additionalProperties": { "type": "string" }
+                },
+                "row": {
+                    "type": "object",
+                    "description": "Journal field -> field of the iterated row.",
+                    "additionalProperties": { "type": "string" }
+                }
+            }
+        },
+
+        "form": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "is": { "$ref": "#/definitions/formKind" },
+                "scope": { "type": "string" },
+                "body": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/formElement" }
+                },
+                "toolbar": { "$ref": "#/definitions/formElement" },
+                "taskPad": { "$ref": "#/definitions/formElement" }
+            }
+        },
+
+        "formElement": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "is": { "$ref": "#/definitions/formElementKind" },
+                "scope": {
+                    "type": "string",
+                    "description": "The collection this node is anchored to."
+                },
+                "kind": {
+                    "type": "string",
+                    "description": "One kind of that collection. Required together with 'scope' exactly when the collection declares kinds."
+                },
+                "elements": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/formElement" }
+                },
+                "fields": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "commands": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/commandBarItem" }
+                },
+                "axis": { "$ref": "#/definitions/flowAxis" },
+                "labelAt": { "$ref": "#/definitions/labelAt" }
+            }
+        },
+
+        "commandBarItem": {
+            "description": "A command name, or a bar token. Case-sensitive: unlike every other enum here, this one is parsed without ignoreCase.",
+            "type": "string",
+            "enum": [
+                "$sep",
+                "Create", "Edit", "Delete", "Save", "SaveAndClose", "Print", "Copy",
+                "Show", "ShowTrans", "Search", "Reload", "Post", "UnPost", "Attachments"
+            ]
+        },
+
+        "printForm": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [ "path", "title" ],
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Path of the blank file, relative to the endpoint folder and WITHOUT an extension - named the way a view is; '.json' is appended, never swapped. The last segment is the blank's name: 'print/waybill' answers to 'waybill', and two blanks under one name are refused."
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Caption of the menu item that prints it. Localized like any other caption: '@[...]' is resolved at render."
+                },
+                "header": {
+                    "type": "string",
+                    "description": "Title of the WINDOW hosting the viewer, as a template over the record: 'Waybill No {Document.Number} of {Document.Date}'. Every path starts with the model name and is resolved against the shape at build, through references only - so no collection, and the model name alone is an error. Values are substituted in the browser. Omitted, 'title' stands in. This is NOT the blank's own heading - the paper draws that in a cell of its layout, which is never read."
+                }
+            }
+        },
+
+        "endpointKind": {
+            "description": "Normally derived from the folder; written only to override it.",
+            "type": "string",
+            "enum": [
+                "undefined", "catalog", "document", "operation", "journal", "report",
+                "details", "folders", "tags", "tagEntries"
+            ]
+        },
+
+        "trait": {
+            "description": "'Print' is deliberately absent: whether an endpoint prints is answered by 'printForms' being non-empty, and a trait would be a second spelling of that, free to disagree with it.",
+            "type": "string",
+            "enum": [ "audit", "hierarchy", "folders", "tags", "attachments" ]
+        },
+
+        "initialSource": {
+            "type": "string",
+            "enum": [ "literal", "context", "profile", "policy", "sql" ]
+        },
+
+        "postDirection": {
+            "description": "'debit' and 'credit' are aliases of 'in' and 'out'.",
+            "type": "string",
+            "enum": [ "none", "in", "out", "debit", "credit" ]
+        },
+
+        "formKind": {
+            "type": "string",
+            "enum": [ "unknown", "page", "dialog" ]
+        },
+
+        "formElementKind": {
+            "type": "string",
+            "enum": [
+                "group", "tabs", "tab", "dataGrid", "taskpad", "toolbar", "pager", "filters"
+            ]
+        },
+
+        "flowAxis": {
+            "type": "string",
+            "enum": [ "columns", "rows" ]
+        },
+
+        "labelAt": {
+            "type": "string",
+            "enum": [ "top", "left" ]
+        },
+
+        "columnType": {
+            "type": "string",
+            "enum": [
+                "string", "id", "name", "memo", "rowNumber", "done", "void", "isSystem",
+                "isFolder", "owner", "parent", "folder", "user", "rowKind", "operation",
+                "document", "documentType", "row", "rowVersion", "color", "enum", "autonum",
+                "company", "direction",
+                "amount", "price", "qty", "percent", "factor",
+                "ref", "date", "dateTime", "money", "boolean",
+                "stream", "integer", "number",
+                "bigInt", "bit", "nChar", "decimal", "float", "varBinary", "uniqueidentifier"
+            ]
+        }
+    }
+}

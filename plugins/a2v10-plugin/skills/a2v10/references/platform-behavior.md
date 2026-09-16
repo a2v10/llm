@@ -29,8 +29,8 @@ Sibling axis: name-sensitive elements that **silently fail** without an exact na
   formatted view — reproduce the platform's rule if you re-show it:
   `msg.startsWith('UI:') ? $alert(msg.substring(3)) : alert(msg)`.
 - **Server side:** raise a user-facing business error as `throw 60000, N'UI:текст', 0`;
-  omit the prefix for internal asserts meant for the developer.
+  omit the prefix for internal asserts meant for the developer. The rule is the message
+  string, not the language — a `clr` command throws
+  `new InvalidOperationException("UI:текст")` for the same effect
+  (→ [clr.md](clr.md)).
 - Mechanics → [controller](https://docs-llm.a2v10.com/client/controller.md).
-
----
-> Full documentation: https://docs-llm.a2v10.com

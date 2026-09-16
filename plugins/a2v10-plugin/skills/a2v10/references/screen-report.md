@@ -4,14 +4,17 @@ An **on-screen report** is an interactive, filterable page that renders a `Sheet
 the default meaning of "report" (звіт) in this skill. It is an **`action`** (Renderable),
 not the `reports` section.
 
-> **Not the same as a file report.** The `reports` *section* of `model.json` is for reports
-> exported **to a file** (PDF/xlsx/xml/json), rendered by the server → `references/model-json.md`.
-> They split by rendering path: on screen → `action` here; to a file → `reports` section.
-> A task that says "report" without naming a file/format means this one.
+> **Not the same as a printed form.** A printed form (PDF, built by the server from a template)
+> is a `reports` element → `references/print-form.md`. They split by what the thing is, not where
+> it shows: a printed form previewed on a form (`PdfReportViewer`) is still `reports`; an
+> interactive, filterable page is always this one.
 
 Working example (clone donor) → `examples/report/`. This page is the index and the contract;
 `Sheet` authoring — sections, row/cell styles, spans, column grammar, tree groups, cross
 columns, Excel export → [xaml/layouts/sheet.md](https://docs-llm.a2v10.com/xaml/layouts/sheet.md).
+Everything else about the view is ordinary view work → [xaml.md](xaml.md) — including what to do
+when the result is a picture rather than a table (`Graphics`), and the ban on drawing it out of
+layout elements and platform CSS classes.
 
 ## What is infrastructure vs. per-report
 
@@ -23,8 +26,9 @@ A screen report is mostly shared engine plus a thin per-report layer.
 | SQL | verb **`Load`**, `Filter` echo, period default | data result sets + lookup `Map`s |
 | template | `/reports/_common/_plain.template` (engine) | computed properties only |
 | view | `/reports/_components/report.components` (`ReportToolbar`, `NoRunPanel`), Taskpad + `Sheet` shell | the Sheet's columns and rows |
+| navigation | `/reports` — a static launch page (`"model": ""`, `index` only), the menu's target | one item on that page |
 
-`_plain.template` and `report.components` are **app files you copy once**, not engine surface
+`_plain.template`, `report.components` and the launch page are **app files you copy once**, not engine surface
 and not scaffold — they ship with the first report (see `examples/report/`). A new report
 reuses them; it does not rewrite the lifecycle.
 
@@ -76,7 +80,7 @@ lean on two in particular:
 
 ## Don't
 
-- Don't put a screen report in the `reports` section — that's file export only.
+- Don't put a screen report in the `reports` section — that section builds fixed documents, not pages.
 - Don't reach for verb `Index` (that's the list of an *entity* endpoint); a report loads as
   one object (Filter + data) → verb `Load`.
 - Don't rewrite the lifecycle in each report — extend `_plain.template`, don't replace it.

@@ -1,0 +1,124 @@
+﻿; Fields
+@Id=#
+@Number=Номер
+@Name=Назва
+@Memo=Примітка
+@Period=Період
+@Short=Скорочення
+@BarCode=Штрихкод
+@Barcode=Штрихкод
+@SKU=Артикул
+@Code=Код
+@Start=Початок
+@Begin=Початок
+@End=Закінчення
+@Phone=Телефон
+@Email=Email
+@Address=Адреса
+@Date=Дата
+@FullName=Повна назва
+@TaxId=Код ЄДРПОУ
+@Article=Артикул
+@Price=Ціна
+@Qty=Кількість
+@Sum=Сума
+@Total=Разом
+@Operation=Операція
+@ExtNumber=Номер контрагента
+@StoreFrom=Склад-відправник
+@StoreTo=Склад-отримувач
+@InOut=Напрямок
+@Detail=Рядок
+
+; Entities
+@Agent=Контрагент
+@Agents=Контрагенти
+@Item=Товар
+@Items=Товари
+@Store=Склад
+@Stores=Склади
+@Unit=Одиниця виміру
+@Units=Одиниці виміру
+@VatRate=Ставка ПДВ
+@VatRates=Ставки ПДВ
+@Document=Накладна
+@Documents=Накладні
+@Rows=Товари
+@Stock=Рух запасів
+
+; Operations
+@Document.waybillin=Прибуткова накладна
+@Document.waybillout=Видаткова накладна
+@Document.waybillmove=Переміщення
+
+; Browse
+@Agent.Browse=Вибір контрагента
+@Item.Browse=Вибір товару
+@Store.Browse=Вибір складу
+@Unit.Browse=Вибір одиниці виміру
+@Document.Browse=Вибір накладної
+
+; Filter
+@Agent.All=Усі контрагенти
+@Item.All=Усі товари
+@Store.All=Усі склади
+@Unit.All=Усі одиниці
+@VatRate.All=Усі ставки
+@Filters=Фільтри
+
+; Commands
+@Create=Створити
+@Add=Додати
+@Edit=Змінити
+@Show=Показати
+@Search=Пошук
+@SaveAndClose=Зберегти і закрити
+@Cancel=Скасувати
+@Close=Закрити
+@Select=Вибрати
+@Post=Провести
+@UnPost=Скасувати проведення
+@AddRow=Додати рядок
+@Print=Друк
+@Download=Завантажити
+@Transactions=Проводки
+@Autonum.Auto=Автоматично
+
+; Report
+@Report=Звіт
+@Report.Run=Сформувати
+@Report.RunNow=Сформувати зараз
+@Report.Param.Changed=Параметри змінено.
+@Report.NotYetBuild=Звіт ще не сформовано.
+@Report.Error.AtLeastGroup=Оберіть хоча б одне групування
+@Report.Error.AtLeastData=Оберіть хоча б один показник
+@Grouping=Групування
+@Data=Показники
+@TurnOver.Start=Початковий залишок
+@TurnOver.In=Надходження
+@TurnOver.Out=Витрата
+@TurnOver.End=Кінцевий залишок
+@Store.AllData=Усі склади
+@Item.AllData=Усі товари
+@Store.NoData=Без складу
+@Item.NoData=Без товару
+
+; Errors
+@Error.Required=Обов'язкове поле
+@Error.Duplicate=Таке значення вже існує
+@Error.Agents.Duplicate.TaxId=Контрагент з таким кодом ЄДРПОУ вже існує
+@Error.Items.Duplicate.Barcode=Товар з таким штрихкодом вже існує
+@Error.Delete.Used=Неможливо видалити елемент, він використовується в системі
+@Error.Element.RowVersion=Елемент змінено іншим користувачем. Відкрийте його заново
+@Error.Document.RowVersion=Документ змінено іншим користувачем. Відкрийте його заново
+@Error.Document.AlreadyApplied=Документ проведено, змінити його неможливо
+@Error.Document.AlreadyPosted=Документ уже проведено
+@Error.Document.NotPosted=Документ не проведено
+
+; Confirm
+@Confirm.Delete.Element=Ви впевнені, що бажаєте видалити елемент?
+@Confirm.Delete.Document=Ви впевнені, що бажаєте видалити документ?
+@Confirm.Delete.Row=Видалити рядок?
+@Confirm.Document.Post=Провести документ?
+@Confirm.Document.UnPost=Скасувати проведення документа?
+

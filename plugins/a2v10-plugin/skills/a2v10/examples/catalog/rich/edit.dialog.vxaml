@@ -1,13 +1,13 @@
 ﻿<!-- Edit Agent — Dialog -->
 <Dialog xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
-		Title="{Bind Agent.Id, Format='@[Agent] [{0}]'}" Overflow="True">
+		Title="{Bind Agent.Id, Format='@[Agent] [{0}]'}" Overflow="True" Width="60rem">
 	<Dialog.Buttons>
 		<Button Content="@[SaveAndClose]" Command="{BindCmd SaveAndClose, ValidRequired=True}" Style="Primary"/>
 		<Button Content="@[Cancel]" Command="{BindCmd Close}"/>
 	</Dialog.Buttons>
 	<!-- Taskpad = our classification of the agent (Manager, Tags), apart from its real properties -->
 	<Dialog.Taskpad>
-		<Taskpad XamlStyle="{StyleResource DialogTaskpad}">
+		<Taskpad Width="20rem">
 			<SelectorSimple Label="@[Manager]" Value="{Bind Agent.Manager}" Url="/catalog/employee"/>
 			<TagsControl Label="@[Tags]" Value="{Bind Agent.Tags}" ItemsSource="{Bind Tags}"
 				Placeholder="@[Tag.Choose]" SettingsText="@[Tag.Settings]"
@@ -16,22 +16,20 @@
 	</Dialog.Taskpad>
 	<Grid Rows="Auto,Auto,1*" Height="100%">
 
-		<Panel Header="@[GeneralInfo]">
-			<Grid Columns="1*,1*">
-				<TextBox Label="@[Name]" Value="{Bind Agent.Name}" Bold="True" TabIndex="1"/>
-				<SelectorSimple Label="@[State]" Value="{Bind Agent.State}" Url="/catalog/agentstate"/>
-				<TextBox Label="@[Memo]" Value="{Bind Agent.Memo}" Multiline="True" Rows="2"/>
-				<CheckBox Label="@[Customer]" Value="{Bind Agent.IsCustomer}"/>
-				<CheckBox Label="@[Supplier]" Value="{Bind Agent.IsSupplier}"/>
-			</Grid>
-		</Panel>
+		<Grid Columns="1*,1*" Grid.Row="1">
+			<TextBox Label="@[Name]" Value="{Bind Agent.Name}" Bold="True" TabIndex="1"/>
+			<SelectorSimple Label="@[State]" Value="{Bind Agent.State}" Url="/catalog/agentstate"/>
+			<TextBox Label="@[Memo]" Value="{Bind Agent.Memo}" Multiline="True" Rows="2"/>
+			<CheckBox Label="@[Customer]" Value="{Bind Agent.IsCustomer}"/>
+			<CheckBox Label="@[Supplier]" Value="{Bind Agent.IsSupplier}"/>
+		</Grid>
 
-		<TabBar Value="{Bind Root.$$Tab}" Grid.Row="1">
+		<TabBar Value="{Bind Root.$$Tab}" Grid.Row="2">
 			<TabButton Content="@[Addresses]" ActiveValue="" Badge="{BindNumber Agent.Addresses.Count}"/>
 			<TabButton Content="@[Accounts]" ActiveValue="acc" Badge="{BindNumber Agent.Accounts.Count}"/>
 		</TabBar>
 
-		<Switch Expression="{Bind Root.$$Tab}" Grid.Row="2">
+		<Switch Expression="{Bind Root.$$Tab}" Grid.Row="3">
 			<!-- table part #1 — addresses (plain scalars) -->
 			<Case Value="">
 				<Grid Rows="Auto,1*" AlignItems="Top" Overflow="Hidden" Height="100%">
@@ -40,7 +38,7 @@
 							Command="{BindCmd Append, Argument={Bind Agent.Addresses}}"/>
 					</Toolbar>
 					<Table ItemsSource="{Bind Agent.Addresses}" GridLines="Both" Width="100%" StickyHeaders="True"
-							Columns="Fit,Auto,Auto,Auto,Auto,Fit" Height="100%">
+							Columns="Fit,Auto,Auto,Auto,Auto,Fit" Height="20rem">
 						<Table.Header>
 							<TableRow>
 								<TableCell Content="@[RowNo]"/>
@@ -72,7 +70,7 @@
 							Command="{BindCmd Append, Argument={Bind Agent.Accounts}}"/>
 					</Toolbar>
 					<Table ItemsSource="{Bind Agent.Accounts}" GridLines="Both" Width="100%" StickyHeaders="True"
-							Columns="Fit,Auto,10rem,Auto,Fit" Height="100%">
+							Columns="Fit,Auto,10rem,Auto,Fit" Height="20rem">
 						<Table.Header>
 							<TableRow>
 								<TableCell Content="@[RowNo]"/>

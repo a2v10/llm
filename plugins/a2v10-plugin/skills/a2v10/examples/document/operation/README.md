@@ -44,6 +44,8 @@ MainApp/
         ├── init.sql                 — INSERT INTO doc.Operations
         ├── index.view.vxaml         — journal of documents for this operation
         ├── edit.view.vxaml          — edit form
+        ├── print.view.vxaml         — printed form preview page (PdfReportViewer)
+        ├── invoice.report.vxaml     — printed form template (A2v10.Xaml.Report)
         └── logic.sql                ← optional: operation-specific procedures (Invoice.Post, etc.)
 ```
 
@@ -52,14 +54,6 @@ MainApp/
 > and endpoint files (`model.json`, `init.sql`, `*.view.vxaml`) live together.
 > In a real application the shared files live in `document/`, the endpoint in `document/invoice/`.
 
-### init.sql and sql.json
-
-`sql.json` collects SQL by the patterns `/**/schema.sql`, `/**/keys.sql`, `/**/logic.sql`.
-For `init.sql` to be picked up automatically as well — add the pattern:
-```json
-"/**/init.sql"
-```
-
 ## File structure
 
 ### Shared files (document/)
@@ -67,7 +61,7 @@ For `init.sql` to be picked up automatically as well — add the pattern:
 | File | Purpose |
 |------|---------|
 | `schema.sql` | Tables `doc.Operations`, `doc.Documents`, `doc.DocDetails`, `doc.OpLinks`, `doc.OpTrans`, `doc.DocLinks` |
-| `logic.sql` | Procedures: `Document.Index`, `Document.Load`, `Document.Metadata`, `Document.Update`, `Document.Delete` |
+| `logic.sql` | Procedures: `Document.Index`, `Document.Load`, `Document.Metadata`, `Document.Update`, `Document.Delete`, `Document.Report` |
 | `keys.sql` | FKs to catalogs |
 | `index.d.ts`, `edit.d.ts` | Base types for templates |
 | `index.template.ts`, `edit.template.ts` | Base templates |
@@ -85,6 +79,8 @@ The `ComponentDictionary` pattern — see `references/xaml.md`.
 | `init.sql` | `INSERT INTO doc.Operations` (if not exists) |
 | `index.view.vxaml` | XAML for the operation's document list |
 | `edit.view.vxaml` | XAML for the edit form |
+| `print.view.vxaml` | Printed form preview: `PdfReportViewer` + Print / Export buttons |
+| `invoice.report.vxaml` | Printed form template — its own dialect, not a view (→ `references/print-form.md`) |
 | `index.d.ts`, `edit.d.ts` | *(optional)* Type extensions |
 | `index.template.ts`, `edit.template.ts` | *(optional)* Template extensions |
 | `logic.sql` | *(optional)* Operation-specific logic (e.g. `Invoice.Post`) |
@@ -92,6 +88,15 @@ The `ComponentDictionary` pattern — see `references/xaml.md`.
 ## Edit form: keep the TabBar scaffold
 
 The document edit form (`edit.view.vxaml`) keeps `TabBar` + `Switch` even with a **single** tab. It looks redundant for one tab, but it is the extension point: a new section (payments, document links, history) is one `TabButton` + one `Case`. Collapsing it to a bare section trades a couple of lines now for rebuilding the form's structure on the next extension. Do not remove it.
+
+## Printed form
+
+The shared `Document.Toolbar` leaves a `Print` slot (`<ComponentSlot Name="Print"/>`); each operation fills it, because only the operation knows its endpoint. The chain in `invoice/`:
+
+- the `Print` button → `{BindCmd Open, Url='/document/invoice/print', SaveRequired=True}` — the document is saved first, so the report has an `Id`;
+- action `print` (`print.view`) — a page with `PdfReportViewer` and Print / Export buttons, all pointing at `Report=print`, `Url='/document/invoice'`;
+- `reports.print` in `model.json` — `type: pdf`, template `invoice.report`;
+- `doc.[Document.Report]` — calls `Document.Load`, so the form prints exactly the model the edit page shows.
 
 ## DB schema
 
@@ -141,13 +146,13 @@ Fields: `ParentId bigint FK → doc.Documents`, `ChildId bigint FK → doc.Docum
         "index": true,
         "model": "Document",
         "parameters": {
-            "Operation": "Invoice"
+            "Operation": "invoice"
         }
     },
     "edit": {
         "model": "Document",
         "parameters": {
-            "Operation": "Invoice"
+            "Operation": "invoice"
         }
     }
 }
@@ -162,16 +167,6 @@ Journals are a separate archetype, the endpoint lives at `journal/{name}/`. Sing
 | In OpTrans | Table | Endpoint |
 |-----------|---------|----------|
 | `Stock` | `jrn.StockJournal` | `/journal/stock` |
-
-## Constraint naming
-
-| Type | Pattern | Example |
-|-----|---------|---------|
-| Primary key | `PK_{Table}` | `PK_Documents` |
-| Foreign key | `FK_{Table}_{Ref}` | `FK_Documents_Operations` |
-| Default | `DF_{Table}_{Column}` | `DF_Documents_Void` |
-| Check | `CK_{Table}_{Column}` | `CK_OpTrans_Dir` |
-| Unique | `UQ_{Table}_{Columns}` | `UQ_OpLinks_Key` |
 
 ## Dependencies
 

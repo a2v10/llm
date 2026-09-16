@@ -10,10 +10,10 @@ Step-by-step checklist for a focused change to a single endpoint.
 |---|---|---|
 | Schema | `schema.sql` (owns the table) | additive DDL — `alter table ... add` (guarded) |
 | FK constraint | `keys.sql` | `foreign key` constraint — ref fields only |
-| SQL | `<endpoint>.sql` | `TableType`, `Load`, `Index`, `Update` / `Metadata` |
-| XAML edit | `edit.dialog.xaml` / `edit.view.xaml` | Field on the form |
-| XAML index | `index.view.xaml` | Column in DataGrid; filter (if filtered) |
-| XAML browse | `browse.dialog.xaml` | Column (only for identifying fields) |
+| SQL | `logic.sql` (fixed name — the bundle collects no other) | `TableType`, `Load`, `Index`, `Update` / `Metadata` |
+| XAML edit | `edit.dialog` / `edit.view` | Field on the form |
+| XAML index | `index.view` | Column in DataGrid; filter (if filtered) |
+| XAML browse | `browse.dialog` | Column (only for identifying fields) |
 | Types | `edit.d.ts` | Field in the corresponding type *(if the file exists — update it; if not — do not create it)* |
 | Validator | `edit.template.ts` | If the field is required or has a rule |
 | Localization | `_localization/*.txt` | Field/column label |
@@ -27,8 +27,6 @@ not tidiness: fragments matched by the same mask are concatenated in **unspecifi
 (→ [sql-discipline.md](sql-discipline.md)), so a stray `alter` can run before the `create` — the
 guard finds no column, the `alter` hits a table that does not exist yet, and the user's apply
 stops there with the rest of the script unapplied.
-
-> XAML files above are named `.xaml` for brevity; on disk they carry the project's `XAML naming convention` extension (`.vxaml` or `.xaml`, CLAUDE.md). When locating a file to edit, match the base name (`edit.view.*`) — don't assume the extension.
 
 ## Field types
 
@@ -132,7 +130,7 @@ d.ts: `IsActive: boolean`.
 
 - [ ] DDL is idempotent and additive: `if not exists(... INFORMATION_SCHEMA.COLUMNS ...)` guards the `add`; no `N''` in guards; never rename/drop (add new, tell the user).
 - [ ] FK field: column in `schema.sql`, `foreign key` constraint in `keys.sql`.
-- [ ] Multi-tenant: a new column in a table without `TenantId` (it is already in the table); but in a new procedure — `@TenantId` in parameters, WHERE, and MERGE INSERT.
+- [ ] Multi-tenant: the new column needs no `TenantId` (the table already has it); a new procedure does — `@TenantId` in parameters, WHERE, and MERGE INSERT.
 - [ ] `TableType` updated.
 - [ ] `Update` MERGE: field in `SET` **and** in `INSERT`.
 - [ ] `Index`: field in SELECT + Map (for FK) + temp table (for FK) + parameter + `$System` (if filtered).

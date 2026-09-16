@@ -17,15 +17,13 @@ Each entry states:
 
 ## Conventions
 
-### Tag chips — `<TagsControl>` (editor) and `<TagsList>` (read-only)
+### Tag chips — `<TagsControl>` (editor), `<TagsList>` (read-only), `<TagsFilter>` (list filter)
 
 - **Element / where** — the tag controls, bound to an array of tag elements
-  (`<TagsControl Value=… ItemsSource=…>` in a form, `<TagsList ItemsSource=…>` in a grid cell).
+  (`<TagsControl Value=… ItemsSource=…>` in a form, `<TagsList ItemsSource=…>` in a grid cell,
+  `<TagsFilter Value=… ItemsSource=…>` in an index Taskpad).
 - **Required name/structure** — each bound element must expose **`Name`** (chip caption) and
   **`Color`** (chip color). Neither is declared on the control — both are read **by convention**
   from the element, so the SQL projection (and the tags dictionary) must supply `Name` and `Color`.
 - **Failure mode** — silent: chips render with a blank caption (missing `Name`) and/or with no
   color (missing `Color`); no error.
-
-> TODO — more entries to enumerate (each as Element / Required name/structure / Failure mode).
-> Do not invent: derive each from the platform docs or observed runtime behavior.

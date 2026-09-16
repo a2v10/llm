@@ -1,10 +1,19 @@
-# A2v10 Skill for Claude
+# A2v10 Skills for Claude
 
-A skill for developing on the **A2v10 Platform** — a generic runtime for building
-business applications. Once installed, Claude loads it automatically when your request
-matches (A2v10, `model.json`, `view.vxaml`, SQL stored procedures, and so on).
+Skills for developing on the **A2v10 Platform** — a generic runtime for building
+business applications. Once installed, Claude loads the right skill automatically when
+your request matches.
 
-The skill ships as a Claude Code **plugin**, distributed from this repository, which is
+| Skill | For | Needs locally |
+|---|---|---|
+| `/a2v10` | endpoints (`model.json`), XAML views, SQL stored procedures, `template.ts`, localization | .NET SDK |
+| `/a2v10meta` | metadata-driven endpoints (`metadata.json`), deployed with the `a2` CLI; builds on `/a2v10` | .NET SDK |
+| `/a2v10from1c` | migrating a 1C configuration: parsing its dump, writing a spec, generating the app with `/a2v10meta` | .NET SDK, 1C Designer to dump the configuration |
+
+The skills install their own command-line tools (`A2v10.CLI`, `A2v10.Confdump`) when
+missing.
+
+The skills ship as one Claude Code **plugin**, distributed from this repository, which is
 a plugin marketplace named `a2v10-dev`.
 
 | | |
@@ -48,11 +57,12 @@ Afterwards the plugin shows up under **Customize → Plugins**. Open it and chec
 **Source** reads `Marketplace (a2v10-dev)` and that the toggle in the top-right is
 **on** — the toggle is what makes the plugin active.
 
-Under **Skills** you'll see the single skill the plugin ships, **`/a2v10`**. It comes
-with the plugin; there is nothing to install separately. Use it either way:
+Under **Skills** you'll see the three skills the plugin ships: **`/a2v10`**,
+**`/a2v10meta`**, **`/a2v10from1c`**. They come with the plugin; there is nothing to
+install separately. Use them either way:
 
-* **Automatically** — describe an A2v10 task, and Claude loads the skill itself.
-* **Explicitly** — type `/a2v10`.
+* **Automatically** — describe the task, and Claude loads the matching skill itself.
+* **Explicitly** — type the skill's name, e.g. `/a2v10meta`.
 
 Those three destinations are the ordinary Claude Code plugin scopes, so the install
 covers every way you reach Claude Code within its scope — sessions in the app's **Code**
@@ -100,24 +110,44 @@ To update, refresh the catalog and the plugin — they move independently:
 > Installing Claude Code on other platforms:
 > <https://docs.claude.com/en/docs/claude-code/overview>
 
-## Fallback: upload the skill as a zip
+## Fallback: upload the skills as zips
 
 If plugins are unavailable to you — for example your plan or your organization's
-settings don't allow custom marketplaces — you can upload the bare skill instead.
+settings don't allow custom marketplaces — you can upload the bare skills instead.
 Custom Skills require Pro, Max, Team, or Enterprise with code execution enabled.
 
-1. Download the latest **`a2v10-*.zip`** from the
+Each release has one zip per skill: **`a2v10-*.zip`**, **`a2v10meta-*.zip`**,
+**`a2v10from1c-*.zip`**. `/a2v10meta` builds on `/a2v10`, and `/a2v10from1c` generates
+the app with `/a2v10meta` — upload the ones you need together with what they build on.
+
+1. Download the zips from the
    [Releases page](https://github.com/a2v10/llm/releases/latest).
 2. In Claude, open **Customize → Skills**.
 3. Click **➕ → Create skill → Upload a skill**.
-4. Select the downloaded zip.
+4. Select a downloaded zip. Repeat for each zip.
 
-The skill appears under **Personal skills** and is used automatically when relevant.
+The skills appear under **Personal skills** and are used automatically when relevant.
 
 Uploaded skills do not auto-update. To move to a newer version, download the latest
-zip, then open the skill's **⋮** menu and choose **Replace** — pick the new zip.
+zips, then for each skill open its **⋮** menu and choose **Replace** — pick its new zip.
 (Claude accepts the versioned file name as-is; no need to rename it.) Alternatively,
 use **Uninstall** from the same menu and upload the new zip from scratch.
+
+## Codex
+
+The same skills work in Codex — there is no separate build. They are not yet tested
+there; please report what breaks in [Issues](https://github.com/a2v10/llm/issues).
+
+1. Download the zips from the
+   [Releases page](https://github.com/a2v10/llm/releases/latest).
+2. Unzip each into its own folder named after the skill: `a2v10-*.zip` →
+   `~/.agents/skills/a2v10/`, `a2v10meta-*.zip` → `~/.agents/skills/a2v10meta/`, and so
+   on. The zips have no top-level folder, so extracting straight into
+   `~/.agents/skills/` scatters their files.
+
+To update, replace each folder's contents with its newer zip.
+
+The skills keep project state in `CLAUDE.md`, under Codex too — keep that file.
 
 ## License
 

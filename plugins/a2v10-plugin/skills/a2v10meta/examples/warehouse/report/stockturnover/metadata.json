@@ -1,0 +1,14 @@
+{
+  "$schema": "../../@schemas/metadata-report-json-schema.json#",
+  "type":    "turnover",
+  "surface": "/journal/stock",
+
+  "groups":  [ "Store", "Item" ],
+  "filters": [ "Store", "Item" ],
+  "data":    [ "Qty", "Sum" ],
+
+  "defaults": {
+    "groups": [ "Store" ],
+    "data":   [ "Qty", "Sum" ]
+  }
+}

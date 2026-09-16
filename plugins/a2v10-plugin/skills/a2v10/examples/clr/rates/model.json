@@ -1,0 +1,19 @@
+﻿{
+	"$schema": "../../@schemas/model-json-schema.json#",
+	"description": "clr.rates",
+	"schema": "cat",
+	"model": "CurrencyRate",
+	"actions": {
+		"index": {
+			"index": true,
+			"template": "index.template",
+			"view": "index.view"
+		}
+	},
+	"commands": {
+		"load": {
+			"type": "clr",
+			"clrType": "clr-type:MainApp.RatesHandler;assembly=MainApp"
+		}
+	}
+}

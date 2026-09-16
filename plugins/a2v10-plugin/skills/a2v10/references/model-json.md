@@ -19,22 +19,35 @@ This is the whole mainline — the examples in this skill use nothing beyond it:
 | `actions` / `dialogs` element | `view`, `template`, `index: true` (calls `.Index` instead of `.Load`), `parameters` |
 | `commands` element | `type: "sql"`, `procedure` |
 
+`model` may also be `"$meta"`: the model is built by another component (SKILL.md §3, *`$meta` → not
+yours*). Under it a missing `view`/`template` key, or a missing element, does not mean "none" — it
+means "built"; what exists is read from `a2 endpoint resolve-*`, not from this file.
+
 Anything else you meet on those pages — additional element keys, the other command types, the older
 spellings — is long tail. Don't reach for one because you saw it listed. A task that genuinely needs
 one describes the need in its own words first; *then* open the page.
+
+One command type beyond that table has its own file: a command that reaches **outside the database**
+— an external API, an integration — runs C# instead of a procedure (`type: "clr"`, `clrType`) → [clr.md](clr.md). The doc page is wrong
+about it; read that file, not the page.
 
 Which section makes an element Renderable or Callable, and why one `model.json` keeps **one** `model`
 → SKILL.md §3 and §4. What the runtime derives from `model` (the `<schema>.[<model>.<Verb>]` proc
 name) → `sql-procedures.md`.
 
-## reports — file export ONLY
+## reports — documents the server builds, not pages
 
-> ⚠️ The `reports` section is **only** for reports rendered **to a file** by the server.
-> An **on-screen report is NOT here** — an interactive `Sheet` page is an `action`
-> (→ `screen-report.md`). Shown on screen instead of downloaded → wrong section.
+> ⚠️ The `reports` section is for a **fixed document built by the server**: a printed form (PDF)
+> or an xml/json export. An **on-screen report is NOT here** — an interactive, filterable `Sheet`
+> page is an `action` (→ `screen-report.md`). A printed form previewed on a form
+> (`PdfReportViewer`) is still a `reports` element: the axis is what the thing is, not where it
+> appears.
 
-The decision rule (does the task name a file or a format?) lives in SKILL.md §3; this is the ban at
-the point where the section is about to be written.
+A printed form has its own file — wiring, the template language, and the bans that go with it
+→ [print-form.md](print-form.md). Here: `xml`/`json` exports, which need no template.
+
+The decision rule lives in SKILL.md §3; this is the ban at the point where the section is about to
+be written.
 
 ## permissions
 

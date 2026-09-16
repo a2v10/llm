@@ -1,0 +1,12 @@
+{
+  "$schema": "../../@schemas/metadata-endpoint-json-schema.json#",
+  "table": "Units",
+
+  "fields": {
+    "Short": { "type": "string", "length": 8 }
+  },
+
+  "rules": {
+    "required": [ "Name" ]
+  }
+}

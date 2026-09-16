@@ -33,10 +33,11 @@ Guard catalog:
 
 | DDL              | Guard                                                                  |
 |------------------|------------------------------------------------------------------------|
-| `CREATE SCHEMA`  | `sys.schemas` (`name`) — **and the statement goes through `exec sp_executesql`**: `create schema` must be the first statement in its batch, so it cannot sit under `if` directly. Scaffold ships `cat`/`doc`/`jrn`/`rep` in `_sql/_schemas.sql` |
+| `CREATE SCHEMA`  | `sys.schemas` (`name`) — **and the statement goes through `exec sp_executesql`**: `create schema` must be the first statement in its batch, so it cannot sit under `if` directly. Scaffold ships `cat`/`doc`/`jrn`/`rep` in `_sql/_schemas.sql`; any other schema — add its block there first: nothing creates a schema implicitly, and a `schema.sql` whose schema is missing fails the whole deploy |
 | `CREATE TABLE`   | `INFORMATION_SCHEMA.TABLES`                                            |
 | `ADD COLUMN`     | `INFORMATION_SCHEMA.COLUMNS` (`TABLE_SCHEMA`+`TABLE_NAME`+`COLUMN_NAME`)|
-| `ADD CONSTRAINT` | `sys.objects WHERE type IN ('F','C','UQ','D')`                         |
+| `ADD CONSTRAINT` (FK) | `INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS` (`CONSTRAINT_NAME`)  |
+| `ADD CONSTRAINT` (other) | `sys.objects WHERE type IN ('C','UQ','D')`                        |
 | `CREATE INDEX`   | `sys.indexes` — key is `object_id(N'<schema>.<table>')` **+** `name`. Index names are unique per **table**, not per database: a `name`-only guard is satisfied by a same-named index on another table and the index is then silently never created |
 | `CREATE SEQUENCE`| `INFORMATION_SCHEMA.SEQUENCES`                                         |
 

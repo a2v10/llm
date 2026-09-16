@@ -1,4 +1,15 @@
 ﻿------------------------------------------------
+-- Stub reference catalog (FK target for doc.DocDetails.Item).
+-- Minimal by design: in a real project it is a full catalog of its own.
+------------------------------------------------
+if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'cat' and TABLE_NAME = 'Items')
+create table cat.[Items]
+(
+	Id bigint not null identity(100, 1) constraint PK_Items primary key,
+	[Name] nvarchar(255)
+);
+go
+------------------------------------------------
 -- doc.Operations — довідник видів операцій
 ------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'doc' and TABLE_NAME = 'Operations')

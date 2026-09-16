@@ -1,0 +1,11 @@
+{
+  "$schema": "../../@schemas/metadata-enum-json-schema.json#",
+  "table": "VatRates",
+  "model": "VatRate",
+
+  "values": [
+    { "id": "20", "name": "20%" },
+    { "id": "7",  "name": "7%" },
+    { "id": "0",  "name": "Без ПДВ" }
+  ]
+}

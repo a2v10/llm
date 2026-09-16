@@ -1,0 +1,48 @@
+﻿<!-- Invoice — printed form (A2v10.Xaml.Report, not the view dialect) -->
+<Page xmlns="clr-namespace:A2v10.Xaml.Report;assembly=A2v10.Xaml.Report"
+		Title="Рахунок {Document.No}">
+	<Column>
+		<Text Style="Title" Align="Center">
+			<Span Content="Рахунок №"/>
+			<Space Width="4pt"/>
+			<Span Content="{Bind Document.No}"/>
+			<Space Width="4pt"/>
+			<Span Content="від"/>
+			<Space Width="4pt"/>
+			<Span Content="{Bind Document.Date, DataType=Date}"/>
+		</Text>
+		<Text Margin="10pt,0,0,0">
+			<Span Content="Контрагент:"/>
+			<Space Width="6pt"/>
+			<Span Content="{Bind Document.Agent.Name}" Bold="True"/>
+		</Text>
+
+		<Table Style="Details" Columns="30pt,1fr,60pt,80pt,80pt" Margin="10pt,0,0,0"
+				ItemsSource="{Bind Document.Rows}">
+			<Table.Header>
+				<TableRow>
+					<TableCell Content="№" Align="Center"/>
+					<TableCell Content="Товар" Align="Center"/>
+					<TableCell Content="Кількість" Align="Center"/>
+					<TableCell Content="Ціна" Align="Center"/>
+					<TableCell Content="Сума" Align="Center"/>
+				</TableRow>
+			</Table.Header>
+			<Table.Body>
+				<TableRow>
+					<TableCell Content="{Bind RowNo}"/>
+					<TableCell Content="{Bind Item.Name}"/>
+					<TableCell Content="{Bind Qty, DataType=Number}" Align="Right"/>
+					<TableCell Content="{Bind Price, DataType=Currency}" Align="Right"/>
+					<TableCell Content="{Bind Sum, DataType=Currency}" Align="Right"/>
+				</TableRow>
+			</Table.Body>
+			<Table.Footer>
+				<TableRow>
+					<TableCell ColSpan="4" Content="Разом" Align="Right"/>
+					<TableCell Content="{Bind Document.Sum, DataType=Currency}" Align="Right"/>
+				</TableRow>
+			</Table.Footer>
+		</Table>
+	</Column>
+</Page>

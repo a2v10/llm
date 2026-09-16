@@ -6,14 +6,16 @@ documents, a total. Use it as the clone donor for screen reports; for trees and 
 [xaml/layouts/sheet.md](https://docs-llm.a2v10.com/xaml/layouts/sheet.md).
 
 > "Report" here means **on-screen** — an `action` rendering a `Sheet`, the common case.
-> A report exported **to a file** (PDF/xlsx) is a different thing — the `reports` section
-> of `model.json`. See `references/screen-report.md` for the split.
+> A printed form (PDF) is a different thing — the `reports` section of `model.json`,
+> → `references/print-form.md`.
 
 ## Folder structure in a real application
 
 ```
 MainApp/
 └── reports/
+    ├── model.json                   ← static launch page (once per app): "model": "", index only
+    ├── index.view.vxaml             ← one ListItemSimple per report; the menu opens this page
     ├── _common/
     │   └── _plain.template.ts       ← report engine (once per app)
     ├── _components/
@@ -28,14 +30,16 @@ MainApp/
 > The proc file **must** be `logic.sql` (alongside `schema.sql`/`keys.sql`/`init.sql`) — the
 > build's `sql.json` collects those names by pattern; any other name is silently skipped.
 
-`_common` and `_components` are written **once per app** and shared by every report.
-A new report adds only an endpoint folder (here `list/`). A `reports/x/model.json` may
+`_common`, `_components` and the `reports/index` launch page are written **once per app** and
+shared by every report. A new report adds an endpoint folder (here `list/`) and one item on
+`reports/index`. The menu points at `/reports` — never at a report's own action, which is not `index`. A `reports/x/model.json` may
 hold several unrelated report models — grouping is the author's choice (see SKILL.md §4).
 
 ## Files
 
 | File | Purpose |
 |------|---------|
+| `model.json` + `index.view.vxaml` | Launch page: `"model": ""`, action `index` with a view only; a `List` of `ListItemSimple`, each `{BindCmd Open, Url='/reports/<report>/<action>', Argument=0}`. |
 | `_common/_plain.template.ts` | Report engine: `generate` (Filter round-trip), dirty/loading/Run lifecycle. Extended by every report template. |
 | `_components/report.components.vxaml` | `ReportToolbar` (run / print / export / regenerate alert) and `NoRunPanel` (pre-run empty state). |
 | `list/model.json` | `schema: rep`; one `action` → model `Report.Document.List`. |

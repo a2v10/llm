@@ -1,0 +1,17 @@
+{
+  "$schema": "../../@schemas/metadata-endpoint-json-schema.json#",
+  "table": "StockJournal",
+
+  "fields": {
+    "InOut":     { "type": "direction" },
+    "Document":  { "type": "document", "target": "/document" },
+    "Operation": { "type": "operation" },
+    "Detail":    { "type": "row" },
+
+    "Store":     { "type": "ref", "target": "/catalog/store" },
+    "Item":      { "type": "ref", "target": "/catalog/item" },
+
+    "Qty":       { "type": "qty" },
+    "Sum":       { "type": "amount" }
+  }
+}

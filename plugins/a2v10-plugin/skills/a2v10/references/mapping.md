@@ -134,6 +134,14 @@ exists in the row only until the record is saved.
 *Failure:* the column fills correctly, the user edits that record, and the cell goes blank —
 returning on a page reload. Reads like a UI glitch; it is a missing column in `Load`.
 
+### Pair 12 — tag-set filter
+
+**XAML** `<TagsFilter Value="{Bind Parent.Filter.Tags}" ItemsSource="{Bind Tags}"/>` + `<FilterItem Property="Tags" DataType="String"/>` ⇔ **SQL** `@Tags nvarchar(max)` — tag ids joined by `-`, split with `STRING_SPLIT(@Tags, N'-')` ⇔ `$System` echo `[!<Entities>.Tags!Filter] = @Tags` ⇔ a root-level pool `[Tags!TTag!Array]` for `ItemsSource` (items carry `Name` + `Color` → [elem-conventions.md](elem-conventions.md)).
+
+`TagsFilter` sends a plain string. It is **not** the "array of references" filter form in [sql/paging.md](https://docs-llm.a2v10.com/sql/paging.md) — no comma, no `.T<Ref>.Array!Filter`, no `Map`.
+
+*Failure:* split by comma → no id parses, the list comes back empty for any selection.
+
 ---
 
 ## Usage

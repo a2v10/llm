@@ -8,7 +8,8 @@ create or alter procedure cat.[Agent.Index]
 @Order nvarchar(32) = N'name',
 @Dir nvarchar(5) = N'asc',
 @Fragment nvarchar(255) = null,
-@State bigint = null
+@State bigint = null,
+@Tags nvarchar(max) = null -- TagsFilter: tag ids joined by '-'
 as
 begin
 	set nocount on;
@@ -19,6 +20,9 @@ begin
 	set @Order = lower(@Order);
 	set @Dir = lower(@Dir);
 
+	declare @ftags table(id bigint);
+	insert into @ftags(id) select TRY_CAST([value] as bigint) from STRING_SPLIT(@Tags, N'-');
+
 	declare @agents table(id bigint, rowNo int identity(1, 1), [rowCount] int);
 
 	insert into @agents(id, [rowCount])
@@ -27,6 +31,10 @@ begin
 	where a.Void = 0
 		and (@fr is null or a.[Name] like @fr or a.Memo like @fr)
 		and (@State is null or a.[State] = @State)
+		-- any of the selected tags
+		and (@Tags is null or exists(
+			select 1 from @ftags f inner join cat.AgentTags ta on ta.Agent = a.Id and ta.Tag = f.id
+		))
 	order by
 		case when @Dir = N'asc'  then case @Order when N'name' then a.[Name] end end asc,
 		case when @Dir = N'desc' then case @Order when N'name' then a.[Name] end end desc,
@@ -64,11 +72,18 @@ begin
 	from cat.AgentStates s
 	where s.Id in (select a.[State] from cat.Agents a inner join @agents t on a.Id = t.Id where a.[State] is not null);
 
+	-- available tags for this entity — root-level collection (TagsFilter ItemsSource)
+	select [Tags!TTag!Array] = null, [Id!!Id] = tg.Id, [Name!!Name] = tg.[Name], tg.Color
+	from cat.Tags tg
+	where tg.[For] = N'Agent'
+	order by tg.[Name];
+
 	select [!$System!] = null,
 		[!Agents!Offset] = @Offset, [!Agents!PageSize] = @PageSize,
 		[!Agents!SortOrder] = @Order, [!Agents!SortDir] = @Dir,
 		[!Agents.Fragment!Filter] = @Fragment,
-		[!Agents.State.TAgentState.RefId!Filter] = @State;
+		[!Agents.State.TAgentState.RefId!Filter] = @State,
+		[!Agents.Tags!Filter] = @Tags;
 end
 go
 ------------------------------------------------

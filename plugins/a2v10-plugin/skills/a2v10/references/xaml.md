@@ -9,15 +9,20 @@ where mainline facts hide:
 - [base-classes.md](https://docs-llm.a2v10.com/xaml/base-classes.md) — properties inherited by
   every element (`UIElementBase` / `UIElement` / `Control` / `ValuedControl` / `Container`).
   Read it before concluding an element lacks a property: most properties are declared here, not
-  on the element's own page. Its list of derived classes is also the fullest inventory of
-  controls in the docs — several of them (`Radio`, `MultiSelect`, `TimePicker`, `PeriodPicker`,
-  `UploadFile`) have no page of their own.
+  on the element's own page. Its lists of derived classes also name the controls the hub links
+  nowhere — `MultiSelect` and `TimePicker` have no page of their own.
 - [bind.md](https://docs-llm.a2v10.com/xaml/bind.md) — `Bind` / `BindCmd`, all `DataType` and
   `CommandType` values.
 - [layouts/fieldset.md](https://docs-llm.a2v10.com/xaml/layouts/fieldset.md) — a labeled frame
   around a group of fields. `Grid` has no `Border`; framing is `FieldSet`'s job.
 - [layouts/sheet.md](https://docs-llm.a2v10.com/xaml/layouts/sheet.md) — spreadsheet-style
   tables, tree groups, cross columns. For on-screen reports start at [screen-report.md](screen-report.md).
+- [controls/graphics.md](https://docs-llm.a2v10.com/xaml/controls/graphics.md) — a drawing
+  surface: `Delegate` names a function in the template's `delegates`, which gets a d3 selection
+  and draws everything itself. This is how you render what no control covers — diagrams, trees,
+  connectors. **Never build lines, frames or diagrams out of layout elements and platform CSS
+  classes**: those classes are internal to the platform, not surface; the app's own styling goes
+  in `_layout/_styles.html`.
 
 > **A2v10 XAML is a WPF dialect, not WPF.** Names overlap — some elements and properties match
 > WPF, some don't, some differ. Don't trust your WPF prior: verify every element and property
@@ -28,8 +33,6 @@ column, `FilterItem` ⇔ procedure parameter, FK ⇔ `Map` ⇔ `SelectorSimple`)
 
 The rest of this file is only what the docs structurally don't have: project conventions and
 elements with no doc page.
-
-> File extension on disk follows the project's `XAML naming convention` (`.vxaml` or legacy `.xaml`, CLAUDE.md). Content is identical either way; paths in `view:`/`Components` stay extension-less.
 
 ## Root elements → files
 
@@ -82,7 +85,7 @@ Set `TabIndex="1"` only on the **first** field of the form. Do not set `TabIndex
 
 ## Index page
 
-Canonical example: [examples/catalog/simple/index.view.xaml](../examples/catalog/simple/index.view.xaml).
+Canonical example: [examples/catalog/simple/index.view.vxaml](../examples/catalog/simple/index.view.vxaml).
 
 **Sorting** — pick one of two modes, depending on the procedure:
 - `<DataGrid Sort="True">` — when **all** columns are sortable (typical for catalogs).

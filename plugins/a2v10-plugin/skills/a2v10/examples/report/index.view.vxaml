@@ -1,0 +1,8 @@
+﻿<!-- Reports — static launch page: one item per report -->
+<Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
+		Title="@[Reports]" Padding="1rem">
+	<List Style="ThreeColumnsGrid" Select="False">
+		<ListItemSimple Content="@[Report.Documents]" Icon="Report" Padding="1rem"
+			Command="{BindCmd Open, Url='/reports/list/documents', Argument=0}"/>
+	</List>
+</Page>

@@ -1,4 +1,4 @@
-name: Release skill
+name: Release skills
 
 # Self-contained: uses no external `uses:` actions, so it is unaffected by the
 # organization's "allowed actions" policy. git / gh / jq / zip are preinstalled
@@ -46,24 +46,29 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Package skill
+      - name: Package skills
         if: steps.check.outputs.exists == 'false'
         run: |
-          SRC="plugins/a2v10-plugin/skills/a2v10"
-          ZIP="$GITHUB_WORKSPACE/a2v10-${{ steps.meta.outputs.tag }}.zip"
-          test -f "$SRC/SKILL.md" || { echo "::error::SKILL.md not found in $SRC"; exit 1; }
-          rm -f "$ZIP"
-          # SKILL.md must be at the TOP LEVEL of the zip — pack the folder
-          # contents, not the folder itself (no wrapping a2v10/ directory).
-          ( cd "$SRC" && zip -r "$ZIP" . )
-          echo "=== archive contents ==="
-          unzip -l "$ZIP"
+          TAG="${{ steps.meta.outputs.tag }}"
+          OUT="$GITHUB_WORKSPACE/dist"
+          mkdir -p "$OUT"
+          # One zip per skill: an upload accepts exactly one skill.
+          for SRC in plugins/a2v10-plugin/skills/*/; do
+            NAME=$(basename "$SRC")
+            test -f "$SRC/SKILL.md" || { echo "::error::SKILL.md not found in $SRC"; exit 1; }
+            # SKILL.md must be at the TOP LEVEL of the zip — pack the folder
+            # contents, not the folder itself.
+            ( cd "$SRC" && zip -r "$OUT/$NAME-$TAG.zip" . -x '*.gitignore' )
+            echo "=== $NAME-$TAG.zip ==="
+            unzip -l "$OUT/$NAME-$TAG.zip"
+          done
+          ls "$OUT"/*.zip >/dev/null 2>&1 || { echo "::error::No skills packaged"; exit 1; }
 
       - name: Create release
         if: steps.check.outputs.exists == 'false'
         run: |
-          gh release create "${{ steps.meta.outputs.tag }}" \
-            "$GITHUB_WORKSPACE/a2v10-${{ steps.meta.outputs.tag }}.zip" \
+          TAG="${{ steps.meta.outputs.tag }}"
+          gh release create "$TAG" "$GITHUB_WORKSPACE"/dist/*.zip \
             --target "${GITHUB_SHA}" \
-            --title "a2v10 ${{ steps.meta.outputs.tag }}" \
-            --notes "A2v10 skill ${{ steps.meta.outputs.tag }}. Download the zip and add it via **Claude → Customize → Skills → + → Create skill → Upload a skill**."
+            --title "A2v10 skills $TAG" \
+            --notes "A2v10 skills $TAG — one zip per skill. Download the ones you need and add each via **Claude → Customize → Skills → + → Create skill → Upload a skill**."

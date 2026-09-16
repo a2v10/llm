@@ -1,0 +1,13 @@
+{
+  "$schema": "../../@schemas/metadata-endpoint-json-schema.json#",
+  "table": "Agents",
+
+  "fields": {
+    "FullName": { "type": "string", "length": 255 },
+    "TaxId":    { "type": "string", "length": 12, "unique": true }
+  },
+
+  "rules": {
+    "required": [ "Name" ]
+  }
+}

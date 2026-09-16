@@ -3,7 +3,7 @@
 	<Toolbar x:Key="Document.Toolbar">
 		<Button Icon="SaveCloseOutline" Content="@[SaveAndClose]" Command="{BindCmd SaveAndClose}" />
 		<Button Icon="SaveOutline" Command="{BindCmd Save}"/>
-		<Button Icon="Print" />
+		<ComponentSlot Name="Print"/>
 		<Separator />
 		<Button Icon="Apply" Content="@[Apply]" Command="{BindCmdExec apply, ValidRequired=True, SaveRequired=True}"/>
 		<Separator />
@@ -15,7 +15,7 @@
 		  Padding=".5rem,0,0,0">
 		<Header Content="{Bind Operation.Name}" Wrap="NoWrap" Margin="0,5rem,0,0"/>
 		<Span Content="@[Number]"/>
-		<TextBox Value="{Bind No}" Width="10rem" Placeholder="@[Auto]" Align="Right"/>
+		<TextBox Value="{Bind No}" Width="10rem" Align="Right"/>
 		<Span Content="@[Date]" Margin="0,0,0,3rem"/>
 		<DatePicker Value="{Bind Date}" Width="10rem"/>
 	</Grid>

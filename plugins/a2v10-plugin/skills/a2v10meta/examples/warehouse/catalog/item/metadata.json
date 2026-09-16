@@ -1,0 +1,20 @@
+{
+  "$schema": "../../@schemas/metadata-endpoint-json-schema.json#",
+  "table": "Items",
+
+  "fields": {
+    "Article": { "type": "string", "length": 32, "unique": true },
+    "Barcode": { "type": "string", "length": 32, "unique": true },
+    "Unit":    { "type": "ref", "target": "/catalog/unit" },
+    "Price":   { "type": "price" },
+    "VatRate": { "type": "enum", "target": "/enum/vatrate" }
+  },
+
+  "initialValues": {
+    "VatRate": { "source": "literal", "value": "20" }
+  },
+
+  "rules": {
+    "required": [ "Name", "Article", "Unit", "VatRate" ]
+  }
+}
