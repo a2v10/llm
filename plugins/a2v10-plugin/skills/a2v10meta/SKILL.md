@@ -1,14 +1,13 @@
 ---
 name: a2v10meta
 description: >
-  Work with A2v10 **metaendpoints** — endpoints driven by `metadata.json`:
-  structure, behavior and forms are declared (kinds, traits, fields, rules,
-  forms, post), not written, and deployed with the `a2` CLI.
-  USE when the request mentions a metaendpoint, `metadata.json`,
-  metadata-driven, kinds/traits, `a2 meta deploy`, materialize/eject, or a
-  metadata-driven catalog / document / journal / report in A2v10.
-  Do NOT use for an endpoint folder without a `metadata.json` — it is not a
-  metaendpoint and belongs to the `a2v10` skill.
+  A2v10 endpoints declared in metadata.json (catalog, document, journal,
+  report) and deployed with the a2 CLI.
+  USE if the project contains metadata.json files, or the request mentions
+  metadata.json, metaendpoint, metadata-driven, or a2 meta.
+  New A2v10 application, no project yet: ask whether metadata-driven or
+  classic; classic is the a2v10 skill.
+  Endpoint folder without metadata.json: a2v10 skill.
 ---
 
 # A2v10 Metadata-Driven Skill
@@ -69,7 +68,7 @@ Unsure → ask; never guess.
 
 | Action | Go to |
 |---|---|
-| create an application (from a request or a written spec) | `references/onboarding.md` |
+| create an application — the user has not said metadata-driven or classic → ask; classic → the `a2v10` skill | `references/onboarding.md` |
 | create an endpoint — which kind is it | `references/kinds.md` → `references/metadata.md` |
 | add or change a field | `references/metadata.md` |
 | set initial values, or how a reference is picked | `references/metadata.md` |
