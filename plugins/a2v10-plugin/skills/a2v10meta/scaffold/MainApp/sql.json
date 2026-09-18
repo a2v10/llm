@@ -1,10 +1,10 @@
-[
+﻿[
 	{
 		"$schema": "@schemas/sql-json-schema.json#",
 		"outputFile": "_sqlscripts/main.sql",
 		"inputFiles": [
-			"../WebApp/_assets/sql/a2v10_platform_simple.sql",
-			"../WebApp/_assets/sql/a2v10_metadata.sql",
+			"@sql/a2v10_platform_simple.sql",
+			"@sql/a2v10_metadata.sql",
 			"/**/keys.sql",
 			"/**/logic.sql",
 			"/**/init.sql"

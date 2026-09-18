@@ -45,7 +45,8 @@ call per file. Then replace every placeholder across the copied files:
 - `^AppName^` — application name (ask the user)
 - `^Year^` — current year
 
-They appear in `WebApp/appsettings.json` — sweep the copied tree and replace **all** occurrences.
+They appear in `WebApp/appsettings.json` and `MainApp/menu.json` — sweep the copied tree and
+replace **all** occurrences.
 
 > Notation in this file: `^Name^` is a literal token in the scaffold files — replace it.
 > `<Name>` stands for the resolved value (e.g. the chosen app name), not a token to leave

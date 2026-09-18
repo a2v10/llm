@@ -48,7 +48,7 @@ Propose the **application name** here as well: it becomes the folder, the projec
 
 No further questions. In this order — and `examples/warehouse/` is what the result looks like when it is done: one declaration file per folder, nothing else.
 
-1. **Shell.** Copy `scaffold/` into the project directory (`MainApp/`, `WebApp/`, `{{AppName}}.slnx`). Rename `{{AppName}}.slnx` to `<AppName>.slnx`. Replace `{{AppName}}` in every copied file (`WebApp/appsettings.json`) and `{{Year}}` with the current year. The scaffold is already a metaapplication — the host carries the `A2v10.Metadata` package and registers `UseAppMetadata()`; nothing else is needed to make `metadataEnabled` true.
+1. **Shell.** Copy `scaffold/` into the project directory (`MainApp/`, `WebApp/`, `AppName.slnx`). Rename the solution file to `<AppName>.slnx`. Replace `{{AppName}}` in every copied file (`WebApp/appsettings.json`) and `{{Year}}` with the current year. The scaffold is already a metaapplication — the host carries the `A2v10.Metadata` package and registers `UseAppMetadata()`; nothing else is needed to make `metadataEnabled` true.
 
    **Then refresh the A2v10 package versions**, once, here — before anything is built. Six `PackageReference`s carry one: `A2v10.Platform`, `A2v10.Web.Assets`, `A2v10.ReportEngine.Pdf`, `A2v10.Metadata` in `WebApp/WebApp.csproj`; `A2v10.App.Assets2026`, `A2v10.Sql.MSBuild` in `MainApp/MainApp.csproj`. `Microsoft.TypeScript.MSBuild` stays as the scaffold has it.
 
@@ -56,7 +56,7 @@ No further questions. In this order — and `examples/warehouse/` is what the re
 
    Never `dotnet add package` or `dotnet restore`: the .NET SDK may be absent on this machine, and only `.csproj` text is being edited. NuGet unreachable → leave the scaffold's versions and say so in one line. Afterwards versions are the user's.
 
-   **Then `MainApp/app.json`** — what is true of the application as a whole and no endpoint can state: `platformid` (the identifier base the database rests on — no default; the first deploy creates `dbo.platformid` from it, afterwards the database is the fact and a different value fails the load) and `useGrants` (→ `references/permissions.md`). Leave `useGrants` off while the application is being written; turning it on demands a `grants` block in every addressable endpoint.
+   **Then `MainApp/app.json`** — what is true of the application as a whole and no endpoint can state: `platformid` — the identifier base the database rests on, one of `bigint`, `int`, `uniqueidentifier`; write `bigint` unless the customer said otherwise. The platform has no default: the first deploy creates `dbo.platformid` from this value, afterwards the database is the fact and a different value fails the load. And `useGrants` (→ `references/permissions.md`). Leave `useGrants` off while the application is being written; turning it on demands a `grants` block in every addressable endpoint.
 2. **Endpoints.** One folder per entity under its kind, one declaration file in each. Write them in dependency order — enums → catalogs → journals → autonum → documents (storage first, then operations) → reports — so that every `target` written points at something that already exists.
 3. **Menu.** `MainApp/menu.json` — until an endpoint is named there, nothing leads the user to it. Its sections and their order come from the words the customer used; what goes in and what never does → `references/menu.md`. `appTitle` is set here too.
 4. **Localization.** Generated screens are labeled with keys, not text — a field with `@[<FieldName>]`, an entity with `@[<Model>]` — so every field and entity that reaches a screen gets a line in `MainApp/_localization/_default.uk.txt`.
@@ -116,7 +116,7 @@ The folder line is what separates the two files: a statement about **one** entit
 
 ## Phase 3 — bring it up
 
-1. **Build twice** — `dotnet build WebApp`, then the same command again. The build generates `MainApp/_sqlscripts/main.sql`, the platform's own schema, from scripts that WebApp's packages copy into `WebApp/_assets/sql` — and MainApp is built before WebApp. So the **first build fails** on `main.sql` on a fresh shell, the second succeeds. Expected: do not investigate the first failure, do not edit `sql.json`.
+1. **Build** — `dotnet build WebApp`. The build generates `MainApp/_sqlscripts/main.sql`, the platform's own schema, from the package scripts `sql.json` names as `@sql/…`.
 2. **Hand the database to the user** — creating it is theirs, not yours. Only after step 1: `main.sql` does not exist before the build. Tell them exactly two things: create an empty database `<AppName>` on the server from `ConnectionStrings.Default` in `WebApp/appsettings.json`; run `MainApp/_sqlscripts/main.sql` against it. Then wait until they say it is done.
 3. **Deploy the metadata** — `a2 meta deploy` (→ `references/deploy_and_migrations.md`).
 4. **Hand off.** Say it is ready and stop. **Do not run the application**: starting the host is the user's job, in their own environment, where they can see and stop it.

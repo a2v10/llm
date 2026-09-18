@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="MainApp/MainApp.csproj" />
-  <Project Path="WebApp/WebApp.csproj" />
-</Solution>

@@ -1,6 +1,6 @@
 # metadata.json — формат
 
-Кожен endpoint у metadata-driven треку — це папка `<kind>/<endpoint>/` з файлом `metadata.json`. Тут — специфікація формату. Архітектурний контекст — у [REDESIGN.md](../REDESIGN.md).
+Кожен endpoint у metadata-driven треку — це папка `<kind>/<endpoint>/` з файлом `metadata.json`. Тут — специфікація формату. Архітектурний контекст — у [SKILL.md](../SKILL.md).
 
 ## Осі
 
@@ -95,6 +95,7 @@ public class Ui
 | `description` | ⚪ | string | Правила моделі про цей endpoint і причини їх; пише й читає модель |
 | `synonyms` | ⚪ | string[] | Альтернативні назви сутності; читає модель |
 | `triggers` | ⚪ | string[] | Фрази в запиті користувача, що вказують на сутність; читає модель |
+| `origin` | ⚪ | string | Вихідне ім'я таблиці в системі, звідки перенесено; пише модель при перенесенні, платформа не читає |
 
 `kind` сериалізується як C# enum (`Catalog`, `Document`, ...). JSON Schema отримує `enum`-constraint автоматично — валідатор ловить опечатки. Дубль з папкою — захисний шар: `kind == folderName` ловить copy-paste.
 
@@ -361,6 +362,10 @@ document/goods-receipt: не оголошено ні 'table', ні 'storage' —
 ### Baseline
 
 - **catalog**: `Id`, `Name`, `Memo`, `Void`, `IsSystem`, `RowVersion`, штампи 🚧.
+- **accplan**: `Id` — код рахунку, `nvarchar`; `Name`, `Parent`, `AccountType`, `NormalBalance`, `Void`, `IsSystem`, `RowVersion`, штампи — [accplan.md](accplan.md).
+- **ledger**: `Id`, `Date`, `InOut`, `Acc`, `CorrAcc`, `Sum`; походження (`document`, `operation`, `row`) — у `fields`, як у журналу — [ledger.md](ledger.md).
+
+**`IsSystem = 1` — запис тільки для читання**, у будь-якій таблиці з цією колонкою: картка відкривається read-only.
 - **document**: `Id`, `Date`, `Done`, `RowVersion`, штампи + штамп проведення 🚧. Поле-номер у baseline **не входить** — його оголошує storage явно (`"Number": { "type": "autonum" }`), бо нумерованість документів — рішення рівня застосунку. `Operation` у baseline теж **не входить**: документ із власною таблицею її не має, а storage родини оголошує явно — `"Operation": { "type": "operation" }` (текстовий код = ім'я підпапки-операції, FK на `doc.Operations`). Ім'я фіксоване: фільтр реєстру операції і перенесення в журнал звертаються до колонки саме за ним.
 
 ### Штампи
@@ -422,6 +427,7 @@ document/goods-receipt: не оголошено ні 'table', ні 'storage' —
 | `column` | string | ⚪ | Override storage-імені для legacy-схем; default = ключ |
 | `title` | string | ⚪ | Locale-binding; default = `@[FieldName]` |
 | `synonyms` | string[] | ⚪ | Альтернативні назви поля бізнес-мовою; читає модель («артикул» → `SKU`) |
+| `origin` | string | ⚪ | Вихідне ім'я колонки в системі, звідки перенесено; пише модель при перенесенні, платформа не читає |
 
 **Інваріанти:**
 - `computed` несумісне з `default`, `unique` (computed-колонка не приймає DEFAULT/UNIQUE). З `required` — сумісне: це перевірка застосунку, і на обчислюваному полі вона осмислена (вираз дав NULL → запис не завершений).
@@ -487,13 +493,15 @@ document/goods-receipt: не оголошено ні 'table', ні 'storage' —
 | Domain | Розгортка | Примітка |
 |---|---|---|
 | `Id` | `bigint` (тип з `idType` appmetadata.json) | Зовнішній ідентифікатор без Ref-семантики |
-| `Ref` | `bigint` або `nvarchar` | FK на відкриту сутність; `target` обов'язковий |
+| `Ref` | `platformid` | FK на відкриту сутність; `target` обов'язковий |
 | `Enum` | `nvarchar` FK | Закритий набір кодів; `target` обов'язковий — шлях `/enum/<name>` |
 | `Autonum` | `nvarchar` | Слот автонумерації; знаходиться за типом (одна колонка на таблицю), нумерацію дає ключ `autonum` |
 | `Name` | `String 255` | Поле назви/найменування |
 | `RowKind` | `nvarchar` CHECK | Дискримінатор запису; набір значень оголошений поряд (ключі `details.<Collection>.kinds`) або виведений генератором; CHECK constraint = набір |
 
-`Ref.target` — endpoint-шлях: `/catalog/...` або `/document/...` → `bigint` FK. `Enum.target` — `/enum/...` → `nvarchar` FK.
+`Ref.target` — endpoint-шлях: `/catalog/...` або `/document/...` → `platformid` FK. `Enum.target` — `/enum/...` → `nvarchar` FK.
+
+**`Account`** — посилання на рахунок плану (`/accplan/...`, `nvarchar` FK): вибір деревом, показ і пошук — за кодом (`presentation` плану), фільтр списку — [accplan.md](accplan.md) → «Посилання на рахунок». 🚧 Збереження значення й уточнення `subtree` не реалізовані. `Ref` на план рахунків не пишеться: `Ref` — завжди `platformid`, а ключ плану — код.
 
 **Посилання на endpoint пишеться однаково на всіх поверхнях платформи** — `target` і `post.journal` у metadata, `menu.json`, `Url` у XAML: провідний слеш обов'язковий, форма одна. Усередині самого metadata.json слеш нічого не розрізняє (відносної форми не існує) — але друге написання того самого коштує дорожче за зайвий символ: автор і модель мусили б тримати правило «endpoint пишеться так, крім metadata.json». JSON Schema тримає `pattern`, тому безслешева форма — помилка при наборі, а не розбіжність у стилі.
 
@@ -646,6 +654,7 @@ CHECK по набору не потребує окремої механіки м
 | Ключ | Required | Призначення |
 |---|---|---|
 | `model` | ⚪ | Singular model name; default = singularize(CollectionName) |
+| `origin` | ⚪ | Вихідне ім'я табличної частини в системі, звідки перенесено; пише модель при перенесенні, платформа не читає |
 | `fields` | ⚪ | Поля колекції (без baseline) |
 | `kinds` | ⚪ | Види рядків: мапа `<ім'я виду, блок поведінки>`. Ключі — набір значень поля типу `RowKind` |
 | `lookup` | ⚪ | Канали вводу `Ref`-полів рядка (див. розділ «lookup») |
@@ -715,7 +724,7 @@ CHECK по набору не потребує окремої механіки м
 
 ### `post`
 
-Список правил проводки (формується при post, `Done = 1`). Запис буває **двох видів** — зіставлення (нижче) або власна процедура ([«Проводка процедурою»](#проводка-процедурою)). Змішати їх в одному `post` не можна.
+Список правил проводки (формується при post, `Done = 1`). Запис буває **трьох видів** — зіставлення в журнал (нижче), проводка в ledger (ключ `ledger`, плечі `dt` / `ct` — [ledger.md](ledger.md)) або власна процедура ([«Проводка процедурою»](#проводка-процедурою)). Процедуру зі зіставленням в одному `post` змішати не можна; записи в журнал і в ledger поруч — можна.
 
 #### Зіставлення (звичайний випадок)
 
@@ -806,7 +815,7 @@ CHECK по набору не потребує окремої механіки м
 - `row` без `each` — помилка.
 - Ключі обох блоків мають резолвитись у `fields` журналу.
 - Одне поле журналу в обох блоках одночасно — помилка.
-- Літералів немає. Знадобляться (multi-currency) — прийдуть окремим ключем `const`, де значення буде літералом **за позицією**, а не через невдалу резолюцію імені.
+- Літералів у записі журналу немає. У ledger-записі вони є — блок `const` у плечі ([ledger.md](ledger.md)): літерал за позицією, а не через невдалу резолюцію імені.
 
 **`Document` і `Row` — заповнює платформа**
 
@@ -1143,8 +1152,8 @@ Top-level ключ `printForms` — плоский список бланків e
 
 1. **Header total recompute з рядків — закрито.** `Total = Σ row.Sum` пишеться як звичайне правило поля: `"computed": { "Total": "this.Rows.$sum(r => r.Sum)" }` ([rules.md](rules.md)). Окремого ключа `headerAggregates` не потрібно.
 2. **`autonum` як string vs object — закрито.** String. Ручний номер не потребує override: поле заповнюється лише на вставці й лише порожнє, тож юзер просто вписує свій. Екран редагування паттерна — окреме рішення, і воно прийде разом із самим екраном.
-3. **`states` block.** Для життєвих циклів складніших за `Done`/`Void` — закладемо коли реально знадобиться (REDESIGN §11).
-4. **`server`-computed (C# virtual).** REDESIGN §11 — додамо ключ `serverComputed` коли з'явиться запит.
+3. **`states` block.** Для життєвих циклів складніших за `Done`/`Void` — закладемо коли реально знадобиться.
+4. **`server`-computed (C# virtual).** Додамо ключ `serverComputed` коли з'явиться запит.
 5. **Persisted vs non-persisted SQL computed.** Зараз `computed` → non-persisted. Якщо знадобиться persisted (індексація) — окремий флаг `computedPersisted: true`.
 6. **Sign convention журналу.** `post.inOut: ±1` голий, semantic «+ = ми винні агенту» зашита поза metadata. Кандидат: `journal.fields[].direction: "asset" | "liability"` + `post.role: "increase" | "decrease"` — або документально через `post[].description`.
 7. **Ідемпотентність post/unpost — закрито.** Гарди на `Done` + атомарна транзакція + `Document`-ref у baseline журналу; семантика — в розділі `post` → «Post/unpost». Спеціальні ключі (`Leg`/`PostIndex`) для ідемпотентності не потрібні: unpost = `DELETE WHERE Document` знімає всі legs разом. `Leg` може колись знадобитися як діагностика «який рядок від якого правила» — окреме питання, якщо виникне.

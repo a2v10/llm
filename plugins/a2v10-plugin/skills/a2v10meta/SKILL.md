@@ -5,8 +5,11 @@ description: >
   report) and deployed with the a2 CLI.
   USE if the project contains metadata.json files, or the request mentions
   metadata.json, metaendpoint, metadata-driven, or a2 meta.
-  New A2v10 application, no project yet: ask whether metadata-driven or
-  classic; classic is the a2v10 skill.
+  ALSO USE, ahead of the a2v10 skill (it matches the same request on the
+  word A2v10), when asked to create or start a new A2v10 application and
+  the folder has no model.json and no metadata.json yet, unless the request
+  already says classic: this skill asks whether metadata-driven or classic;
+  classic then hands off to the a2v10 skill.
   Endpoint folder without metadata.json: a2v10 skill.
 ---
 
@@ -78,6 +81,8 @@ Unsure → ask; never guess.
 | make an operation post into a journal | `references/metadata.md` → `references/journal.md` |
 | declare what a journal stores | `references/journal.md` |
 | number documents with a series | `references/kinds.md` → `references/metadata.md` |
+| declare a chart of accounts | `references/accplan.md` |
+| declare a ledger, make a document post double-entry | `references/ledger.md` |
 | declare a report over a journal | `references/report.md` |
 | attach a print blank to an endpoint | `references/print.md` |
 | lay out a form | `references/forms.md` |

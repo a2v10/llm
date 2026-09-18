@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://a2v10.com/schemas/metadata-endpoint-json-schema.json",
     "title": "A2v10 metadata.json (endpoint)",
-    "description": "One normal endpoint - catalog, document, journal, and the operations of a document. A report has its own schema (metadata-report-json-schema.json), as do the autonum registry and an enum set. The same file is deserialized twice by the platform - into TableMetadata (the shape) and into DeclarationMetadata (what this endpoint declares over it) - so this schema is the union of the two. Every enum value is written in PascalCase: the loader also accepts other casings, but one spelling is canonical - and command tokens, parsed without ignoreCase, accept nothing else.",
+    "description": "One normal endpoint - catalog, document, journal, and the operations of a document. A report has its own schema (metadata-report-json-schema.json), as do the autonum registry, an enum set, a chart of accounts and a ledger. The same file is deserialized twice by the platform - into TableMetadata (the shape) and into DeclarationMetadata (what this endpoint declares over it) - so this schema is the union of the two. Every enum value is written as listed here, in camelCase: the loader also accepts other casings, but one spelling is canonical. Command tokens are the exception - parsed without ignoreCase, they are PascalCase and accept nothing else.",
     "type": "object",
     "additionalProperties": false,
     "anyOf": [
@@ -22,7 +22,7 @@
         },
         "storage": {
             "type": "string",
-            "description": "Path to the endpoint that declares the table this one writes into. Documents only. One hop: it must point at an endpoint that declares 'table'."
+            "description": "Path to the endpoint that declares the table this one writes into: an operation of a document, or a catalog/journal with screens of its own over the same rows (a second window; 'fixed' makes it a subset). Document, catalog and journal only. One hop: it must point at an endpoint that declares 'table'."
         },
         "kind": { "$ref": "#/definitions/endpointKind" },
         "schema": {
@@ -56,6 +56,12 @@
         },
 
         "initialValues": { "$ref": "#/definitions/initialValues" },
+        "origin": { "$ref": "#/definitions/origin" },
+        "fixed": {
+            "type": "object",
+            "description": "Field -> value this endpoint FIXES: the rows it is about carry these values (the WHERE of the index and of the selector fetch), and a new record starts on them. What makes a second endpoint over one table ('storage') a window on a SUBSET; without it, the same rows. Spelled by the column's type, so a bit is written true, a code \"code\". A field cannot also be in 'initialValues'. Per endpoint, never inherited from 'storage'.",
+            "additionalProperties": { "type": [ "boolean", "string", "number" ] }
+        },
         "rules": { "$ref": "#/definitions/rules" },
         "post": {
             "type": "array",
@@ -83,7 +89,7 @@
                 "type": { "$ref": "#/definitions/columnType" },
                 "target": {
                     "type": "string",
-                    "description": "For a reference: path of the endpoint it points at, e.g. '/catalog/item'."
+                    "description": "For a reference: path of the endpoint it points at, e.g. '/catalog/item'. For 'account': a chart of accounts, '/accplan/national'."
                 },
                 "length": {
                     "type": "integer",
@@ -91,8 +97,14 @@
                 },
                 "precision": { "type": "integer" },
                 "scale": { "type": "integer" },
-                "unique": { "type": "boolean" }
+                "unique": { "type": "boolean" },
+                "origin": { "$ref": "#/definitions/origin" }
             }
+        },
+
+        "origin": {
+            "type": "string",
+            "description": "The original name of this table, column or value in the system it was carried over from. Written by the model during a transfer from another system; the platform ignores it."
         },
 
         "details": {
@@ -107,6 +119,7 @@
             "additionalProperties": false,
             "properties": {
                 "model": { "type": "string" },
+                "origin": { "$ref": "#/definitions/origin" },
                 "fields": { "$ref": "#/definitions/fields" },
                 "details": { "$ref": "#/definitions/details" },
                 "kinds": { "$ref": "#/definitions/kinds" },
@@ -209,8 +222,52 @@
         "post": {
             "oneOf": [
                 { "$ref": "#/definitions/postMapped" },
+                { "$ref": "#/definitions/postLedger" },
                 { "$ref": "#/definitions/postSql" }
             ]
+        },
+
+        "postLedger": {
+            "type": "object",
+            "description": "Posting into a ledger: one declaration, two mirrored legs. Nothing is mapped by name - a name does not know its leg. The platform fills CorrAcc (the other leg's Acc), InOut, Date and the provenance. A leg with no 'row' block collapses to the header: one row per distinct value, the sum summed.",
+            "additionalProperties": false,
+            "required": [ "ledger", "sum", "dt", "ct" ],
+            "properties": {
+                "ledger": {
+                    "type": "string",
+                    "description": "Path of the ledger endpoint, e.g. '/ledger/national'."
+                },
+                "each": { "$ref": "#/definitions/postMapped/properties/each" },
+                "sum": {
+                    "type": "string",
+                    "description": "The sum field - of the iterated row under 'each', of the header otherwise. One for both legs, so debit equals credit by construction."
+                },
+                "dt": { "$ref": "#/definitions/postLeg" },
+                "ct": { "$ref": "#/definitions/postLeg" }
+            }
+        },
+
+        "postLeg": {
+            "type": "object",
+            "description": "One leg: ledger column -> where its value comes from, the source being the key of the block. Exactly one 'Acc' across the blocks. Keys are 'Acc' or the author's columns of the ledger, never the provenance; one column in one block only.",
+            "additionalProperties": false,
+            "properties": {
+                "const": {
+                    "type": "object",
+                    "description": "Ledger column -> literal. An account literal is a code of the chart's seed file, checked at load.",
+                    "additionalProperties": { "type": "string" }
+                },
+                "document": {
+                    "type": "object",
+                    "description": "Ledger column -> field of the document header. Domain and target must match.",
+                    "additionalProperties": { "type": "string" }
+                },
+                "row": {
+                    "type": "object",
+                    "description": "Ledger column -> field of the iterated row. Requires 'each'; a leg that reads the row is not collapsed.",
+                    "additionalProperties": { "type": "string" }
+                }
+            }
         },
 
         "postSql": {
@@ -289,7 +346,7 @@
                     "items": { "$ref": "#/definitions/formElement" }
                 },
                 "toolbar": { "$ref": "#/definitions/formElement" },
-                "taskPad": { "$ref": "#/definitions/formElement" }
+                "taskpad": { "$ref": "#/definitions/formElement" }
             }
         },
 
@@ -312,6 +369,11 @@
                 },
                 "fields": {
                     "type": "array",
+                    "items": { "type": "string" }
+                },
+                "filters": {
+                    "type": "array",
+                    "description": "References into the endpoint's filter namespace - not fields: most filters have no column. A name the namespace does not have is refused at load.",
                     "items": { "type": "string" }
                 },
                 "commands": {
@@ -387,7 +449,7 @@
         "formElementKind": {
             "type": "string",
             "enum": [
-                "group", "tabs", "tab", "dataGrid", "taskpad", "toolbar", "pager", "filters"
+                "group", "tabs", "tab", "dataGrid", "treeGrid", "taskpad", "toolbar", "pager", "filters"
             ]
         },
 
@@ -405,8 +467,8 @@
             "type": "string",
             "enum": [
                 "string", "id", "name", "memo", "rowNumber", "done", "void", "isSystem",
-                "isFolder", "owner", "parent", "folder", "user", "rowKind", "operation",
-                "document", "documentType", "row", "rowVersion", "color", "enum", "autonum",
+                "isFolder", "parent", "folder", "user", "rowKind", "operation",
+                "document", "documentType", "row", "rowVersion", "color", "enum", "account", "autonum",
                 "company", "direction",
                 "amount", "price", "qty", "percent", "factor",
                 "ref", "date", "dateTime", "money", "boolean",

@@ -17,7 +17,7 @@ The mainline is the shape below and nothing else: `title`, `icon`, `items`, `url
 ```json
 {
 	"$schema": "@schemas/menu-json-schema.json#",
-	"appTitle": "@[AppTitle]",
+	"appTitle": "Sales App",
 	"menu": [
 		{
 			"title": "@[Sales]", "icon": "cart",
@@ -54,7 +54,9 @@ The mainline is the shape below and nothing else: `title`, `icon`, `items`, `url
   full list → [app/menu.md#icons](https://docs-llm.a2v10.com/app/menu.md#icons).
 - **`icon` belongs on top-level items only, and there it is required.** Without one the sidebar still
   works, but the section is unrecognizable; on deeper levels an icon is never rendered.
-- Titles use `@[...]` localization (SKILL.md §1).
+- **Node** titles use `@[...]` localization (SKILL.md §1). **`appTitle` is the application's own
+  name — a literal**; it takes `@[...]` too, but only reach for it when the name itself must be
+  translated.
 
 ## Menu in the database
 

@@ -20,7 +20,7 @@
 
 | Вісь | Ключ | Словник |
 |---|---|---|
-| РОЛЬ — чим вузол є | `is` | **замкнутий**: `Page` / `Dialog` / `Tabs` / `Tab` / `Group` / `Toolbar` / `Taskpad` |
+| РОЛЬ — чим вузол є | `is` | **замкнутий**: `Page` / `Dialog` / `Tabs` / `Tab` / `Group` / `TreeGrid` / `Toolbar` / `Taskpad` |
 | ЯКІР ДАНИХ — до чого прив'язаний | `scope` (+ `kind`) | **відкритий**: імена з metadata |
 
 Кожне `is` — власний тип, диспетч по таблиці `tag → Type`, без `when`. `scope` — **атрибут, а не тип**: інакше комбінаторний вибух ролей × якорів.
@@ -268,6 +268,8 @@ elements: node[]     ← піддерева
 
 **Журнал / index — не `Group`.** Список генератор будує роллю таблиці з пейджером і фільтрами, а цих ролей у словнику `is` ще немає — див. «Відкрите» 1. Доки їх немає, `forms.index` написати нічим: без нього список будується за замовчуванням.
 
+**Дерево — `treeGrid`.** Index плану рахунків за замовчуванням — один вузол `treeGrid` із `fields`; перша колонка несе кнопку розгортання. Дерево прив'язане до колекції напряму: пейджера, фільтрів і пошуку в нього немає, модель приходить цілком ([accplan.md](accplan.md) → «Екрани»). SQL дерева сьогодні будується лише для `accplan`: `treeGrid` у формі іншого kind-а даних не отримає.
+
 ## Eject
 
 **Частка eject — 5–10% форм** (оцінка автора, 2026-07-08). Решта лягає в мову; шар окупається.
@@ -279,7 +281,7 @@ elements: node[]     ← піддерева
 Факти з генератора (`A2v10.Metadata/Meta/FormMetadata.cs`, `Form/*.cs`) на 2026-07-28 — не частина специфікації, а те, що вже є:
 
 - Корінь: `Page` / `Dialog`; слоти `Body`, `Toolbar`, `TaskPad`.
-- Вузли: `Group`, `Tabs`, `Tab`, `DataGrid`, `Taskpad`, `Toolbar`, `Pager`, `Filters`.
+- Вузли: `Group`, `Tabs`, `Tab`, `DataGrid`, `TreeGrid`, `Taskpad`, `Toolbar`, `Pager`, `Filters`.
 - Вузол: `Is`, `Scope`, `Elements`, `Fields`, `Commands`, `Axis` (умовчання `Columns`). `Count` був заведений і **прибраний** разом із гридовою гілкою.
 - Команди toolbar (замкнутий словник): `Create`, `Edit`, `Delete`, `Save`, `SaveAndClose`, `Print`, `Copy`, `Show`, `ShowTrans`, `Search`, `Reload`, `Post`, `UnPost`, `Attachments` + `$sep`. Стандартний набір будує шаблон (`XamlBuilder.StandardToolbar`), `DefaultFormBuilder` смуг не створює.
 - `ShowTrans` — діалог рухів документа: що саме він проводить, у які журнали й на які суми. Набір журналів береться з `post` — при зіставленні з `journal` кожного запису, при проводці процедурою з її `journals` ([metadata.md](metadata.md) → `post`).

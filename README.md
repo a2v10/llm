@@ -23,7 +23,7 @@ a plugin marketplace named `a2v10-dev`.
 
 ## Install
 
-No terminal required — everything happens in the Claude app's settings.
+No terminal required to install — everything happens in the Claude app's settings.
 
 **Add the marketplace** (once):
 
@@ -75,8 +75,18 @@ tab and `claude` sessions you start in a terminal alike.
 
 Open **Customize → Plugins** in settings and click **A2v10** to open its page:
 
-* **Update** — the button next to the toggle. It's active only when a newer version
-  is published; compare the **Version** field with the
+* **Update** — the button next to the toggle doesn't work: it stays grey even after a
+  newer version is published (a known Claude Code Desktop
+  [bug](https://github.com/anthropics/claude-code/issues/54276)). Update from a
+  terminal instead — two commands, since the catalog and the plugin move independently:
+
+  ```
+  claude plugin marketplace update a2v10-dev
+  claude plugin update a2v10@a2v10-dev
+  ```
+
+  Sessions started afterwards use the new version; check the **Version** field on the
+  plugin's page against the
   [latest release](https://github.com/a2v10/llm/releases/latest).
 * **Disable** — flip the toggle off. The plugin stays installed but Claude ignores it.
 * **Remove** — the **⋮** menu next to the toggle. The same menu has **Show in folder**,
