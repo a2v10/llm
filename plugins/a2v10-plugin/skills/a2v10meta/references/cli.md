@@ -45,8 +45,9 @@ CLI в цьому проекті — інструмент для LLM. Це зм�
 | Команда | Що робить | Вивід |
 |---|---|---|
 | `a2 app config` | Конфігурація застосунку — див. нижче | `{multiTenant, metadataEnabled, hostRoot, modules[]}` |
-| `a2 validate [path]` 🚧 | Перевіряє metadata.json. path = endpoint або весь проект | `{valid, errors[], resolved}` |
 | `a2 effective <endpoint>` 🚧 | metadata.json з усіма застосованими умовчаннями — те, що платформа реально бачить | `{...full resolved metadata}` |
+| `a2 meta list` | Адреси всіх metadata-driven endpoint-ів застосунку — теки, де є `metadata.json` | `["catalog/agent", "document/waybillin", …]` |
+| `a2 meta validate <endpoint>` | Збирає один endpoint і викидає зібране — нічого не пише, бази не читає — див. нижче | `{endpoint, checks{}, error}` |
 | `a2 meta deploy` | Уся послідовність деплою (див. `deploy_and_migrations.md`) | `{applied, file}` |
 | `a2 meta materialize <endpoint> <action> view\|template` | Записує згенерований view або template у файл, щоб правити руками — див. нижче | `{endpoint, action, what, files[], modelJson}` |
 
@@ -70,6 +71,37 @@ CLI в цьому проекті — інструмент для LLM. Це зм�
 `false` → у проєкті metadata-рантайму немає: писати `metadata.json` нікуди, спершу онбординг (`SKILL.md` §6).
 
 Решта полів — `multiTenant` (режим розгортання), `hostRoot` (папка хоста), `modules` (`prefix` — літеральний токен URL разом із `$`; `root` — папка з коренем від кореня проєкту, `null` = локальної папки немає, писати нікуди).
+
+## `a2 meta validate` — endpoint зібраний і викинутий
+
+```
+a2 meta validate document/waybillout
+```
+
+Збирає **один** endpoint усім, що вміє шар метаданих, і викидає зібране: нічого не пишеться, база не читається. Це та сама збірка, яку рантайм робить на першому запиті, просто раніше за часом — помилку бачить модель одразу після правки, а не автор у браузері.
+
+- **Адреса** — тека endpoint-а, як у меню й у `target`: `catalog/agent`, `document`, `$admin/catalog/user`. Які адреси застосунок має, каже `a2 meta list`.
+- **Області «весь проект» немає.** Валідують той endpoint, який щойно правили.
+- **Запускати з кореня застосунку** — там, де лежить хост із `appsettings.json`. Застосунок має бути metadata-driven (`a2 app config` → `metadataEnabled`) і оголошувати `platformid` в `app.json`: базу `Id` валідація типізує з нього, бо в БД не ходить.
+
+```json
+{ "endpoint": "document/waybillout",
+  "checks": { "declaration": "passed", "screen": "passed", "print": "passed" },
+  "error": null }
+```
+
+`checks` перелічує **кожну** стадію, яка для цієї адреси існує, зі статусом `passed` / `failed` / `unknown`: «не перевірено» має читатись на місці, а не виводитись із відсутнього ключа. Стадії йдуть ланцюгом і зупиняються на першій невдачі — все після неї `unknown`. Що саме збирає кожна і які помилки де живуть — [validate.md](validate.md).
+
+**Два різні «не вийшло», і вони в різних полях:**
+
+| Що сталось | Де | `success` |
+|---|---|---|
+| endpoint не зібрався — знахідка про файл | `data.error`, поряд `failed` у `checks` | `true`: інструмент відпрацював |
+| інструмент не зміг запуститись — не та тека, застосунок не metadata-driven, немає `platformid` | зовнішній `error` | `false`, `data` порожній |
+
+Розділення не косметичне: «файл поганий» і «команду не вдалося виконати» — різні дії у відповідь, і плутати їх нема на чому. Код виходу при цьому завжди `0` — відповідь читають із JSON, як і в решти команд.
+
+**Два `validate` у CLI, і це не колізія:** `a2 view validate <файл>` перевіряє матеріалізовану розмітку, `a2 meta validate <endpoint>` — декларацію. Об'єкт стоїть у самій команді, тому викликати «не той validate» ніде.
 
 ## `a2 meta materialize` — дефолтний екран текстом
 

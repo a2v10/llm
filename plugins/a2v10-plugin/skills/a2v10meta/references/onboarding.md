@@ -117,9 +117,10 @@ The folder line is what separates the two files: a statement about **one** entit
 ## Phase 3 — bring it up
 
 1. **Build** — `dotnet build WebApp`. The build generates `MainApp/_sqlscripts/main.sql`, the platform's own schema, from the package scripts `sql.json` names as `@sql/…`.
-2. **Hand the database to the user** — creating it is theirs, not yours. Only after step 1: `main.sql` does not exist before the build. Tell them exactly two things: create an empty database `<AppName>` on the server from `ConnectionStrings.Default` in `WebApp/appsettings.json`; run `MainApp/_sqlscripts/main.sql` against it. Then wait until they say it is done.
-3. **Deploy the metadata** — `a2 meta deploy` (→ `references/deploy_and_migrations.md`).
-4. **Hand off.** Say it is ready and stop. **Do not run the application**: starting the host is the user's job, in their own environment, where they can see and stop it.
+2. **Validate every endpoint you wrote** — `a2 meta list` gives the addresses, `a2 meta validate <endpoint>` assembles one of them and throws the result away. It writes nothing and reads no database, so it is the one gate that costs nothing and it belongs here, before anything is created: a declaration that does not assemble is found now, not by the user in a browser. One error per run — fix it and run the endpoint again. → `references/validate.md`
+3. **Hand the database to the user** — creating it is theirs, not yours. Only after step 1: `main.sql` does not exist before the build. Tell them exactly two things: create an empty database `<AppName>` on the server from `ConnectionStrings.Default` in `WebApp/appsettings.json`; run `MainApp/_sqlscripts/main.sql` against it. Then wait until they say it is done.
+4. **Deploy the metadata** — `a2 meta deploy` (→ `references/deploy_and_migrations.md`).
+5. **Hand off.** Say it is ready and stop. **Do not run the application**: starting the host is the user's job, in their own environment, where they can see and stop it.
 
 ## Done
 

@@ -1,7 +1,7 @@
 {
 	"name": "a2v10",
 	"description": "A2v10 Platform development: classic endpoints, metadata-driven endpoints, 1C migration",
-	"version": "10.1.1013",
+	"version": "10.1.1014",
 	"author": {
 		"name": "Oleksandr Kukhtin"
 	},

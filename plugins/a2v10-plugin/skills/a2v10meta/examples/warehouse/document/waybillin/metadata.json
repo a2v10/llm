@@ -22,7 +22,7 @@
 
   "forms": {
     "edit": {
-      "is": "page", "scope": "Document",
+      "is": "page",
       "body": [
         { "is": "group", "axis": "rows", "labelAt": "left", "fields": [ "Operation", "Number", "Date", "ExtNumber" ] },
         { "is": "group", "axis": "rows", "fields": [ "Agent", "StoreTo" ] },

@@ -1,0 +1,28 @@
+﻿<Project>
+
+	<!-- Every scaffold/ under plugins/ is a template, not a project: it is built only after being
+	     copied into a real app. Here it must stay inert — Visual Studio's Open Folder mode
+	     design-time-builds whatever .csproj it finds, the A2v10 package targets then litter the
+	     scaffold tree (@assemblies, @schemas, @sql, @types, tsconfig.json, bin, obj), and the skill
+	     copies that tree wholesale into every new app — so the litter would ship with the plugin.
+	     Two cuts below: no packages restore (hence no package .targets, hence nothing generated),
+	     and bin/obj land outside the copied tree. What remains on disk under each scaffold/ is
+	     exactly the files that belong in a new app.
+	     Visual Studio will show unresolved-type errors in WebApp — the references are gone on
+	     purpose. Nothing in a scaffold compiles, and nothing there needs to.
+	     This file sits ABOVE plugins/ on purpose — it is never published with a skill. -->
+	<PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('\scaffold\'))">
+		<!-- One shared dump: nothing here is ever built, the output is throwaway. -->
+		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory).scaffold-build\obj\</BaseIntermediateOutputPath>
+		<BaseOutputPath>$(MSBuildThisFileDirectory).scaffold-build\bin\</BaseOutputPath>
+	</PropertyGroup>
+
+	<Target Name="A2Skill_NeutralizeScaffold"
+	        BeforeTargets="CollectPackageReferences"
+	        Condition="$(MSBuildProjectDirectory.Contains('\scaffold\'))">
+		<ItemGroup>
+			<PackageReference Remove="@(PackageReference)" />
+		</ItemGroup>
+	</Target>
+
+</Project>

@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>disable</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="A2v10.Platform" Version="10.1.8662" />
-		<PackageReference Include="A2v10.Web.Assets" Version="10.1.8662" />
-		<PackageReference Include="A2v10.ReportEngine.Pdf" Version="10.1.8662" />
-		<PackageReference Include="A2v10.Metadata" Version="10.1.8662" />
+		<PackageReference Include="A2v10.Platform" Version="10.1.8665" />
+		<PackageReference Include="A2v10.Web.Assets" Version="10.1.8665" />
+		<PackageReference Include="A2v10.ReportEngine.Pdf" Version="10.1.8665" />
+		<PackageReference Include="A2v10.Metadata" Version="10.1.8665" />
 	</ItemGroup>
 
 	<ItemGroup>
