@@ -8,10 +8,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="A2v10.Platform" Version="10.1.8665" />
-		<PackageReference Include="A2v10.Web.Assets" Version="10.1.8665" />
-		<PackageReference Include="A2v10.ReportEngine.Pdf" Version="10.1.8665" />
-		<PackageReference Include="A2v10.Metadata" Version="10.1.8665" />
+		<PackageReference Include="A2v10.Platform" Version="10.1.8666" />
+		<PackageReference Include="A2v10.Web.Assets" Version="10.1.8666" />
+		<PackageReference Include="A2v10.ReportEngine.Pdf" Version="10.1.8666" />
+		<PackageReference Include="A2v10.Metadata" Version="10.1.8666" />
+		<PackageReference Include="A2v10.Sql.MSBuild" Version="10.1.8220" />
 	</ItemGroup>
 
 	<ItemGroup>

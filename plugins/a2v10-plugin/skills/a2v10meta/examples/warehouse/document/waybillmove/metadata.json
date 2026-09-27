@@ -1,6 +1,6 @@
 {
   "$schema": "../../@schemas/metadata-endpoint-json-schema.json#",
-  "storage": "document",
+  "storage": "/document",
   "autonum": "waybill",
 
   "initialValues": {

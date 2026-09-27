@@ -47,9 +47,11 @@
 @Stock=Рух запасів
 
 ; Operations
-@Document.waybillin=Прибуткова накладна
-@Document.waybillout=Видаткова накладна
-@Document.waybillmove=Переміщення
+@Operation.waybillin=Прибуткова накладна
+@Operation.waybillout=Видаткова накладна
+@Operation.waybillreturn=Повернення від покупця
+@Operation.waybillmove=Переміщення
+@Operation.All=Усі операції
 
 ; Browse
 @Agent.Browse=Вибір контрагента

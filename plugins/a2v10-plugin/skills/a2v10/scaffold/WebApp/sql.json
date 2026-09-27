@@ -1,0 +1,10 @@
+﻿[
+	{
+		"$schema": "../MainApp/@schemas/sql-json-schema.json#",
+		"outputFile": "_sqlscripts/full.sql",
+		"inputFiles": [
+			"_assets/sql/a2v10_platform_simple.sql",
+			"../MainApp/_sqlscripts/app.sql"
+		]
+	}
+]

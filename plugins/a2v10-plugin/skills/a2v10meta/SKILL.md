@@ -35,17 +35,18 @@ An endpoint is **one model** — one business entity the engine processes as a s
 
 - **URL = `/[$<module>]/<kind>/<endpoint>/<action>/<id>`** — the platform's addressing model: `/document/waybillin/edit/2222`, or `/$admin/document/waybillin/edit/2222` inside a module.
 - **`$<module>`** (optional) relocates the path's root — a `$`-prefixed segment is the one thing the runtime interprets. Modules and their roots come from `a2 app config`.
-- **`<kind>/<endpoint>`** locates the folder. For a raw endpoint both segments are opaque — free names the runtime does not read. **For us the first one is neither free nor opaque**: `kind` is the parent folder name (`catalog/agent/` → `catalog`), it comes from a fixed set, and it is **interpreted** — it decides what gets generated. → `references/kinds.md`. Other first segments are possible in an application; they are not ours — pay them no attention.
+- **`<kind>/<endpoint>`** locates the folder. For a raw endpoint both segments are opaque — free names the runtime does not read. **For us the first one is neither free nor opaque**: `kind` is the parent folder name (`catalog/agent/` → `catalog`), it comes from a fixed set, and it is **interpreted** — it decides what gets generated. → `references/kinds.md`. A kind may also have **aliases** — more folders of it, named in `app.json` (`"aliases": { "document": ["sale"] }`): `sale/invoice/` is of kind `document` and is addressed `/sale/invoice`, never `/document/invoice`. Other first segments are possible in an application; they are not ours — pay them no attention.
 - **Endpoint** = a `<kind>/` subfolder. → `references/metadata.md`
 - **`<action>` and `<id>` are never authored.** For a raw endpoint an action is an element name, freely declared. For a metaendpoint the set is **fixed and interpreted** by the runtime (`index`, `edit`, …) and declared nowhere — you will not find it in `metadata.json`, and there is nothing to add there. The names surface in exactly one place: `model.json`, and only for an artifact that has been materialized → `references/materialize.md`. **What you ever write is `/<kind>/<endpoint>`** — in the menu, in a link, everywhere.
 
 ## 4. Must — break it and it does not work
 
 - **The schema is converged, never edited.** It comes from `metadata.json` through `a2 meta deploy` — the same sequence the runtime runs. Do not write DDL to fix it: a change made by hand is invisible to the deploy hash, so the drift is silent and stays. What deploy will not do by itself — drops, narrowing, renames, changes to data — is proposed in `diff.sql` or written as a data migration, and **the author applies it**. → `references/deploy_and_migrations.md`
-- **Generated files are products, not sources.** `deploydatabase.sql` is regenerated from the metadata byte for byte; an edit inside it is gone on the next deploy. `diff.sql` is a proposal — never execute it as part of a task.
+- **Generated files are products, not sources.** `deploydatabase.sql` is regenerated from the metadata byte for byte, `app.sql` and `full.sql` are assembled from their `sql.json` on every deploy; an edit inside any of them is gone on the next one — fix the source it came from. `diff.sql` is a proposal — never execute it as part of a task.
 - **A `<kind>/` subfolder without `metadata.json`, or with `{}`, is an error.** Legacy endpoints live in the classic layout, never under a `<kind>/`.
-- **Every `metadata.json` says where its shape comes from, explicitly.** One axis, three keys: `table` — its own table; `storage` — a table declared elsewhere that it writes into; `surface` — a shape it only reads. **The folder decides which of them is legal** (`document` — one of `table`/`storage`; `report` — `surface`; everything else — `table`), **the file decides which one is used**. No defaults, never two, never none. → `references/metadata.md`, checks → `references/validate.md`
-- **An operation owns no table, therefore declares no structure** — only behavior. It is not a rule to remember: an operation is the file that wrote `storage` instead of `table`.
+- **Every `metadata.json` says where its shape comes from, explicitly.** One axis, three keys: `table` — its own table; `storage` — a table declared elsewhere that it writes into; `surface` — a shape it only reads. **The folder decides which of them is legal** (`document`, `catalog`, `journal` — one of `table`/`storage`; `report` — `surface`; everything else — `table`), **the file decides which one is used**. No defaults, never two, never none. → `references/metadata.md`, checks → `references/validate.md`
+- **A document is what the menu opens; an operation is what is switched inside an open document** — an entry of the document's `operations`, one `<op>.operation.json` holding its `post` and nothing else. waybillin / waybillout / waybillmove are three documents over one table, not three operations: nobody switches a receipt into a transfer. → `references/metadata.md` → «`document` — таблиця й операції»
+- **A document over `storage` owns no table, therefore declares no structure** — only behavior. It is not a rule to remember: it is the file that wrote `storage` instead of `table`.
 
 ## 5. Discipline — orthogonal to the engine
 
@@ -56,7 +57,7 @@ An endpoint is **one model** — one business entity the engine processes as a s
 - **Two markers in `references/`, and they say different things.** 🟡 — the decision is provisional; the form may still change. 🚧 — the form is settled and **the platform does not execute it yet**. A 🚧 surface is written down so the decision is not taken twice, not so it can be used: never put it in a `metadata.json`. Say which construct is missing and stop there — the norm names no substitute, and one improvised in its place is invented surface (above).
 - **An endpoint with no files of its own is finished, not unfinished.** Every scaffolder you have ever seen generates once and lets go, so a folder holding only a `metadata.json` reads as a draft and invites XAML or SQL "so that something is there". A file exists **only** because that artifact was ejected on purpose; a file with nothing behind it is an error, not a spare. → `references/materialize.md`
 - **Declared is not reachable.** The rule above is about the files inside the folder; this one is about the application around it. An endpoint no `menu.json` item names loses its **own entrance**, not its existence — a catalog still opens in a Ref lookup, and records are still created there — but nothing leads the user to its register, and nothing says so: deploy succeeds, validation passes, the URL works when typed by hand. Every endpoint you declare, you also place → `references/menu.md`.
-- **An operation file does not describe its entity completely, and must not try.** Every file you have seen elsewhere is self-contained, so repeating `fields` from the storage will feel like completeness. Those keys are read by nobody and reported by nothing: the endpoint works, and the copy quietly rots next to the original.
+- **A document over `storage` does not describe its entity completely, and must not try.** Every file you have seen elsewhere is self-contained, so repeating `fields` from the table's owner will feel like completeness. Those keys are read by nobody and reported by nothing: the endpoint works, and the copy quietly rots next to the original.
 - **Do not carry priors from 1C, Frappe or an ORM.** This format splits what they merge, and the merged reading drifts back under pressure.
 
 ## 6. Workflow
@@ -78,8 +79,9 @@ Unsure → ask; never guess.
 | set initial values, or how a reference is picked | `references/metadata.md` |
 | turn on a trait | `references/metadata.md` |
 | make a field required, conditional, computed, inherited | `references/rules.md` |
-| add an operation to a document family | `references/metadata.md` |
-| make an operation post into a journal | `references/metadata.md` → `references/journal.md` |
+| add a document over a shared table, or operations switched inside a document | `references/metadata.md` |
+| spread a kind's endpoints over several folders (hundreds of documents) | `references/kinds.md` → aliases |
+| make a document or an operation post into a journal | `references/metadata.md` → `references/journal.md` |
 | declare what a journal stores | `references/journal.md` |
 | number documents with a series | `references/kinds.md` → `references/metadata.md` |
 | declare a chart of accounts | `references/accplan.md` |
@@ -93,6 +95,7 @@ Unsure → ask; never guess.
 | restrict access — declare roles, grant verbs, hide a menu item | `references/permissions.md` — 🚧 the whole subsystem; read it before promising anything |
 | add or change localization keys | `references/localization.md` |
 | check metadata before deploying | `references/validate.md` — `a2 meta validate <endpoint>`, one endpoint at a time |
+| check that the application does what was asked — write a scenario | `references/tests.md` |
 | build the application and bring up its database | `references/onboarding.md` → Phase 3 |
 | call the CLI, read its output | `references/cli.md` |
 

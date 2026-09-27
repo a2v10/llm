@@ -1,0 +1,33 @@
+{
+	"requirement": "Прихід і переміщення між складами проводяться, переміщення розпроводиться; документ показує, проведений він чи ні, і відкривається з тими рядками, що збережені. Залишки тут не перевіряються.",
+	"records": {
+		"pcs":    { "at": "/catalog/unit",  "data": { "Name": "Штука", "Short": "шт" } },
+		"apple":  { "at": "/catalog/item",  "data": { "Name": "Яблука", "Article": "A-002", "Unit": { "ref": "pcs" } } },
+		"main":   { "at": "/catalog/store", "data": { "Name": "Головний склад" } },
+		"shop":   { "at": "/catalog/store", "data": { "Name": "Магазин" } },
+		"vendor": { "at": "/catalog/agent", "data": { "Name": "Постачальник" } }
+	},
+	"steps": [
+		{
+			"do": "save", "name": "in1", "at": "/document/waybillin",
+			"data": {
+				"Date": "2026-09-01", "Agent": { "ref": "vendor" }, "StoreTo": { "ref": "main" },
+				"Rows": [ { "Item": { "ref": "apple" }, "Qty": 10, "Price": 5, "Sum": 50 } ]
+			}
+		},
+		{ "do": "post", "name": "in1" },
+		{
+			"do": "save", "name": "mv1", "at": "/document/waybillmove",
+			"data": {
+				"Date": "2026-09-02", "StoreFrom": { "ref": "main" }, "StoreTo": { "ref": "shop" },
+				"Rows": [ { "Item": { "ref": "apple" }, "Qty": 3, "Price": 5, "Sum": 15 } ]
+			}
+		},
+		{ "do": "post", "name": "mv1" },
+		{ "do": "expect", "record": "in1", "data": { "Done": true, "Rows": [ { "Item": { "ref": "apple" }, "Qty": 10 } ] } },
+		{ "do": "expect", "record": "mv1", "data": { "Done": true } },
+		{ "do": "unpost", "name": "mv1" },
+		{ "do": "expect", "record": "mv1", "data": { "Done": false } },
+		{ "do": "expect", "record": "in1", "data": { "Done": true } }
+	]
+}

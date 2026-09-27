@@ -1,0 +1,13 @@
+{
+	"requirement": "Товар зберігається з артикулом і одиницею виміру й відкривається тим самим; перейменований — лишається тим самим товаром і є в списку товарів.",
+	"records": {
+		"pcs": { "at": "/catalog/unit", "data": { "Name": "Штука", "Short": "шт" } }
+	},
+	"steps": [
+		{ "do": "save", "name": "apple", "at": "/catalog/item", "data": { "Name": "Яблука", "Article": "A-001", "Unit": { "ref": "pcs" } } },
+		{ "do": "expect", "record": "apple", "data": { "Name": "Яблука", "Article": "A-001", "Unit": { "ref": "pcs" } } },
+		{ "do": "save", "name": "apple", "at": "/catalog/item", "data": { "Name": "Яблука червоні" } },
+		{ "do": "expect", "record": "apple", "data": { "Name": "Яблука червоні", "Article": "A-001" } },
+		{ "do": "expect", "at": "/catalog/item", "list": [ { "Name": "Яблука червоні" } ] }
+	]
+}

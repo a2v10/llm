@@ -39,7 +39,7 @@ a2 meta validate <endpoint>
 | `screen` | XAML, шаблон і `.d.ts` кожної **зібраної форми** (у `browse` шаблон спільний з `index`, тож не дублюється) | у звичайного endpoint'а і в `report` — там своїм білдером |
 | `print` | `Model` кожного оголошеного бланка, перетворений у SQL; розкладка не читається взагалі | у звичайного endpoint'а |
 
-Перевірено на стенді: `catalog`, `document` (і гола адреса родини), `journal`, `enum`, `state`, `accplan`, `ledger`, `autonum` дають усі три стадії; `report` — дві, бо власного бланка в нього немає: він друкує ту сторінку, яку й малює. Системний endpoint — жодної, крім завантаження.
+Перевірено на стенді: `catalog`, `document` (і корінь спільної таблиці `/document`), `journal`, `enum`, `state`, `accplan`, `ledger`, `autonum` дають усі три стадії; `report` — дві, бо власного бланка в нього немає: він друкує ту сторінку, яку й малює. Системний endpoint — жодної, крім завантаження.
 
 Форми беруться з `BakedForms`, тому в shape, який ніхто не рендерить (набір, нумерація), стадія `screen` просто порожня — «нема чого будувати» не є знахідкою. У системного endpoint'а (екран і дані в коді) стадій немає зовсім, і порожній `checks` читається як «нічого тут не перевірено», а не як згода.
 
@@ -49,7 +49,7 @@ a2 meta validate <endpoint>
 { "success": true,
   "data": { "endpoint": "catalog/nosuch",
             "checks": { "declaration": "failed" },
-            "error": "catalog/nosuch/metadata.json: declares neither 'table' nor 'storage', so nothing says where the data lives.\n    \"table\":   \"<TableName>\"     - if this endpoint has its own table;\n    \"storage\": \"/catalog/<name>\" - if it is a second one over a table declared elsewhere (an operation, a second screen).\n  There is no default: an absent 'table' is not a shared table and not a derived name." },
+            "error": "catalog/nosuch/metadata.json: declares neither 'table' nor 'storage', so nothing says where the data lives.\n    \"table\":   \"<TableName>\"     - if this endpoint has its own table;\n    \"storage\": \"/catalog/<name>\" - if it is a second one over a table declared elsewhere (a document over a shared table, a second screen).\n  There is no default: an absent 'table' is not a shared table and not a derived name." },
   "error": null }
 ```
 
@@ -107,7 +107,7 @@ a2 meta validate <endpoint>
 
 | Kind | Правило |
 |---|---|
-| `document` | рівно один із `table` / `storage` (див. `metadata.md` → «`document` — один шар або два») |
+| `document`, `catalog`, `journal` | рівно один із `table` / `storage` (див. `metadata.md` → «`document` — таблиця й операції», «`fixed`») |
 | `report` | тільки `surface`; `table` і `storage` — помилка |
 | решта | тільки `table`; `storage` і `surface` — помилка |
 
@@ -119,12 +119,12 @@ a2 meta validate <endpoint>
 {
   "file": "document/goods-receipt/metadata.json",
   "path": "",
-  "message": "declared both 'table' and 'storage' — these are different layouts. 'table' = own table (doc.GoodsReceipts); 'storage' = shares a table with other operations. Keep one."
+  "message": "declared both 'table' and 'storage' — these are different layouts. 'table' = own table (doc.GoodsReceipts); 'storage' = shares a table with other documents. Keep one."
 }
 {
   "file": "document/goods-receipt/metadata.json",
   "path": "",
-  "message": "neither 'table' nor 'storage' declared — no data location. Add 'table': \"GoodsReceipts\" for an own table, or 'storage': \"document\" for an operation over shared doc.Documents."
+  "message": "neither 'table' nor 'storage' declared — no data location. Add 'table': \"GoodsReceipts\" for an own table, or 'storage': \"/document\" for a document over the shared table."
 }
 {
   "file": "catalog/role/metadata.json",
@@ -132,9 +132,9 @@ a2 meta validate <endpoint>
   "message": "does not declare 'table', so nothing says where the data lives. Add \"table\": \"<TableName>\". There is no default: a table name is never derived from the folder name."
 }
 {
-  "file": "catalog/agent/metadata.json",
+  "file": "enum/vatrate/metadata.json",
   "path": "",
-  "message": "declares 'storage', which only a document endpoint may do. 'storage' shares one table across a family of operations; every other kind owns its table. Declare \"table\": \"<TableName>\" instead."
+  "message": "declares 'storage', which 'enum/' may not do. 'storage' is a second endpoint over one table, with screens of its own; a set has no screens. Declare \"table\": \"<TableName>\" instead."
 }
 {
   "file": "report/stockturnover/metadata.json",
@@ -163,7 +163,7 @@ a2 meta validate <endpoint>
 {
   "file": "document/invoice/metadata.json",
   "path": "details.Rows.fields.Price.required",
-  "message": "'required' is not part of a field. In an operation it belongs to 'details.Rows.rules', which is also the only block an operation may write for a collection: \"details\": { \"Rows\": { \"rules\": { \"required\": [\"Price\"] } } }."
+  "message": "'required' is not part of a field. In a document over 'storage' it belongs to 'details.Rows.rules', which is also the only block such a document may write for a collection: \"details\": { \"Rows\": { \"rules\": { \"required\": [\"Price\"] } } }."
 }
 ```
 

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../@schemas/metadata-endpoint-json-schema.json#",
+  "storage": "/document",
+  "autonum": "waybill",
+
+  "initialValues": {
+    "Date": { "source": "context", "value": "today" }
+  },
+
+  "rules": {
+    "required": [ "Agent", "StoreFrom" ]
+  },
+
+  "post": [
+    {
+      "journal":  "/journal/stock",
+      "dir":      "out",
+      "storno":   true,
+      "each":     { "details": "Rows" },
+      "document": { "Store": "StoreFrom" }
+    }
+  ]
+}

@@ -71,7 +71,7 @@ Your `.sql` files never reach the database as written: `sql.json` concatenates t
 concatenation decide where a statement may live.
 
 - **Across masks — guaranteed.** `inputFiles` is an explicit ordered list, and the build follows
-  it exactly: platform base → `_sql/_schemas.sql` → `/**/schema.sql` → `/**/keys.sql` →
+  it exactly: `_sql/_schemas.sql` → `/**/schema.sql` → `/**/keys.sql` →
   `/**/logic.sql` → `/**/init.sql`. This is why every table exists before any FK, and every table
   before any procedure — the guarantee comes from the array, not from any cleverness.
 - **Within one mask — none.** The fragments arrive in filesystem enumeration order: not

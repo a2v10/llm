@@ -11,6 +11,7 @@
           "items": [
             { "title": "Прибуткові накладні", "url": "/document/waybillin" },
             { "title": "Видаткові накладні",  "url": "/document/waybillout" },
+            { "title": "Повернення від покупців", "url": "/document/waybillreturn" },
             { "title": "Переміщення",         "url": "/document/waybillmove" },
             { "title": "Журнал запасів",         "url": "/journal/stock" }
           ]

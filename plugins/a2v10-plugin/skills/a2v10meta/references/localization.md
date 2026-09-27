@@ -81,6 +81,9 @@ validators: {
 | `@<Model>.Browse` | заголовок діалогу вибору | по одному на ціль |
 | `@Period` | підпис фасета за періодом | один, якщо kind має період |
 | `@Tags`, `@Filter.Tag.All` | фасет за мітками | при trait `tags` |
+| `@Ungrouped` | вузол «увесь довідник» у дереві папок | один на застосунок, при trait `Folders` |
+| `@Operation.<код>` | назва операції: деплой пише її в `doc.Operations.Name`, вона ж — заголовок картки; код — ім'я документа (`waybillin`) або `<документ>.<op>` (`receipt.gratis`), а `@Operation.<документ>` — заголовок картки документа з `operations` ([metadata.md](metadata.md) → «Коди операцій») | по одному на код; ще один на документ з `operations` |
+| `@Operation.All` | плейсхолдер «усі операції» у фільтрі реєстру документа з `operations` і кореня `/document` | один на застосунок, якщо є спільна таблиця |
 | `@Filters` | заголовок панелі фасетів | один на застосунок |
 
 Ключі команд (`@Create`, `@Edit`, `@Show`, `@Search`, `@Print`, `@Post`, `@UnPost`, `@Transactions`, `@Select`, `@Cancel`, `@Confirm.Delete.Element` / `.Document`) — теж один раз на застосунок; у `_default.uk.txt` прикладу вони вже є.
