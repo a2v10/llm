@@ -158,7 +158,7 @@ a2 meta materialize catalog/agent edit template
     "Id":   { "type": "id" },
     "Name": { "type": "name" },
     "Memo": { "type": "memo" },
-    "Void": { "type": "bit" },
+    "Void": { "type": "void" },
     "Code": { "type": "string", "length": 16 },
     "..."
   },
@@ -178,14 +178,16 @@ a2 meta materialize catalog/agent edit template
 | `MainApp/_sqlscripts/app.sql` | написане руками: `/**/keys.sql`, `/**/logic.sql`, `/**/init.sql` | збирач `MainApp/sql.json` |
 | `WebApp/_sqlscripts/full.sql` | `a2v10_platform_simple.sql` + `a2v10_metadata.sql` + `deploydatabase.sql` + `app.sql` | збирач `WebApp/sql.json` |
 
+**Версія пакета `A2v10.Metadata` у хоста і версія CLI `a2` збігаються — завжди.** CLI несе власну копію `A2v10.Metadata`: нею генерує `deploydatabase.sql`, а процедури `a2meta`, які цей файл викликає, ставить у базу скрипт із пакета хоста. Збіг забезпечує викатка застосунку; розбіжність модель не лагодить (не оновлює пакети й CLI), а повідомляє користувачеві.
+
 Збирач — `A2v10.Sql.MSBuild` на збірці проєкту; CLI збирає перенесеним кодом, вивід той самий байт у байт. Платформні скрипти кладуть у `WebApp/_assets/sql` пакети `A2v10.Web.Assets` і `A2v10.Metadata` на збірці WebApp. На проді виконується `full.sql`.
 
-**`a2 meta deploy`** — змінився застосунок. Збірка не потрібна. Платформа вже мусить бути в базі: схеми `a2meta` немає → помилка з вказівкою на `--full`.
+**`a2 meta deploy`** — змінився застосунок. Збірка не потрібна. Платформа вже мусить бути в базі й тієї самої версії, що CLI: схеми `a2meta` немає, або перед виконанням `deploydatabase.sql` версія `a2meta` у базі ≠ версії CLI → помилка з вказівкою на `--full`.
 1. Хеш збігся → `deploydatabase.sql` не чіпати. Інакше — алгоритм `deploy_and_migrations.md`: згенерувати, записати, виконати, записати хеш.
 2. Зібрати `app.sql`.
 3. Виконати `app.sql` — завжди: скрипти, написані руками, ідемпотентні.
 
-**`a2 meta deploy --full`** — порожня база або нові версії пакетів. Завжди парою: `dotnet build WebApp`, одразу `a2 meta deploy --full`. `--full` без збірки мовчки накотить старі платформні скрипти; збірка без `--full` лишить новий C# на старій схемі платформи.
+**`a2 meta deploy --full`** — порожня база або нові версії пакетів. Завжди парою: `dotnet build WebApp`, одразу `a2 meta deploy --full`. `--full` без збірки мовчки накотить старі платформні скрипти; збірка без `--full` лишить новий C# на старій схемі платформи — наступний `a2 meta deploy` на цьому відмовить.
 1. Схема `a2meta` є: хеш збігся → нічого, інакше згенерувати й записати `deploydatabase.sql`, **не виконуючи**. Немає (порожня база) → крок пропускається: генерувати нема проти чого, `deploydatabase.sql` іде таким, як лежить на диску.
 2. Зібрати `app.sql` і `full.sql`.
 3. Виконати `full.sql`. Вивід — `{applied: true, file: "WebApp/_sqlscripts/full.sql"}`.

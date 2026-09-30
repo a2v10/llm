@@ -10,7 +10,8 @@
     "Agent":     { "type": "ref", "target": "/catalog/agent" },
     "StoreFrom": { "type": "ref", "target": "/catalog/store" },
     "StoreTo":   { "type": "ref", "target": "/catalog/store" },
-    "Total":     { "type": "amount" }
+    "Total":     { "type": "amount" },
+    "Shipment":  { "type": "basedOn", "target": "/document/waybillout" }
   },
 
   "rules": {

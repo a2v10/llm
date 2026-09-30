@@ -183,7 +183,8 @@ a2 meta validate <endpoint>
 | Написано в полі | Повідомлення веде | Чому |
 |---|---|---|
 | `required`, `visible`, `computed`, `inherit` | блок `rules` своєї області | правило поля, не форма колонки |
-| `notNull`, `nullable` | ключ `default` на цьому ж полі | nullability оголошенню не підлягає: `NOT NULL` — наслідок названого значення |
+| `notNull`, `nullable` | домен поля (`type`) і `rules.required` | nullability оголошенню не підлягає: `NOT NULL` — наслідок домену |
+| `default` | top-level `initialValues` | початкове значення — Load нового об'єкта; нуль колонки дає домен |
 | `grid`, `searchable`, `sortable`, `total`, `rows` | блок `forms` | що і де показується, вирішує форма |
 | `control`, `multilineHeight` | домен поля (`type`) | контрол і вигляд виводяться, не оголошуються |
 | `label`, `caption` | ключ `title` цього ж поля | підпис — locale-binding, а не вільний текст |
@@ -194,11 +195,21 @@ a2 meta validate <endpoint>
 {
   "file": "catalog/agent/metadata.json",
   "path": "fields.Region.notNull",
-  "message": "there is no 'notNull' key. A column becomes NOT NULL exactly when the field declares a 'default' — the only way in is to name the value. If what you need is a completeness check on save, that is \"rules\": { \"required\": [\"Region\"] } and it leaves the column nullable."
+  "message": "there is no 'notNull' key. Whether a column can hold NULL is its domain's answer: magnitudes (amount, qty, price, percent, factor, money, decimal, float) and boolean are NOT NULL with 0/false; a ref, a code, a date, a string are nullable. If what you need is a completeness check on save, that is \"rules\": { \"required\": [\"Region\"] } and it leaves the column as the domain made it."
 }
 ```
 
-Обидві половини тут навмисні: сказати тільки «ключа немає» — значить лишити модель із задачею «зробити поле обов'язковим» і без адреси, а тоді найкоротшою відповіддю стане вигаданий `default` на домені, у якого нульового значення за змістом немає.
+Обидві половини тут навмисні: сказати тільки «ключа немає» — значить лишити модель із задачею «зробити поле обов'язковим» і без адреси, а тоді найкоротшою відповіддю стане підміна домену заради `NOT NULL` (рядковий код → `decimal`).
+
+Повідомлення для `default` веде в `initialValues` — туди, куди модель і цілилась:
+
+```json
+{
+  "file": "document/invoice/metadata.json",
+  "path": "fields.Status.default",
+  "message": "there is no 'default' key on a field. What a new record starts with is \"initialValues\": { \"Status\": { \"source\": \"literal\", \"value\": \"draft\" } }. A field not named there starts at its domain's zero (0, false) or empty."
+}
+```
 
 ## 🚧 resolved metadata
 

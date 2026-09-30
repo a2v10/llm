@@ -40,5 +40,9 @@
       "title": "Видаткова накладна",
       "header": "Видаткова накладна № {Document.Number} від {Document.Date}"
     }
+  ],
+
+  "basedOn": [
+    { "target": "/document/waybillreturn", "each": { "details": "Rows" } }
   ]
 }

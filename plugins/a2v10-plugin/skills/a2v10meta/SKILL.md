@@ -82,6 +82,7 @@ Unsure → ask; never guess.
 | add a document over a shared table, or operations switched inside a document | `references/metadata.md` |
 | spread a kind's endpoints over several folders (hundreds of documents) | `references/kinds.md` → aliases |
 | make a document or an operation post into a journal | `references/metadata.md` → `references/journal.md` |
+| create a document on basis of another (a return from a shipment, a payment from an order) | `references/metadata.md` → `basedOn` |
 | declare what a journal stores | `references/journal.md` |
 | number documents with a series | `references/kinds.md` → `references/metadata.md` |
 | declare a chart of accounts | `references/accplan.md` |

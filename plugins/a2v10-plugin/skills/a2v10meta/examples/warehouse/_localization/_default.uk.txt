@@ -27,6 +27,7 @@
 @ExtNumber=Номер контрагента
 @StoreFrom=Склад-відправник
 @StoreTo=Склад-отримувач
+@Shipment=Відвантаження
 @InOut=Напрямок
 @Detail=Рядок
 
@@ -84,6 +85,7 @@
 @Print=Друк
 @Download=Завантажити
 @Transactions=Проводки
+@BasedOn=Створити на підставі
 @Autonum.Auto=Автоматично
 
 ; Report
