@@ -18,8 +18,11 @@ skill, so there is no version number to look up anywhere else. Count every `Pack
 whose id starts with `A2v10.`; they sit in more than one project (`scaffold/WebApp`,
 `scaffold/MainApp`) and do **not** all carry the same version, so go package by package.
 
-Versions are the only thing that moves. A package the app references and the scaffold does not →
-leave it alone. A package the scaffold pins and the app does not reference → do not add it.
+Versions are what moves. A package the app references and the scaffold does not → leave it alone.
+A package the scaffold pins and the app does not reference → do not add it — **except
+`A2v10.CheckUpdates`: add it** at the scaffold's version, where the scaffold has it — the app's
+`MainApp` counterpart (the module csproj, never the host's). It is the build warning that tells this
+app a newer generation exists; without it the app goes stale without a sign.
 
 ## 3. Below → raise. Above → the skill is stale.
 

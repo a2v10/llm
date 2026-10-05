@@ -14,8 +14,8 @@
     "Shipment":  { "type": "basedOn", "target": "/document/waybillout" }
   },
 
-  "rules": {
-    "computed": { "Total": "this.Rows.$sum(r => r.Sum)" }
+  "properties": {
+    "Total": { "get": "this.Rows.$sum(r => r.Sum)" }
   },
 
   "details": {
@@ -29,12 +29,14 @@
         "Sum":     { "type": "amount" },
         "VatRate": { "type": "enum", "target": "/enum/vatrate" }
       },
+      "properties": {
+        "Sum": { "get": "this.Qty * this.Price" }
+      },
       "rules": {
         "inherit":  {
           "Unit":    { "ref": "Item", "field": "Unit" },
           "VatRate": { "ref": "Item", "field": "VatRate" }
         },
-        "computed": { "Sum": "this.Qty * this.Price" },
         "required": [ "Item", "Qty", "Price" ]
       }
     }

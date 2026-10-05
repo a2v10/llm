@@ -63,11 +63,12 @@ Bring the shell up:
    `WebApp/_sqlscripts/full.sql` — the platform plus the app. From here on you rebuild
    `MainApp` alone, and its `MainApp/_sqlscripts/app.sql` (the app only) is what gets applied;
    the host is rebuilt only by the user, when C# changes (SKILL.md §4).
-2. Hand the database to the user: *"create the database `<AppName>`, apply
-   `WebApp/_sqlscripts/full.sql`, and tell me when it's done."* The database name and server
-   live in the `Default` connection string in `WebApp/appsettings.json` — point the user there
-   to adjust `Server=` if theirs isn't `localhost`. How they create and apply it is their
-   business — the database is never yours to touch (SKILL.md §4: the only door is `a2 db`).
+2. Hand the database to the user: resolve `<database>` and `<server>` with `a2 db info`
+   (→ `cli.md`), then *"create the database `<database>` on `<server>`, apply
+   `WebApp/_sqlscripts/full.sql`, and tell me when it's done."* A different server → the user
+   adjusts `Server=` in the `Default` connection string in `WebApp/appsettings.json`. How they
+   create and apply it is their business — the database is never yours to touch (SKILL.md §4:
+   the only door is `a2 db`).
 
 Any `dotnet build` failure (compile error, missing SDK): stop and report it — don't improvise
 fixes, downgrade the framework, or hand-edit the generated SQL.

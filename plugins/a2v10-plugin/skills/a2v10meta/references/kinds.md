@@ -18,7 +18,7 @@ Kind = одночасно всі три:
 | `catalog` | `cat` | `Id`, `Name`, `Memo`, `Void`, `IsSystem`, `RowVersion`, штампи | CRUD + browse/select |
 | `document` | `doc` | `Id`, `Date`, `Done`, `RowVersion`, штампи + штамп проведення | Проведення (`Done`); таблиця своя або спільна, операції — реєстр `doc.Operations` (див. нижче) |
 | `journal` | `jrn` | `Id`, `Date`, `Document`, `InOut` | Накопичення через `document.post` |
-| `accplan` | `acc` | `Id` (код рахунку), `Name`, `Parent`, `AccountType`, `NormalBalance`, `Void`, `IsSystem`, `RowVersion`, штампи | План рахунків: рядки оголошує `seed.json`, пише деплой; дерево за `Parent`. Детально — [accplan.md](accplan.md) |
+| `accplan` | `acc` | `Id` (код рахунку), `Name`, `DisplayName`, `Parent`, `AccountType`, `NormalBalance`, `SplitBy`, `Void`, `IsSystem`, `RowVersion`, штампи | План рахунків: рядки оголошує `seed.json`, пише деплой; дерево за `Parent`. Детально — [accplan.md](accplan.md) |
 | `ledger` | `led` | `Id`, `Date`, `InOut`, `Acc`, `CorrAcc`, `Sum` | Проводки на рахунки одного плану дзеркальними плечима через `document.post`. Детально — [ledger.md](ledger.md) |
 | `report` | `rep` | — | Query + presentation, без власних даних |
 | `enum` | `enm` | `Id`, `Name`, `Memo`, `Order`, `Void` (форма фіксована платформою) | Закритий набір кодів; свого екрана немає — значення приїжджають з тим, хто на них указує |
@@ -88,7 +88,7 @@ Kind = одночасно всі три:
 
 **`accplan`** — план рахунків (chart of accounts). Окремий kind, бо **не зводиться до catalog**: ключ — код рахунку, дерево `Parent` у baseline, закриті набори `AccountType` / `NormalBalance`, і рядки — конфігурація застосунку (оголошує `seed.json`, пише деплой, `IsSystem` = рядок із файла), а не дані користувача. Endpoints — окремі плани (`/accplan/national`, `/accplan/ifrs`), кожен зі своєю таблицею. Повністю — [accplan.md](accplan.md).
 
-**`ledger`** — проводки на рахунки. Не `journal` із двома полями рахунку: проводка лежить дзеркальними плечима (`Acc` / `CorrAcc`), і **аналітика належить плечу** — у журнальному форматі сказати «`Agent` — аналітика кредитового плеча» немає де. Звідси свій запис у `post` (`dt` / `ct` / `sum`, без auto-mapping). Один ledger — один план (`accplan`). Повністю — [ledger.md](ledger.md). Посилання на рахунок із поля (домен `Account`) — 🚧.
+**`ledger`** — проводки на рахунки. Не `journal` із двома полями рахунку: проводка лежить дзеркальними плечима (`Acc` / `CorrAcc`), і **аналітика належить плечу** — у журнальному форматі сказати «`Agent` — аналітика кредитового плеча» немає де. Звідси свій запис у `post` (`dt` / `ct` / `sum`, без auto-mapping). Один ledger — один план (`accplan`). Повністю — [ledger.md](ledger.md). Посилання на рахунок із поля — домен `Account` ([accplan.md](accplan.md) → «Посилання на рахунок»).
 
 **`report`** — звіт без власних даних: вікно в **поверхню**, на яку вказує `surface` (журнал сьогодні, `mart` колись — контракт один). Оголошується сабсетом `groups`/`filters`/`data`, конкретний запит робить клієнт у його межах. Детально — `references/report.md`.
 

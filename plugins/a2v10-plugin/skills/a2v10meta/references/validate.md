@@ -163,7 +163,7 @@ a2 meta validate <endpoint>
 {
   "file": "document/invoice/metadata.json",
   "path": "details.Rows.fields.Price.required",
-  "message": "'required' is not part of a field. In a document over 'storage' it belongs to 'details.Rows.rules', which is also the only block such a document may write for a collection: \"details\": { \"Rows\": { \"rules\": { \"required\": [\"Price\"] } } }."
+  "message": "'required' is not part of a field. In a document over 'storage' it belongs to 'details.Rows.rules' - such a document writes only behaviour for a collection, 'rules' and 'properties': \"details\": { \"Rows\": { \"rules\": { \"required\": [\"Price\"] } } }."
 }
 ```
 
@@ -173,8 +173,8 @@ a2 meta validate <endpoint>
 {
   "file": "catalog/agent/metadata.json",
   "path": "rules.FullName",
-  "message": "in 'rules' the key is the rule, not the field: \"rules\": { \"required\": [\"FullName\"] }. Each rule has its own shape - 'required' takes names, 'visible' and 'computed' take field-to-expression maps, 'inherit' takes field-to-source.",
-  "available": ["required", "visible", "computed", "inherit", "when"]
+  "message": "in 'rules' the key is the rule, not the field: \"rules\": { \"required\": [\"FullName\"] }. Each rule has its own shape - 'required' takes names, 'visible' takes field-to-expression, 'inherit' takes field-to-source.",
+  "available": ["required", "visible", "inherit", "when"]
 }
 ```
 
@@ -182,7 +182,8 @@ a2 meta validate <endpoint>
 
 | Написано в полі | Повідомлення веде | Чому |
 |---|---|---|
-| `required`, `visible`, `computed`, `inherit` | блок `rules` своєї області | правило поля, не форма колонки |
+| `required`, `visible`, `inherit` | блок `rules` своєї області | правило поля, не форма колонки |
+| `computed` | блок `properties` своєї області (`{ "get": "…" }`) | значення-вираз — властивість моделі, не форма колонки |
 | `notNull`, `nullable` | домен поля (`type`) і `rules.required` | nullability оголошенню не підлягає: `NOT NULL` — наслідок домену |
 | `default` | top-level `initialValues` | початкове значення — Load нового об'єкта; нуль колонки дає домен |
 | `grid`, `searchable`, `sortable`, `total`, `rows` | блок `forms` | що і де показується, вирішує форма |

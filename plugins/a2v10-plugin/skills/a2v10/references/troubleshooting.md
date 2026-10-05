@@ -10,10 +10,10 @@ the files or asking the `a2` CLI.
 
 Identify the layer that changed, run its checks. When a check needs the live DB
 or config (does the proc exist? what columns does the table have?), use the `a2`
-CLI (see `../cli.md`), not guesswork.
+CLI (see `cli.md`), not guesswork.
 
 **Post-deploy, one shot:** once procs are created and `build` is done, `a2
-endpoint resolve-*` (see `../cli.md`) checks several layers at once — that the
+endpoint resolve-*` (see `cli.md`) checks several layers at once — that the
 route resolves, which procs/files the runtime actually binds, and the model
 shape it assembles (to compare against your XAML binds and SQL markers). It
 fails by design before deploy, so it confirms a deployed result, it does not
@@ -39,7 +39,7 @@ error returning, plus the whole application folder copied into the host's output
 ## Checks by layer
 
 - **Routing / model.json** — endpoint resolves? `model`/`schema` correct? element declared?
-- **View** — run `a2 view validate <view-file>` (the file `view:` names, from the application root → `../cli.md`): it loads the file as the server does and names bad markup, an unknown element/property, a bad enum value or an unresolvable `Components` file. Source-only, so it answers before deploy. It stays silent about binds, attached properties and `<Component Name>`.
+- **View** — run `a2 view validate <view-file>` (the file `view:` names, from the application root → `cli.md`): it loads the file as the server does and names bad markup, an unknown element/property, a bad enum value or an unresolvable `Components` file. Source-only, so it answers before deploy. It stays silent about binds, attached properties and `<Component Name>`.
 - **Template** — `template:` names an existing `.template.ts`, and its `.js` was rebuilt after the last edit (SKILL.md §4)?
 - **Stored procedure (found)** — proc exists under the exact derived name `<schema>.[<model>.<Verb>]`? (verify via CLI)
 - **Stored procedure (contract)** — result-set markers present and well-formed? cross-layer names agree (TVP column = client property; marker ↔ `d.ts` ↔ XAML)?

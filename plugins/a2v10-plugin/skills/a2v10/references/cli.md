@@ -59,7 +59,7 @@ Brackets are mandatory — a table name may contain a dot.
 
 ## Command `a2 app config` — project configuration
 
-Returns application-level decisions that must be **written into CLAUDE.md** during onboarding of an existing project (SKILL.md §6 → `references/existing-project.md`), plus the list of modules.
+Returns application-level decisions that must be **written into CLAUDE.md** during onboarding of an existing project (SKILL.md §6 → `existing-project.md`), plus the list of modules.
 
 ```json
 {
@@ -78,7 +78,7 @@ Returns application-level decisions that must be **written into CLAUDE.md** duri
 }
 ```
 
-- `multiTenant` — the **deployment mode**, not the schema. `true` implies a multi-tenant schema (a single-tenant application started in that mode simply fails); `false` proves nothing — an MT application may be deployed single-tenant. Never decide `TenantId` in tables or procedures from this flag; read it from the schema (→ `references/sql-procedures.md`).
+- `multiTenant` — the **deployment mode**, not the schema. `true` implies a multi-tenant schema (a single-tenant application started in that mode simply fails); `false` proves nothing — an MT application may be deployed single-tenant. Never decide `TenantId` in tables or procedures from this flag; read it from the schema (→ `sql-procedures.md`).
 - `hostRoot` — the ASP.NET Core host folder, a path **from the project root, without a leading slash** (same contract as a module's `root`); always present. The host is the opposite of a module: it has no `model.json`, **endpoints are never written there**, and you never build or run it yourself.
 - `modules` — the list of application modules (see below).
 
@@ -201,7 +201,7 @@ One argument: `<route>` — the element's route: the `list` path plus the elemen
 
 `dataModel` is obtained by **invoking** the `load`/`index` procedure, so if it doesn't exist the command fails entirely (`success: false`, `error`) rather than returning a partial result.
 
-**When to call — post-deploy, discretionary.** This is the verification half of the "wrote → verify" loop, not authoring-time: the procedures must already exist in the DB — the **module you edited** rebuilt so its bundle (`outputFile` in `sql.json`) is regenerated, and that script applied. Rebuild **just that module** — `dotnet build <root>`, the module's `root` folder (from `a2 app config`) — **never the solution**: a solution build also rebuilds the host (`hostRoot` in `a2 app config`) and fails when the user is running it (its output DLLs and port are locked), while the module build is untouched by the running host. (Whole-solution build belongs only to first-time setup, before the host has ever run → `references/new-project.md`.) Before deployment the command fails **by design** — that means "not deployed yet", not "broken". Calling it is not mandatory after every small change; the deploy may not be in the LLM's hands — then there is simply nothing to verify.
+**When to call — post-deploy, discretionary.** This is the verification half of the "wrote → verify" loop, not authoring-time: the procedures must already exist in the DB — the **module you edited** rebuilt so its bundle (`outputFile` in `sql.json`) is regenerated, and that script applied. Rebuild **just that module** — `dotnet build <root>`, the module's `root` folder (from `a2 app config`) — **never the solution**: a solution build also rebuilds the host (`hostRoot` in `a2 app config`) and fails when the user is running it (its output DLLs and port are locked), while the module build is untouched by the running host. (Whole-solution build belongs only to first-time setup, before the host has ever run → `new-project.md`.) Before deployment the command fails **by design** — that means "not deployed yet", not "broken". Calling it is not mandatory after every small change; the deploy may not be in the LLM's hands — then there is simply nothing to verify.
 
 For now: the three renderable commands below. `resolve-command` (callables — the `commands`
 section), `resolve-report`, `resolve-files` — **planned, not yet implemented**; until then read a
