@@ -10,8 +10,8 @@ Kind `ledger`: проводки на рахунки одного плану ([ac
 ledger/<name>/metadata.json
 ```
 
-```jsonc
-// ledger/national/metadata.json
+`ledger/national/metadata.json`:
+```json
 {
   "$schema": "../../@schemas/metadata-ledger-json-schema.json#",
   "table": "National",
@@ -68,8 +68,8 @@ ledger/<name>/metadata.json
 
 ## Запис — `post` документа
 
-```jsonc
-// document/waybillin/metadata.json
+`document/waybillin/metadata.json`:
+```json
 "post": [
   { "ledger": "/ledger/national",
     "each": { "details": "Rows", "kinds": ["Stock"] },
@@ -138,7 +138,7 @@ ledger/<name>/metadata.json
 - **index** — стрічка **плечей**, як index журналу: колонки з baseline і `fields`, фільтр періоду за `Date`, смуга `Edit`. `Acc` / `CorrAcc` показуються за `presentation` плану ([accplan.md](accplan.md)). Журнал «Дт | Кт | Сума» — це `InOut = 1`, прочитаний як `Acc | CorrAcc`; окремою формою index його немає.
 - **`ShowTrans`** документа — вкладка на кожен ledger, у який він проводить.
 
-**Локалізація**, яку дає застосунок ([localization.md](localization.md)): `@[InOut]`, `@[Acc]`, `@[CorrAcc]` і підписи полів автора (`@[Document]`, `@[Operation]`, `@[Row]`, …).
+**Локалізація**, яку дає застосунок ([localization.md](localization.md)): підписи полів автора (`@[Document]`, `@[Row]`, …). `@[InOut]`, `@[Acc]`, `@[CorrAcc]`, `@[Operation]` дає платформа.
 
 **Меню:** `/ledger/<name>` — самостійний вхід ([menu.md](menu.md)).
 

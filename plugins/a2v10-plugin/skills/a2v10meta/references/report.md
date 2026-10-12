@@ -19,8 +19,8 @@ Kind `report`, схема `rep`. Власних даних не має: це **�
 
 ## Формат
 
-```jsonc
-// report/stockturnover/metadata.json
+`report/stockturnover/metadata.json`:
+```json
 {
   "type": "turnover",
   "surface": "/journal/stock",
@@ -48,8 +48,8 @@ Kind `report`, схема `rep`. Власних даних не має: це **�
 
 ## `trialBalance` — оборотно-сальдова відомість
 
-```jsonc
-// report/trialbalance/metadata.json
+`report/trialbalance/metadata.json`:
+```json
 {
   "type": "trialBalance",
   "surface": "/ledger/national",
@@ -66,12 +66,12 @@ Kind `report`, схема `rep`. Власних даних не має: це **�
 - Рядки — рахунки, на яких є проводки до кінця періоду, за кодом; ієрархії плану (28 над 281) немає.
 - `surface` не на ledger — помилка при відкритті звіту.
 
-**Локалізація**, яку дає застосунок: `@[TrialBalance]`, `@[TrialBalance.Start]`, `@[TrialBalance.Turnover]`, `@[TrialBalance.End]`, `@[Account]`, `@[Code]`, `@[Name]`, `@[Debit]`, `@[Credit]`, `@[Total]`.
+**Локалізацію** дає платформа ([localization.md](localization.md) → «Ключі платформи»); застосунок її не дописує.
 
 ## `chessboard` — шахова відомість
 
-```jsonc
-// report/chessboard/metadata.json
+`report/chessboard/metadata.json`:
+```json
 {
   "type": "chessboard",
   "surface": "/ledger/national",
@@ -87,7 +87,7 @@ Kind `report`, схема `rep`. Власних даних не має: це **�
 - Рядки й колонки — лише рахунки з оборотом за період, за кодом; ієрархії плану немає.
 - `surface` не на ledger — помилка при відкритті звіту.
 
-**Локалізація**, яку дає застосунок: `@[Chessboard]`, `@[Chessboard.Header]` (шапка над колонками — «З дебету в кредит рахунків»), `@[Code]`, `@[Name]`, `@[Total]`.
+**Локалізацію** дає платформа, як у `trialBalance`.
 
 ## Що в metadata звіту НЕ пишеться
 

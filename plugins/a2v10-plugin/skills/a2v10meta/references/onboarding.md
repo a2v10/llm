@@ -4,10 +4,10 @@ Reached from `SKILL.md` §6 when the project has no `CLAUDE.md`. It ends with `C
 
 ## Which way this goes — one check
 
-**Are any endpoints already declared?** A `<kind>/` subfolder with a `metadata.json` in it, under a module root from `a2 app config`.
+**Are any endpoints already declared?** A `<kind>/` subfolder with a `metadata.json` in it, or any endpoint folder with a `model.json` — a classic one, `references/classic.md` — under a module root from `a2 app config`.
 
 - **none** → **a new application.** Everything below applies as written.
-- **some** → **an application that exists and was simply never recorded.** Nothing is being created: **do not copy `scaffold/`, do not touch a declaration that is already there.** Missing are `CLAUDE.md` and `DOMAIN.md`, and nothing else.
+- **some** → **an application that exists and was simply never recorded.** Nothing is being created: **do not copy `scaffold/`, do not touch a declaration that is already there.** Missing are `CLAUDE.md` and `DOMAIN.md`, and nothing else — except in a classic application whose host does not reference `A2v10.Metadata`: it also needs the package and `services.UseAppMetadata()`, as `scaffold/WebApp` has them. Name both to the user; the host project is theirs.
 
 A missing `CLAUDE.md` says nothing about whether the application exists — it is written by this file and by nobody else, so an application built by hand has never had one.
 
@@ -52,7 +52,7 @@ No further questions. In this order — and `examples/warehouse/` is what the re
 
    **Package versions stay as the scaffold pins them** — they are the platform generation this skill is written against. Do not look them up on NuGet: an application above the scaffold reads, to the update procedure, as a stale skill (SKILL.md §7 → update the platform). `A2v10.CheckUpdates` in `MainApp` warns at build time when a newer generation is out.
 
-   **Then `MainApp/app.json`** — what is true of the application as a whole and no endpoint can state: `platformid` — the identifier base the database rests on, one of `bigint`, `int`, `uniqueidentifier`; write `bigint` unless the customer said otherwise. The platform has no default: the first deploy creates `dbo.platformid` from this value, afterwards the database is the fact and a different value fails the load. And `useGrants` (→ `references/permissions.md`). Leave `useGrants` off while the application is being written; turning it on demands a `grants` block in every addressable endpoint.
+   **Then `MainApp/app.json`** — what is true of the application as a whole and no endpoint can state: `platformid` — the identifier base the database rests on, one of `bigint`, `int`, `uniqueidentifier`; write `bigint` unless the customer said otherwise. The platform has no default: the first deploy creates `dbo.platformid` from this value, afterwards the database is the fact and a different value fails the load. And `useGrants` (→ `references/permissions.md`). Leave `useGrants` off while the application is being written. Turned on, it closes every endpoint a role has no `grants` line for — the menu entry disappears and the URL is refused — for everyone but the admin.
 2. **Endpoints.** One folder per entity under its kind, one declaration file in each. Write them in dependency order — enums → catalogs → journals → autonum → documents (the root of a shared table first, then the documents over it) → reports — so that every `target` written points at something that already exists.
 3. **Menu.** `MainApp/menu.json` — until an endpoint is named there, nothing leads the user to it. Its sections and their order come from the words the customer used; what goes in and what never does → `references/menu.md`. `appTitle` is set here too.
 4. **Localization.** Generated screens are labeled with keys, not text — a field with `@[<FieldName>]`, an entity with `@[<Model>]` — so every field and entity that reaches a screen gets a line in `MainApp/_localization/_default.uk.txt`.

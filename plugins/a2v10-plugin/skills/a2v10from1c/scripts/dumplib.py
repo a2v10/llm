@@ -71,11 +71,10 @@ def has_file(dump, key, filename):
 
 def synonym(obj, lang=None):
     """Синонім об'єкта: зазначеною мовою, інакше перший, який є."""
-    items = obj.get("synonym") or []
-    for item in items:
-        if lang is None or item.get("lang") == lang:
-            return item.get("content", "")
-    return items[0].get("content", "") if items else ""
+    texts = obj.get("synonym") or {}
+    if lang in texts:
+        return texts[lang]
+    return next(iter(texts.values()), "")
 
 
 def refs(obj):

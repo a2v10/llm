@@ -6,8 +6,8 @@
 
 ## metadata.json журналу
 
-```jsonc
-// journal/stock/metadata.json
+`journal/stock/metadata.json`:
+```json
 {
   "table": "StockJournal",
   "fields": {
@@ -26,7 +26,7 @@
 | Секція | Призначення |
 |---|---|
 | `fields` | **усі** колонки журналу — і розрізи, і показники; той самий field-shape, що в catalog |
-| `checks` | Прив'язка SQL-перевірок до post/unpost документів-писарів: `{ onPost: [...], onUnPost: [...] }` — див. нижче |
+| `checks` 🚧 | Прив'язка SQL-перевірок до post/unpost документів-писарів: `{ onPost: [...], onUnPost: [...] }` — див. нижче |
 
 Окремих секцій під «виміри» і «показники» тут **немає**: розріз від показника відрізняє домен поля, а не секція. (`dimensions`/`measures` — словник **марта**, іншого шару: журнал каже, як факти лежать, март — як їх питають.)
 
@@ -57,8 +57,8 @@
 
 Мінімальний приклад (stock, рядки):
 
-```jsonc
-// document/waybillin/metadata.json
+`document/waybillin/metadata.json`:
+```json
 {
   "post": [
     {
@@ -74,12 +74,14 @@
 - `dir: "in"` → `InOut = +1`; `dir: "out"` → `InOut = -1`
 - `each` — `{ details, kinds }`: одна колекція і деякі її види; відсутній → один запис на документ ([metadata.md](metadata.md) → «`each` — по чому ітеруємо»)
 - `document` / `row` — тільки відхилення від auto-mapping; значення завжди голе ім'я поля з відповідного набору
-- `Document`, `Date` — baseline журналу, заповнює платформа; в override-блоках не пишуться
+- `Date` — baseline журналу; `Document` — колонка, яку оголошує автор (платформа знаходить її за типом). Обидві заповнює платформа; в override-блоках не пишуться
 
-## `checks` — серверні перевірки проведення
+## 🚧 `checks` — серверні перевірки проведення
 
-```jsonc
-// journal/stock/metadata.json
+Платформа ще не виконує: ключа немає ні в схемі, ні в генераторі post/unpost. Не писати в `metadata.json`.
+
+`journal/stock/metadata.json`:
+```json
 "checks": {
   "onPost":   ["jrn.CheckStockPost"],
   "onUnPost": ["jrn.CheckStockUnPost"]
@@ -114,15 +116,14 @@
 
 ## Validation
 
-**Форму запису** `post[]` перевіряє завантаження (`DeclarationMetadata.CheckPost`), тобто стадія `declaration` у `a2 meta validate` ([validate.md](validate.md)): запис, що оголосив і `journal`, і `ledger` — або жодного з трьох; `sql` поруч із другим записом чи з будь-яким ключем мапінгу; ключі плеча на журнальному записі й навпаки; `ledger` без `dt` / `ct` / `sum`.
-
-🚧 **Імена** в мапінгу на цьому шарі не резолвляться: їх читає генератор SQL (`Database/PostStatements.cs`), тобто помилка в імені падає на `a2 meta deploy`, а не на валідації. Прийнята форма перевірок:
-- Ключі `document` / `row` резолвуються у `fields` журналу
-- Значення `document` — у `fields`/baseline документа; значення `row` — у `fields` колекції `each.details`
-- `row` без `each` — помилка
-- Одне поле журналу в обох блоках — помилка
-- `each.kinds` — непорожній тоді і тільки тоді, коли колекція оголосила види
-- Невідоме ім'я → `available` у відповіді
+`post[]` перевіряє завантаження — і форму запису, і імена, — тобто стадія `declaration` у `a2 meta validate` ([validate.md](validate.md)):
+- запис оголосив і `journal`, і `ledger` — або жодного з трьох; `sql` поруч із другим записом чи з будь-яким ключем мапінгу; ключі плеча на журнальному записі й навпаки; `ledger` без `dt` / `ct` / `sum`;
+- значення `document` резолвуються у `fields`/baseline документа, значення `row` — у `fields` колекції `each.details`;
+- `row` без `each` — помилка;
+- `each.kinds` — непорожній тоді і тільки тоді, коли колекція оголосила види;
+- невідомий вид → перелік оголошених (`Available: …`); невідоме поле — де шукали, без переліку;
+- 🚧 одне поле журналу в обох блоках — помилка. Сьогодні мовчки бере `document`.
+- 🚧 ключ `document` / `row`, якого немає серед колонок журналу, — помилка. Сьогодні пропускається мовчки.
 
 ## UI журналу
 
@@ -130,8 +131,8 @@
 
 ## Приклад — stock journal
 
-```jsonc
-// journal/stock/metadata.json
+`journal/stock/metadata.json`:
+```json
 {
   "description": "Рух товарів по складах",
   "table": "StockJournal",

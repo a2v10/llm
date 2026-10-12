@@ -1,6 +1,6 @@
 # validate — валідація metadata
 
-Команда є: **`a2 meta validate <endpoint>`**. Вона збирає один endpoint і викидає зібране — те саме, що робить рантайм, тільки нічого не пишеться й база не читається. Повідомлення, які вона віддає, — повідомлення платформи; власного набору перевірок у CLI немає.
+**`a2 meta validate <endpoint>`** збирає один endpoint так само, як рантайм, і викидає зібране: нічого не пишеться, база не читається.
 
 ## Команда
 
@@ -8,42 +8,11 @@
 a2 meta validate <endpoint>
 ```
 
-`<endpoint>` — тека endpoint'а (`catalog/agent`, `document/waybillout`), `$prefix` — модуль. Запускається з кореня застосунку (де лежить `WebApp` / `WebApiHost` з `appsettings.json`). Застосунок мусить оголосити `platformid` в `app.json`: валідація типізує `Id`, не заглядаючи в базу, і базу більше нізвідки взяти — без неї падає **інструмент**, а не endpoint.
+`<endpoint>` — тека endpoint'а (`catalog/agent`, `document/waybillout`), `$prefix` — модуль. Запускається з кореня застосунку (де лежить `WebApp` / `WebApiHost` з `appsettings.json`). Застосунок мусить оголосити `platformid` в `app.json`, інакше команда не запуститься. Так само без теки `@schemas` — її кладе пакет `A2v10.App.Assets2026` при збірці: спершу збери застосунок (version >= 8670).
 
 **Області «весь проект» немає.** Валідують той endpoint, який щойно правили.
 
-## Вихід — JSON
-
-```json
-{ "success": true,
-  "data": { "endpoint": "document/waybillout",
-            "checks": { "declaration": "passed", "screen": "passed", "print": "passed" },
-            "error": null },
-  "error": null }
-```
-
-| Ключ | Що значить |
-|---|---|
-| `checks` | **кожна** стадія, яка для цього endpoint'а існує, зі статусом — щоб «не перевірено» читалось на місці |
-| `passed` / `failed` / `unknown` | пройдено / впало / не дійшли (усе після невдалої стадії) |
-| `data.error` | повідомлення тієї єдиної стадії, що впала; яка саме — видно з `failed` у мапі |
-| `error` (зовнішній) | **інструмент не зміг запуститись**. Знахідка про endpoint сюди не потрапляє ніколи |
-
-Розділення зовнішнього `error` і `data.error` — те, заради чого ця відповідь має таку форму: «endpoint не зібрався» і «команду не вдалося виконати» не змішуються. Код виходу завжди `0`, відповідь читають із JSON.
-
-Стадії йдуть ланцюгом у порядку залежності й зупиняються на першій невдачі:
-
-| Стадія | Що збирається | У кого є |
-|---|---|---|
-| `declaration` | endpoint, як його вантажить рантайм: декларація поверх сховища, seed'и, імена, зібрані форми, граф посилань, форма `post` | у кожної адреси |
-| `screen` | XAML, шаблон і `.d.ts` кожної **зібраної форми** (у `browse` шаблон спільний з `index`, тож не дублюється) | у звичайного endpoint'а і в `report` — там своїм білдером |
-| `print` | `Model` кожного оголошеного бланка, перетворений у SQL; розкладка не читається взагалі | у звичайного endpoint'а |
-
-Перевірено на стенді: `catalog`, `document` (і корінь спільної таблиці `/document`), `journal`, `enum`, `state`, `accplan`, `ledger`, `autonum` дають усі три стадії; `report` — дві, бо власного бланка в нього немає: він друкує ту сторінку, яку й малює. Системний endpoint — жодної, крім завантаження.
-
-Форми беруться з `BakedForms`, тому в shape, який ніхто не рендерить (набір, нумерація), стадія `screen` просто порожня — «нема чого будувати» не є знахідкою. У системного endpoint'а (екран і дані в коді) стадій немає зовсім, і порожній `checks` читається як «нічого тут не перевірено», а не як згода.
-
-Падіння виглядає так:
+## Відповідь
 
 ```json
 { "success": true,
@@ -53,176 +22,36 @@ a2 meta validate <endpoint>
   "error": null }
 ```
 
-Тека без `metadata.json` дає це саме повідомлення: вона не оголосила нічого — рівно як порожній `{}`.
-
-**Помилка за раз.** Генератори кидають, а не накопичують: одна правка — один прогін. Повідомлення береться **найзовнішнє** — саме воно несе контекст (`form 'edit': …`), який голий текст усередині вже втратив.
-
-## 🚧 Далі — прийнята форма повідомлень, не поведінка
-
-Інструмент сьогодні віддає **один рядок** у `data.error`; полів `file` / `path` / `available` у відповіді немає. Виняток — повідомлення про `table` / `storage` / `surface`: вони вже такі, як описано нижче, бо їх кидає сама платформа.
-
-## Формат message
-
-Дві складові:
-
-1. **Що** не так і **де** — `'Total' not found in document/metadata.json fields`
-2. **Де шукати** — посилання на файл/колекцію де має бути поле
-
-`available` — замість «did you mean»: CLI повертає список, LLM сам визначає правильне значення. Простіше реалізувати, надійніше ніж fuzzy matching.
-
-Приклади:
-
-```json
-{
-  "file": "document/invoice/metadata.json",
-  "path": "post[0].document.Sum",
-  "message": "'Total' not found in document/metadata.json fields",
-  "available": ["Sum", "Qty", "Price", "Item"]
-}
-{
-  "path": "post[0].row",
-  "message": "block 'row' requires 'each' to be set"
-}
-{
-  "path": "post[0].journal.Sum",
-  "message": "'Sum' resolves both in document fields and in details.Rows.fields — name it in 'document' or 'row'"
-}
-{
-  "path": "post[0].each.kinds[0]",
-  "message": "kind 'Goods' not declared in details.Rows.kinds",
-  "available": ["Stock", "Service"]
-}
-{
-  "path": "post[0].each.kinds",
-  "message": "details.Rows declares kinds — name the ones meant; 'all of them' has no spelling",
-  "available": ["Stock", "Service"]
-}
-```
-
-**Немає поля `code`** — інвестиція у якість message важливіша. `code` додати коли з'явиться реальна потреба (CI-підавлення, i18n).
-
-## Звідки форма — `table` / `storage` / `surface`
-
-Обов'язкова перевірка на кожному endpoint-і. Три ключі — це **одна вісь**: звідки endpoint бере форму, з якою працює (`table` — своя таблиця; `storage` — таблиця, оголошена деінде, у яку я пишу; `surface` — форма, яку я тільки читаю). Легальне написання рівно одне, і **яке саме — вирішує тека**:
-
-| Kind | Правило |
+| Ключ | Що значить |
 |---|---|
-| `document`, `catalog`, `journal` | рівно один із `table` / `storage` (див. `metadata.md` → «`document` — таблиця й операції», «`fixed`») |
-| `report` | тільки `surface`; `table` і `storage` — помилка |
-| решта | тільки `table`; `storage` і `surface` — помилка |
+| `checks` | **кожна** стадія, яка в цього endpoint'а є, зі статусом |
+| `passed` / `failed` / `unknown` | пройдено / впало / не дійшли (усе після невдалої стадії) |
+| `data.error` | що не так з endpoint'ом — повідомлення тієї стадії, що впала. Правиться файл |
+| `error` (зовнішній) | команда не запустилась (немає `platformid`, не той каталог). Правиться оточення, не endpoint |
 
-Помилка стосується файлу цілком, тому `path` порожній — це і є ознака «дивись на файл, а не в позицію».
+Код виходу завжди `0`: відповідь читають із JSON. Тека без `metadata.json` (одруківка в адресі) дає те саме повідомлення, що порожній `{}`, — як вище.
 
-Повідомлення тут формулюється **як вибір між двома варіантами розкладки**, а не як «відсутній обов'язковий ключ». Різниця істотна: голе «required property missing» штовхає дописати ключ навмання, а варіант доводиться обирати свідомо — і вибір неможливо зробити випадково правильно.
+## Стадії
 
-```json
-{
-  "file": "document/goods-receipt/metadata.json",
-  "path": "",
-  "message": "declared both 'table' and 'storage' — these are different layouts. 'table' = own table (doc.GoodsReceipts); 'storage' = shares a table with other documents. Keep one."
-}
-{
-  "file": "document/goods-receipt/metadata.json",
-  "path": "",
-  "message": "neither 'table' nor 'storage' declared — no data location. Add 'table': \"GoodsReceipts\" for an own table, or 'storage': \"/document\" for a document over the shared table."
-}
-{
-  "file": "catalog/role/metadata.json",
-  "path": "",
-  "message": "does not declare 'table', so nothing says where the data lives. Add \"table\": \"<TableName>\". There is no default: a table name is never derived from the folder name."
-}
-{
-  "file": "enum/vatrate/metadata.json",
-  "path": "",
-  "message": "declares 'storage', which 'enum/' may not do. 'storage' is a second endpoint over one table, with screens of its own; a set has no screens. Declare \"table\": \"<TableName>\" instead."
-}
-{
-  "file": "report/stockturnover/metadata.json",
-  "path": "",
-  "message": "does not declare 'surface', so nothing says which shape this report reads. Add \"surface\": \"/journal/<name>\". There is no default: an absent 'surface' is not a shape of the report's own."
-}
-{
-  "file": "report/stockturnover/metadata.json",
-  "path": "",
-  "message": "declares 'storage', which a report may not do. A report is a window into a shape declared elsewhere: it owns no table and writes to none. Declare \"surface\": \"<path to a journal>\" instead."
-}
-```
+Ідуть ланцюгом і зупиняються на першій невдачі:
 
-Порожній `{}` і папка без `metadata.json` ловляться цією ж перевіркою: обидва не оголосили нічого, тому дають третє повідомлення. Окремої помилки «empty file» не заводимо — вона сказала б менше.
-
-## Ключ не в тому блоці
-
-`fields` описує **колонку**; повнота, видимість, обчислення і успадкування — блок `rules` ([metadata.md](metadata.md) → «Що НЕ пишеться у field»). Склад ключів поля закритий (`additionalProperties: false`), тому написане в полі `required` відхиляється в будь-якому разі. Але відхилити його як **невідомий ключ** — програш: помилка передбачувана (індустрія скрізь пише її саме там), отже повідомлення під неї має бути написане заздалегідь і називати нове місце, а не факт незнайомства.
-
-```json
-{
-  "file": "catalog/agent/metadata.json",
-  "path": "fields.FullName.required",
-  "message": "'required' is not part of a field: 'fields' describes the column, completeness is checked by the application at a moment the field cannot know. It is declared in the 'rules' block next to 'fields', and the key there is the rule, not the field: \"rules\": { \"required\": [\"FullName\"] }."
-}
-{
-  "file": "document/invoice/metadata.json",
-  "path": "details.Rows.fields.Price.required",
-  "message": "'required' is not part of a field. In a document over 'storage' it belongs to 'details.Rows.rules' - such a document writes only behaviour for a collection, 'rules' and 'properties': \"details\": { \"Rows\": { \"rules\": { \"required\": [\"Price\"] } } }."
-}
-```
-
-Другий частий випадок того ж класу — правильний блок, але **ключем узято поле**: `"rules": { "FullName": { "required": true } }`. Повідомлення називає інверсію прямо, бо навмання її не вгадати:
-
-```json
-{
-  "file": "catalog/agent/metadata.json",
-  "path": "rules.FullName",
-  "message": "in 'rules' the key is the rule, not the field: \"rules\": { \"required\": [\"FullName\"] }. Each rule has its own shape - 'required' takes names, 'visible' takes field-to-expression, 'inherit' takes field-to-source.",
-  "available": ["required", "visible", "inherit", "when"]
-}
-```
-
-Той самий клас — ключі, у яких є дім, але не тут:
-
-| Написано в полі | Повідомлення веде | Чому |
+| Стадія | Що збирається | У кого є |
 |---|---|---|
-| `required`, `visible`, `inherit` | блок `rules` своєї області | правило поля, не форма колонки |
-| `computed` | блок `properties` своєї області (`{ "get": "…" }`) | значення-вираз — властивість моделі, не форма колонки |
-| `notNull`, `nullable` | домен поля (`type`) і `rules.required` | nullability оголошенню не підлягає: `NOT NULL` — наслідок домену |
-| `default` | top-level `initialValues` | початкове значення — Load нового об'єкта; нуль колонки дає домен |
-| `grid`, `searchable`, `sortable`, `total`, `rows` | блок `forms` | що і де показується, вирішує форма |
-| `control`, `multilineHeight` | домен поля (`type`) | контрол і вигляд виводяться, не оголошуються |
-| `label`, `caption` | ключ `title` цього ж поля | підпис — locale-binding, а не вільний текст |
+| `declaration` | endpoint, як його вантажить рантайм: декларація поверх сховища, seed'и, імена, форми, посилання, `post` | у кожної адреси |
+| `schema` | `metadata.json` і файли його операцій — проти схеми свого виду з `@schemas` застосунку: кожен ключ, його місце, регістр, значення переліків (version >= 8670) | у звичайного endpoint'а і в `report` |
+| `screen` | XAML, шаблон і `.d.ts` кожної форми | у звичайного endpoint'а і в `report` |
+| `print` | `Model` кожного оголошеного бланка, перетворений у SQL | у звичайного endpoint'а |
 
-Повідомлення для `notNull` формулюється **як ціна входу**, а не як заборона — інакше воно штовхає шукати обхід:
+`report` не має `print`. Системний endpoint (екран і дані в коді) — жодної: порожній `checks` значить «нічого не перевірено», а не «пройдено».
 
-```json
-{
-  "file": "catalog/agent/metadata.json",
-  "path": "fields.Region.notNull",
-  "message": "there is no 'notNull' key. Whether a column can hold NULL is its domain's answer: magnitudes (amount, qty, price, percent, factor, money, decimal, float) and boolean are NOT NULL with 0/false; a ref, a code, a date, a string are nullable. If what you need is a completeness check on save, that is \"rules\": { \"required\": [\"Region\"] } and it leaves the column as the domain made it."
-}
-```
+## Цикл
 
-Обидві половини тут навмисні: сказати тільки «ключа немає» — значить лишити модель із задачею «зробити поле обов'язковим» і без адреси, а тоді найкоротшою відповіддю стане підміна домену заради `NOT NULL` (рядковий код → `decimal`).
+Помилка — одна за прогін: виправив, запустив знову. Повідомлення називає місце; де вибір закритий, у ньому є `Available: …` — бери значення з переліку, не вгадуй.
 
-Повідомлення для `default` веде в `initialValues` — туди, куди модель і цілилась:
+## Що `passed` не доводить
 
-```json
-{
-  "file": "document/invoice/metadata.json",
-  "path": "fields.Status.default",
-  "message": "there is no 'default' key on a field. What a new record starts with is \"initialValues\": { \"Status\": { \"source\": \"literal\", \"value\": \"draft\" } }. A field not named there starts at its domain's zero (0, false) or empty."
-}
-```
-
-## 🚧 resolved metadata
-
-Цього в команді немає: успішний прогін віддає лише мапу стадій. Прийнята форма — повертати повний ефективний metadata з усіма застосованими defaults:
-
-```json
-{
-  "valid": true,
-  "resolved": { ...повний ефективний metadata... }
-}
-```
-
-LLM використовує `resolved` для верифікації: написав sparse metadata → перевірив що resolved відповідає наміру → якщо ні → править файл.
-
-`resolved` — read only. Не переписувати вміст назад у `metadata.json`.
+- **Що кожен ключ прочитано — на збірці до 8670.** Ключ, якого платформа не знає, — одруківка, `required` у полі, ключ із 🚧 — завантажувач пропускає мовчки: endpoint збирається без нього. З 8670 такий ключ відхиляє стадія `schema` і називає дозволені на тому місці. Де ключу місце — [metadata.md](metadata.md) → «Що НЕ пишеться у field».
+- **Що авторський текст працює.** JavaScript у `properties` і `visible`, вирази фільтрів, SQL процедур не розбираються й не виконуються — помилка в них видна лише при відкритті сторінки чи виклику.
+- **Що збереження й проведення працюють.** Обидва пишуть дані, тому валідація їх не запускає; їх перевіряє перший прогін на стенді.
+- **Що бланк надрукується.** Розкладку бланка не читає ніхто: клітинка над полем, якого немає в `Model`, друкується порожньою.
+- **Що endpoint досяжний.** Меню не перевіряється — [menu.md](menu.md).

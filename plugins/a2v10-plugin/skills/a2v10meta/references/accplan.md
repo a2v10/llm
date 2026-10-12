@@ -11,8 +11,8 @@ accplan/<name>/seed.json
 
 **План завжди іменований**, навіть єдиний: `/accplan/national`. Голої форми `accplan/metadata.json` немає — у одного факту було б два написання, а поява другого плану переносила б перший разом з усіма посиланнями на нього. Кілька планів — кілька endpoint-ів, кожен зі своєю таблицею (`/accplan/national`, `/accplan/ifrs`).
 
-```jsonc
-// accplan/national/metadata.json
+`accplan/national/metadata.json`:
+```json
 {
   "$schema": "../../@schemas/metadata-accplan-json-schema.json#",
   "table": "National",
@@ -61,8 +61,8 @@ accplan/<name>/seed.json
 
 Мапа «код → колонки»:
 
-```jsonc
-// accplan/national/seed.json
+`accplan/national/seed.json`:
+```json
 {
   "28":  { "Name": "Товари", "AccountType": "Asset", "NormalBalance": "Debit" },
   "281": { "Name": "Товари на складі", "AccountType": "Asset", "NormalBalance": "Debit", "Parent": "28" },
@@ -108,15 +108,7 @@ accplan/<name>/seed.json
 
 `Parent` у моделі даних зветься **`ParentElem`** (`Account.ParentElem`): `Parent` — зарезервоване слово моделі. Колонка в БД і ключ у `seed.json` — `Parent`. Для форми (`fields`) ім'я поля — `Parent`.
 
-**Локалізація**, яку дає застосунок ([localization.md](localization.md)):
-
-| Ключ | Де |
-|---|---|
-| `@[Code]` | заголовок коду (натуральний ключ — не `#`) |
-| `@[Name]`, `@[Parent]`, `@[AccountType]`, `@[NormalBalance]`, `@[SplitBy]` | підписи полів |
-| `@[AccountType.Asset]` … `@[AccountType.OffBalance]` | значення розділу — всі шість |
-| `@[NormalBalance.Debit]`, `@[NormalBalance.Credit]`, `@[NormalBalance.Both]`, `@[NormalBalance.Split]` | значення сторони сальдо; `Split` — «Розгорнуте» |
-| `@[<model>]` | заголовок картки: `@[Account] [361]` |
+**Локалізація**, яку дає застосунок ([localization.md](localization.md)): `@[<model>]` — заголовок картки (`@[Account] [361]`). Підписи колонок і значення `AccountType` / `NormalBalance` дає платформа ([localization.md](localization.md) → «Ключі платформи»).
 
 **Меню:** план — самостійний вхід, пункт `/accplan/<name>` ([menu.md](menu.md)).
 
@@ -124,7 +116,7 @@ accplan/<name>/seed.json
 
 Домен `Account` — поле, що посилається на рахунок:
 
-```jsonc
+```json
 "Account": { "type": "account", "target": "/accplan/national" }
 ```
 

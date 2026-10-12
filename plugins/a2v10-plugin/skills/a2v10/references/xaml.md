@@ -3,8 +3,9 @@
 **Full docs — [docs-llm.a2v10.com/xaml.md](https://docs-llm.a2v10.com/xaml.md).** That hub lists
 every control and layout page with a one-line description. Element names, properties, syntax —
 always there, never guessed. It is a catalogue of what exists, **not** a menu of what to use: an
-element you had no reason to look for is not one your form was missing. Non-obvious entry points —
-where mainline facts hide:
+element you had no reason to look for is not one your form was missing. Compose the page from a
+donor — the closest page of the same shape in this project, else `examples/`. Neither has it →
+then the hub. Non-obvious entry points — where mainline facts hide:
 
 - [base-classes.md](https://docs-llm.a2v10.com/xaml/base-classes.md) — properties inherited by
   every element (`UIElementBase` / `UIElement` / `Control` / `ValuedControl` / `Container`).
@@ -28,7 +29,7 @@ where mainline facts hide:
 > WPF, some don't, some differ. Don't trust your WPF prior: verify every element and property
 > name against the docs or the examples.
 
-Working markup — `examples/`. Column → control projection and SQL ⇔ XAML invariants (sortable
+Column → control projection and SQL ⇔ XAML invariants (sortable
 column, `FilterItem` ⇔ procedure parameter, FK ⇔ `Map` ⇔ `SelectorSimple`) — [mapping.md](mapping.md).
 
 The rest of this file is only what the docs structurally don't have: project conventions and
