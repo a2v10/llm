@@ -101,7 +101,7 @@ Unsure → ask; never guess.
 | check that the application does what was asked — write a scenario | `references/tests.md` |
 | build the application and bring up its database | `references/onboarding.md` → Phase 3 |
 | call the CLI, read its output | `references/cli.md` |
-| update the platform — CLI and package pins; the build's `A2V0001` warning | the `a2v10` skill's update-platform procedure, with **this** skill's `scaffold/` as the reference: it pins `A2v10.Metadata`, which that skill's scaffold does not |
+| update the platform — CLI and package pins; the build's `A2V0001` warning | the `a2v10` skill's update-platform procedure, with **this** skill's `scaffold/` as the reference: it pins `A2v10.Metadata` and `A2v10.Metadata.Xaml`, which that skill's scaffold does not. Crossing 8671, the application also takes from the scaffold `UseAppMetadataXaml()` in `Startup.cs` and `MainApp/_sql/platformid.sql` first in `WebApp/sql.json`, with the type of its `app.json` `platformid` |
 
 **No row matches?** Do not force-fit. Route by what you are declaring: the shape of a record → `references/metadata.md`; a rule tying its fields together, or a value computed from them → `references/rules.md`; what it looks like on screen → `references/forms.md`. Still unclear → ask.
 

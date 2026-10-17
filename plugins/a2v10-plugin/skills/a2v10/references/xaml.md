@@ -24,6 +24,10 @@ then the hub. Non-obvious entry points — where mainline facts hide:
   connectors. **Never build lines, frames or diagrams out of layout elements and platform CSS
   classes**: those classes are internal to the platform, not surface; the app's own styling goes
   in `_layout/_styles.html`.
+- [controls/blobimage.md](https://docs-llm.a2v10.com/xaml/controls/blobimage.md) — files of the
+  platform storage: `BlobImage` shows, uploads and clears the image in a model-root field;
+  `BlobPreview` shows any file read-only. **Never `Image` or `FileImage`** — deprecated, they need
+  the old byte procedures. Donors → `examples/catalog/rich` (logo), `examples/attachment`.
 
 > **A2v10 XAML is a WPF dialect, not WPF.** Names overlap — some elements and properties match
 > WPF, some don't, some differ. Don't trust your WPF prior: verify every element and property

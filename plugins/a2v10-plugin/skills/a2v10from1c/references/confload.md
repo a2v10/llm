@@ -125,19 +125,21 @@ OData віддає лише об'єкти, внесені до складу ст
 
 ## Що має оголосити ціль
 
-```jsonc
-// catalog/company/metadata.json
+`catalog/company/metadata.json`:
+```json
 {
   "table": "Companies",
-  "origin": "Catalog.Организации",         // об'єкт джерела цілком: вид і ім'я
+  "origin": "Catalog.Организации",
   "fields": {
     "Code":                  { "type": "string", "length": 9, "origin": "Code" },
     "HeadCompany":           { "type": "ref", "target": "/catalog/company", "origin": "ГоловнаяОрганизация" },
     "LegalIndividualPerson": { "type": "enum", "target": "/enum/legalform", "origin": "ЮридическоеФизическоеЛицо" }
   }
 }
+```
 
-// enum/legalform/metadata.json
+`enum/legalform/metadata.json`:
+```json
 { "table": "LegalForms", "values": [ { "id": "Legal", "origin": "ЮридическоеЛицо" } ] }
 ```
 
@@ -165,9 +167,12 @@ OData віддає лише об'єкти, внесені до складу ст
 
 | вид ендпоінта | колонка цілі ← стандартний реквізит джерела |
 |---|---|
-| `catalog` | `Id ← Ref`, `Name ← Description`, `Void ← DeletionMark`, `IsSystem ← Predefined` |
-| `document` | `Id ← Ref`, `Date ← Date`, `Done ← Posted`, `Void ← DeletionMark` |
+| `catalog` | `Id ← Ref`, `Name ← Description`, `Void ← DeletionMark`, `IsSystem ← Predefined`, `Memo ← Комментарий` |
+| `document` | `Id ← Ref`, `Date ← Date`, `Done ← Posted`, `Void ← DeletionMark`, `Memo ← Комментарий` |
 | рядок колекції (`details`) | власник ← `Ref` (колонка названа моделлю власника), `RowNo ← LineNumber` |
+
+**`Комментарий` — не стандартний реквізит, а угода БСП.** `Memo` у цілі — baseline, `origin` на нього
+не повісити, тому відповідність живе в інструменті. Реквізиту в записі немає — `Memo` порожній.
 
 **У рядка колекції свого ключа в джерелі немає:** повтор зливає за парою «власник + `RowNo`», а `Id`
 рядка ціль робить сама під час вставки.

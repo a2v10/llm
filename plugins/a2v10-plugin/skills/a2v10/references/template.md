@@ -71,7 +71,7 @@ A function (`(this: IRoot, arg?) => …`; returning `'save'` triggers a save) or
 
 ## Inside a handler — `this.$ctrl`
 
-Every `IElement` (and `IRoot`) exposes `$ctrl: IController` — the runtime surface you call from any command/event body. Common reaches: `$invoke`, `$showDialog`, `$navigate`, `$save`, `$requery`, `$reload`, `$close`, `$toast`, `$report`, `$upload`. Full surface → [controller](https://docs-llm.a2v10.com/client/controller.md).
+Every `IElement` (and `IRoot`) exposes `$ctrl: IController` — the runtime surface you call from any command/event body. Common reaches: `$invoke`, `$showDialog`, `$navigate`, `$save`, `$requery`, `$reload`, `$close`, `$toast`, `$report`, `$uploadBlob` (a file into the platform storage → `examples/attachment`). Full surface → [controller](https://docs-llm.a2v10.com/client/controller.md).
 
 Server errors from `$invoke` are shown by the platform by default (business `UI:` message vs bare developer alert); reach for `catchError` **only** for a client-side follow-up on failure → [platform-behavior.md](platform-behavior.md).
 

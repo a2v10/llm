@@ -25,6 +25,7 @@ Output: full row of artifacts.
 | **Boolean** | `bit not null default 0` | `bit` | `boolean` | `<CheckBox>` | `Role="CheckBox"` *(not `DataType="CheckBox"`)* |
 | **Enum** | `char(N) + CHECK in (...)` | same | `string` | `<ComboBox>` with static `<ComboBoxItem>` | (default) |
 | **FK reference** | `bigint null` + FK constraint | `bigint` | `TRefItem` (`{Id, Name}`) | `<SelectorSimple Url="/<kind>/<endpoint>">` | `{Bind <col>.Name}` `LineClamp="2"` |
+| **File / image** (model-root field only) | `bigint null` + FK → `a2blob.Blobs(Id)` | `bigint` | `TBlob` (`{Id, Name, Mime, Token}`) | `<BlobImage Url="/<this endpoint>">` + key in `model.json` `blobs` | (not shown) |
 | **System flags** (`Void`, `IsSystem`) | `bit not null default 0` | `bit` | `boolean` | (usually hidden) | (usually hidden) |
 
 **Notes:**

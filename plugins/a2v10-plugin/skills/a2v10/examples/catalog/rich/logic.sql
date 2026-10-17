@@ -101,6 +101,7 @@ begin
 		[Manager!TEmployee!RefId] = a.Manager,
 		[State!TAgentState!RefId] = a.[State],
 		a.IsCustomer, a.IsSupplier,
+		[Logo!TBlob!RefId] = a.Logo,
 		[Addresses!TAddress!Array] = null,
 		[Accounts!TAccount!Array] = null,
 		[Tags!TAgentTag!Array] = null
@@ -157,6 +158,10 @@ begin
 
 	select [!TTag!Map] = null, [Id!!Id] = t.Id, [Name!!Name] = t.[Name], t.Color
 	from cat.Tags t where t.Id in (select Tag from cat.AgentTags where Agent = @Id);
+
+	-- the file object: these four fields, Token named exactly so (BlobImage reads the file by Id + Token)
+	select [!TBlob!Map] = null, [Id!!Id] = b.Id, b.[Name], b.Mime, [Token!!Token] = b.AccessToken
+	from a2blob.Blobs b where b.Id = (select Logo from cat.Agents where Id = @Id);
 end
 go
 -------------------------------------------------
@@ -176,7 +181,8 @@ as table(
 	Manager    bigint,
 	[State]    bigint,
 	IsCustomer bit,
-	IsSupplier bit
+	IsSupplier bit,
+	Logo       bigint
 );
 go
 -------------------------------------------------
@@ -247,10 +253,11 @@ begin
 		t.Manager    = s.Manager,
 		t.[State]    = s.[State],
 		t.IsCustomer = s.IsCustomer,
-		t.IsSupplier = s.IsSupplier
+		t.IsSupplier = s.IsSupplier,
+		t.Logo       = s.Logo -- an ordinary field: the platform has checked its token before this call
 	when not matched by target then insert
-		([Name], Memo, Manager, [State], IsCustomer, IsSupplier) values
-		(s.[Name], s.Memo, s.Manager, s.[State], s.IsCustomer, s.IsSupplier)
+		([Name], Memo, Manager, [State], IsCustomer, IsSupplier, Logo) values
+		(s.[Name], s.Memo, s.Manager, s.[State], s.IsCustomer, s.IsSupplier, s.Logo)
 	output inserted.Id into @rtable(id);
 	select top(1) @id = id from @rtable;
 
@@ -320,6 +327,8 @@ begin
 	set nocount on;
 	set transaction isolation level read committed;
 
+	-- soft delete keeps the attachment links, so the agent can be restored. A hard delete must remove
+	-- them itself (BlobLinks has no FK to the owner): delete from a2blob.BlobLinks where [Base] = N'/catalog/agent' and LinkId = @Id
 	update cat.Agents set Void = 1 where Id = @Id;
 end
 go

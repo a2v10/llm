@@ -74,7 +74,8 @@ create table cat.[Agents]
 	IsCustomer bit not null
 		constraint DF_Agents_IsCustomer default(0),
 	IsSupplier bit not null
-		constraint DF_Agents_IsSupplier default(0)
+		constraint DF_Agents_IsSupplier default(0),
+	Logo bigint        -- FK → a2blob.Blobs (a file in a record field)
 );
 go
 ------------------------------------------------

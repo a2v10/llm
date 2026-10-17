@@ -26,5 +26,8 @@
 			"type": "sql",
 			"procedure": "Agent.Fetch"
 		}
+	},
+	"blobs": {
+		"Logo": { "accept": "image/png,image/jpeg,image/svg+xml", "maxSize": 512 }
 	}
 }

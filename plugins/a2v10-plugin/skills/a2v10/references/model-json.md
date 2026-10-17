@@ -1,7 +1,7 @@
 # model.json
 
 **Full docs — [docs-llm.a2v10.com/model.md](https://docs-llm.a2v10.com/model.md).** A page per
-section (overview, actions, dialogs, popups, commands, reports, files), every property with its type
+section (overview, actions, dialogs, popups, commands, reports, files, blobs), every property with its type
 and default. Look a key up there; never guess one.
 
 **Read that hub as a catalogue of what the platform *can* do, not as a menu of what to use.** It is
@@ -18,6 +18,8 @@ This is the whole mainline — the examples in this skill use nothing beyond it:
 | endpoint (top) | `$schema`, `description`, `schema`, `model` |
 | `actions` / `dialogs` element | `view`, `template`, `index: true` (calls `.Index` instead of `.Load`), `parameters` |
 | `commands` element | `type: "sql"`, `procedure` |
+| `blobs` element | `accept`, `maxSize` (KB) — key = the model-root field (`Logo`), or the upload name in an attachment endpoint |
+| attachment endpoint (top) | `requireBase: true` — only in the app's one attachment endpoint (`examples/attachment`) |
 
 `model` may also be `"$meta"`: the model is built by another component (SKILL.md §3, *`$meta` → not
 yours*). Under it a missing `view`/`template` key, or a missing element, does not mean "none" — it
@@ -48,6 +50,13 @@ A printed form has its own file — wiring, the template language, and the bans 
 
 The decision rule lives in SKILL.md §3; this is the ban at the point where the section is about to
 be written.
+
+## blobs — files and images, not `files`
+
+> ⚠️ A file or an image kept with a record is a **`blobs`** key (→ `add-field.md`, attachments →
+> `examples/attachment`). **Never** declare a `files` operation to store one: its storage types
+> `sql` and `azureBlob` are deprecated, and the platform no longer keeps files that way. An endpoint
+> with `blobs` has no `source` of its own.
 
 ## permissions
 

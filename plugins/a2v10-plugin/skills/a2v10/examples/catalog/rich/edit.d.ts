@@ -27,6 +27,14 @@ export interface TTag extends IElement {
 }
 export declare type TTagArray = IElementArray<TTag>;
 
+// A file of the platform storage — always these four fields.
+export interface TBlob extends IElement {
+	readonly Id: number;
+	Name: string;
+	Mime: string;
+	Token: string;
+}
+
 // Table part #1 — addresses (plain scalars)
 export interface TAddress extends IArrayElement {
 	readonly Id: number;
@@ -69,6 +77,7 @@ export interface TAgent extends IElement {
 	State: TAgentState;
 	IsCustomer: boolean;
 	IsSupplier: boolean;
+	Logo: TBlob;
 	Addresses: TAddressArray;
 	Accounts: TAccountArray;
 	Tags: TAgentTagArray;

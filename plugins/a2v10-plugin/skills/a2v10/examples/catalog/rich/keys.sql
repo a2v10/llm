@@ -11,6 +11,11 @@ if not exists(select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CON
 		constraint FK_Agents_State_AgentStates foreign key ([State]) references cat.AgentStates(Id);
 go
 ------------------------------------------------
+if not exists(select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CONSTRAINT_NAME = 'FK_Agents_Logo_Blobs')
+	alter table cat.Agents add
+		constraint FK_Agents_Logo_Blobs foreign key (Logo) references a2blob.Blobs(Id);
+go
+------------------------------------------------
 -- FK from cat.AgentAddresses
 ------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CONSTRAINT_NAME = 'FK_AgentAddresses_Agent_Agents')

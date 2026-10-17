@@ -9,9 +9,15 @@
 @Create=Створити
 @SaveAndClose=Зберегти і закрити
 @Cancel=Скасувати
+@Close=Закрити
+@Upload=Завантажити
 @Select=Вибрати
 @AddRow=Додати рядок
 @Search=Пошук
+
+; Attachments
+@Attachments=Вкладення
+@Attachments.Empty=Для цього елемента ще немає вкладень
 
 ; Errors
 @Error.Required=Обов'язкове поле

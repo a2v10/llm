@@ -137,6 +137,8 @@ Each row is an action you take. The kind (catalog / document / journal / …) is
 | Action | Go to |
 |---|---|
 | add a field | `references/add-field.md` |
+| add a file / image to a record | `references/add-field.md` (*File / image*) |
+| add attachments (any number of files on a record) | `examples/attachment/` |
 | edit the view | `references/xaml.md` |
 | edit the template | `references/template.md` |
 | edit a procedure | `references/sql-procedures.md` (verb/structure) + `references/sql-rules.md` (result-set markers) |

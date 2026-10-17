@@ -126,6 +126,26 @@ XAML DataGrid: `Role="CheckBox"` (**not** `DataType="CheckBox"`).
 
 d.ts: `IsActive: boolean`.
 
+### File / image — a field of the model root only
+
+The platform stores the file; the record keeps a reference. Donor → `examples/catalog/rich` (`Logo`);
+mechanics → [sql/blob-storage.md](https://docs-llm.a2v10.com/sql/blob-storage.md).
+
+- Column `bigint` (`schema.sql`) + FK → `a2blob.Blobs(Id)` (`keys.sql`); `TableType` and `Update`
+  MERGE as an ordinary field.
+- `Load`: `[Logo!TBlob!RefId] = a.Logo` + a `TBlob` Map of exactly
+  `[Id!!Id] = b.Id, b.[Name], b.Mime, [Token!!Token] = b.AccessToken` from `a2blob.Blobs`.
+- `model.json`: `"blobs": { "Logo": { "accept": …, "maxSize": <KB> } }` — the key is the field name.
+- XAML edit: `<BlobImage Url="/<this endpoint>" Value="{Bind Agent.Logo}" Height="8rem"/>`.
+- d.ts: `Logo: TBlob` (`{ Id, Name, Mime, Token }` — declare it as the donor's `edit.d.ts` does).
+- **Not in a table-part row or a nested object** (`Document.Rows[].Photo`, `Agent.Contact.Photo`) —
+  unsupported. Several files on one record → attachments, `examples/attachment`.
+- **Never** bytes in the app's tables (`varbinary`), `<Image>` / `<FileImage>`, a `files` operation, or
+  `<Model>.<Field>.Load`/`.Update` byte procedures — all deprecated.
+- The host registers the storage once: `AddBlobStorages` in `Startup.cs`, `BlobStorage` in
+  `appsettings.json`, package `A2v10.BlobStorage.FileSystem` — the scaffold has all three. The app
+  lacks them → name them to the user: the host is theirs to change and rebuild (SKILL.md §4).
+
 ## "Don't forget" checklist
 
 - [ ] DDL is idempotent and additive: `if not exists(... INFORMATION_SCHEMA.COLUMNS ...)` guards the `add`; no `N''` in guards; never rename/drop (add new, tell the user).

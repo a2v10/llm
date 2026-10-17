@@ -7,7 +7,9 @@ full range a reference entity reaches in practice:
   color (`State`), and FKs **inside** a table-part row (`Bank`, `Currency`);
 - **boolean flags** (`IsCustomer`, `IsSupplier`);
 - **two table parts** — `Addresses` (plain scalars) and `Accounts` (two references per row);
-- **tags** — a many-to-many link, modelled as a reference-only table part.
+- **tags** — a many-to-many link, modelled as a reference-only table part;
+- **files** — a logo in a record field (`Logo`, `<BlobImage>`) and attachments through the app's
+  one attachment endpoint (`examples/attachment/`).
 
 Same header `cat.Agents` that `document/operation` references — this example defines it.
 
@@ -18,7 +20,7 @@ Same header `cat.Agents` that `document/operation` references — this example d
 | `schema.sql`          | Sequences + `cat.Agents`, 3 table parts, 5 stub FK targets |
 | `keys.sql`            | FK constraints                                            |
 | `logic.sql`           | All stored procedures + table types                      |
-| `model.json`          | Action `index`; `edit` + `browse` dialogs; `fetch` command |
+| `model.json`          | Action `index`; `edit` + `browse` dialogs; `fetch` command; `blobs.Logo` |
 | `index.d.ts`          | Type definitions for the list form                       |
 | `index.template.ts`   | List template; shared by index and browse                |
 | `edit.d.ts`           | Type definitions for the edit form (header + 3 arrays)   |
@@ -75,6 +77,15 @@ placeholder `[Tags!TTag!Array]` in the row projection + a second result set carr
 `[!TAgent.Tags!ParentId]`). The Name column renders it with `<TagsList>` next to the name inside
 a `<Block>`. Because that column's content is a `Block` (not a plain `Content` bind), the sort
 field can't be inferred — `SortProperty="Name"` names it. Tag chips use `cat.Tags.Color`.
+
+**Files — the platform keeps them, the record keeps a reference.** `Logo` is a `bigint` FK to
+`a2blob.Blobs`, loaded as `RefId` + a `TBlob` `Map` of `Id`/`Name`/`Mime`/`[Token!!Token]` and saved
+as an ordinary TVP column. `model.json` `blobs.Logo` declares it an upload target (`accept`,
+`maxSize` — checked by the server); `<BlobImage Url="/catalog/agent">` names this endpoint, the key
+comes from the bound field. Only a field of the model root — not a table-part row. Attachments are
+not here: the **Attachments** button opens `/attachment/index?base=/catalog/agent`
+(→ `examples/attachment/`). `Agent.Delete` is soft, so the links stay; a hard delete removes them.
+Full mechanics → [sql/blob-storage.md](https://docs-llm.a2v10.com/sql/blob-storage.md).
 
 **Edit in a dialog, classification in the Taskpad.** Editing is a `dialogs.edit` (`edit.dialog`,
 root `<Dialog>`), not a page — so the list / browse open it with `Dialog Action=Append/EditSelected/Edit`.

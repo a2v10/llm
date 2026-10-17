@@ -195,7 +195,7 @@ Alias-типи (`platformid`) у каталозі роздвоюються: `DAT
 
 Робоча форма — `isnull(DOMAIN_NAME, DATA_TYPE)`: для `platformid` збігається по першому, для `nvarchar` по другому, розвилки не потрібно.
 
-**База `platformid` — факт БД, не декларація.** Тип є в БД — береться звідти. Немає — з `platformid` у `app.json` (`bigint` | `int` | `uniqueidentifier`), і деплой створює `dbo.platformid`. Немає ніде — помилка. `app.json` суперечить БД — помилка.
+**База `platformid` — факт БД, не декларація.** Тип є в БД — береться звідти. Створює його лише `MainApp/_sql/platformid.sql`, першим у `full.sql` ([cli.md](cli.md) → «`a2 meta deploy` і `--full`»); `deploydatabase.sql` його не створює (version >= 8671). `app.json` суперечить БД — помилка.
 
 **Довжина — у символах**, тому джерело `INFORMATION_SCHEMA.COLUMNS`, а не `sys.columns` (там байти: 510 для `nvarchar(255)`). Змішати два джерела означає отримати той самий вічний ALTER.
 

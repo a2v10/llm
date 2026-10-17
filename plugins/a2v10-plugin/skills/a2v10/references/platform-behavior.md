@@ -34,3 +34,15 @@ Sibling axis: name-sensitive elements that **silently fail** without an exact na
   `new InvalidOperationException("UI:текст")` for the same effect
   (→ [clr.md](clr.md)).
 - Mechanics → [controller](https://docs-llm.a2v10.com/client/controller.md).
+
+## Files — the server checks type, size and token
+
+- **The platform does:** checks `accept` and `maxSize` of the `blobs` key on upload (type from the
+  file content for images and PDF, not from what the browser reports); before `.Update`, checks that
+  every non-empty file reference of a `blobs` key arrives with its own token — a foreign `Id` fails
+  the save with `Invalid blob token`. Clearing a reference is always allowed.
+- **Don't:** check MIME or size in the template or the procedure; validate a file `Id` in `.Update`.
+  `accept` passed to `$uploadBlob` only filters the file picker.
+- **Yours, as everywhere:** row-level access — every attachment procedure filters by `@Base` + the
+  owner (→ `examples/attachment`).
+- Mechanics → [sql/blob-storage.md](https://docs-llm.a2v10.com/sql/blob-storage.md).

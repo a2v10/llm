@@ -31,7 +31,16 @@ app a newer generation exists; without it the app goes stale without a sign.
   application is newer than this skill, so the scaffold is not the current generation and nothing
   here is an upgrade. Say so, tell the user to update the skill, and stop.
 
-## 4. The user rebuilds
+## 4. The key type — `dbo.platformid`
+
+The platform script needs `dbo.platformid` — the type of the application's keys — declared before
+it; without it the apply of `full.sql` stops at its first statement. The app's main module has no
+`_sql/platformid.sql` → copy `scaffold/MainApp/_sql/platformid.sql` there, set the type to the
+app's PK type (`bigint` | `int` | `uniqueidentifier`, read with `a2 db`), and put it **first** in
+`inputFiles` of the host's `sql.json` — as in `scaffold/WebApp/sql.json`. Declared once for the life
+of the database: an existing `platformid.sql` is never edited.
+
+## 5. The user rebuilds
 
 Editing pins restarts nothing. Finish by naming what changed and asking the user to rebuild and
 restart the application — the host is never yours to build (SKILL.md §4).

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using A2v10.ReportEngine.Pdf;
+using A2v10.BlobStorage.FileSystem;
 
 namespace WebApp;
 
@@ -20,6 +21,12 @@ public class Startup(IConfiguration configuration)
         services.AddReportEngines(factory =>
         {
             factory.RegisterEngine<PdfReportEngine>("pdf");
+        });
+
+        // files of the "blobs" sections; the provider and its folder - "BlobStorage" in appsettings.json
+        services.AddBlobStorages(factory =>
+        {
+            factory.RegisterStorage<FileSystemBlobStorage>("FileSystem");
         });
     }
 

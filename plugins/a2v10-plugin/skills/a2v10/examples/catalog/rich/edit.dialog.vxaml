@@ -2,6 +2,9 @@
 <Dialog xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
 		Title="{Bind Agent.Id, Format='@[Agent] [{0}]'}" Overflow="True" Width="60rem">
 	<Dialog.Buttons>
+		<!-- the one attachment endpoint of the app; base = this endpoint. SaveRequired: a new agent gets its Id first -->
+		<Button Content="@[Attachments]" Icon="Attach"
+			Command="{BindCmd Dialog, Action=Show, Argument={Bind Agent}, Url='/attachment/index?base=/catalog/agent', SaveRequired=True}"/>
 		<Button Content="@[SaveAndClose]" Command="{BindCmd SaveAndClose, ValidRequired=True}" Style="Primary"/>
 		<Button Content="@[Cancel]" Command="{BindCmd Close}"/>
 	</Dialog.Buttons>
@@ -22,6 +25,8 @@
 			<TextBox Label="@[Memo]" Value="{Bind Agent.Memo}" Multiline="True" Rows="2"/>
 			<CheckBox Label="@[Customer]" Value="{Bind Agent.IsCustomer}"/>
 			<CheckBox Label="@[Supplier]" Value="{Bind Agent.IsSupplier}"/>
+			<!-- Url = the endpoint whose "blobs" has the key; the key itself comes from the field name (Logo) -->
+			<BlobImage Url="/catalog/agent" Value="{Bind Agent.Logo}" Height="8rem"/>
 		</Grid>
 
 		<TabBar Value="{Bind Root.$$Tab}" Grid.Row="2">

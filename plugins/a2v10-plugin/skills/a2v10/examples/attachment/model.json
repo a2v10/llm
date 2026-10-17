@@ -1,0 +1,23 @@
+﻿{
+	"$schema": "../@schemas/model-json-schema.json#",
+	"description": "attachment",
+	"schema": "cat",
+	"model": "Attachment",
+	"requireBase": true,
+	"dialogs": {
+		"index": {
+			"index": true,
+			"template": "index.template",
+			"view": "index.dialog"
+		}
+	},
+	"blobs": {
+		"Upload": { "maxSize": 20480 }
+	},
+	"commands": {
+		"delete": {
+			"type": "sql",
+			"procedure": "Attachment.Delete"
+		}
+	}
+}

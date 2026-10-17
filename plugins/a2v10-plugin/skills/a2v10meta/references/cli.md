@@ -154,7 +154,9 @@ a2 meta materialize catalog/agent edit template
 |---|---|---|
 | `MainApp/_sqlscripts/deploydatabase.sql` | схема з метаданих | `a2 meta deploy` |
 | `MainApp/_sqlscripts/app.sql` | написане руками: `/**/keys.sql`, `/**/logic.sql`, `/**/init.sql` | збирач `MainApp/sql.json` |
-| `WebApp/_sqlscripts/full.sql` | `a2v10_platform_simple.sql` + `a2v10_metadata.sql` + `deploydatabase.sql` + `app.sql` | збирач `WebApp/sql.json` |
+| `WebApp/_sqlscripts/full.sql` | `MainApp/_sql/platformid.sql` + `a2v10_platform_simple.sql` + `a2v10_metadata.sql` + `deploydatabase.sql` + `app.sql` | збирач `WebApp/sql.json` |
+
+`MainApp/_sql/platformid.sql` — тип ключів застосунку, `dbo.platformid`; пише автор, той самий тип, що `platformid` в `app.json`, і не змінюється ніколи. Першим у `full.sql`, бо на нього спираються платформні скрипти; без нього `full.sql` падає на першому платформному скрипті з повідомленням, що дописати. У `app.sql` не входить (version >= 8671).
 
 **Версія пакета `A2v10.Metadata` у хоста і версія CLI `a2` збігаються — завжди.** CLI несе власну копію `A2v10.Metadata`: нею генерує `deploydatabase.sql`, а процедури `a2meta`, які цей файл викликає, ставить у базу скрипт із пакета хоста. Збіг забезпечує оновлення платформи: CLI і пакети піднімаються разом, лише на прохання користувача, процедурою з [SKILL.md](../SKILL.md) §7 («update the platform»). Розбіжність поза нею модель не лагодить, а повідомляє користувачеві.
 

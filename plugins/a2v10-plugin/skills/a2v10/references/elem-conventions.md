@@ -27,3 +27,13 @@ Each entry states:
   from the element, so the SQL projection (and the tags dictionary) must supply `Name` and `Color`.
 - **Failure mode** — silent: chips render with a blank caption (missing `Name`) and/or with no
   color (missing `Color`); no error.
+
+### File object — `<BlobImage>`, `<BlobPreview>`, `$uploadBlob`
+
+- **Element / where** — any model property that holds a file of the platform storage (`Agent.Logo`,
+  `Attachment.Blob`).
+- **Required name/structure** — a `Map` row from `a2blob.Blobs` with exactly
+  `[Id!!Id] = b.Id, b.[Name], b.Mime, [Token!!Token] = b.AccessToken`. The token property is named
+  **`Token`**; the platform reads the file by `Id` + `Token` and checks that pair on save.
+- **Failure mode** — no token: the file is not shown, and saving the record fails with
+  `Invalid blob token`.

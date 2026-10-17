@@ -140,7 +140,9 @@ idType, naming (table/model spelling, constraint patterns) and the per-kind stan
 **not semantic decisions** — they are conventions applied silently from their defaults, no
 dialogue. (Multi-tenancy is rare enough in new projects to ignore until one actually needs it;
 the scaffold ships single-tenant.) Defaults live in `sql-discipline.md` (naming, constraints) and
-`semantic.md` (standard columns).
+`semantic.md` (standard columns). The platform learns idType from `MainApp/_sql/platformid.sql`
+(`bigint` in the scaffold): a non-default idType is set there before the first apply — afterwards it
+is fixed for the life of the database.
 
 **XAML extension** — `.vxaml`, applied silently (the scaffold ships it; the `XAML naming
 convention` line above records it). Change only if the user explicitly asks for `.xaml` (then

@@ -85,6 +85,7 @@ parent. (Concrete parent-child invariants → [mapping.md](mapping.md) §2, Pair
 | `!PageSize`    | Echo of the page size (in `$System`). → [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md) |
 | `!Offset`      | Echo of the paging offset (in `$System`). → [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md) |
 | `!Filter`      | Echo of a filter parameter back to the form (in `$System`); several written forms per filter kind. → [sql/system-datasets.md](https://docs-llm.a2v10.com/sql/system-datasets.md) |
+| `!Token`       | Access token of a platform file: `[Token!!Token] = b.AccessToken`, only in the `TBlob` Map from `a2blob.Blobs`; the property is named exactly `Token`. → [sql/blob-storage.md](https://docs-llm.a2v10.com/sql/blob-storage.md) |
 | `!Json`        | Text column holding valid JSON; deserialized into an object in the model (not a string). **The object is NOT reactive.** |
 
 ## Reserved property names
