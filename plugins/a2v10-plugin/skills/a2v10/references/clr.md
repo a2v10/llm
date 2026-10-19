@@ -35,7 +35,7 @@ of C# large enough to have its own structure. Such a library is referenced by th
 
 Either way the host loads the assembly from its own output at startup: a changed `.cs` needs the
 host **rebuilt and restarted**, and that is the user's step, not yours (SKILL.md §4). Nothing on this
-floor is read live. `.cs` counts as a platform file for the BOM rule (SKILL.md §5).
+floor is read live.
 
 ## The class
 

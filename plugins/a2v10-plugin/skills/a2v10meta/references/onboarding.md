@@ -15,6 +15,8 @@ A missing `CLAUDE.md` says nothing about whether the application exists — it i
 
 Phase 1 changes its subject: nothing is being designed, so nothing is proposed. Read the declarations and **state back what you understood** — what the application is for, what each entity is, which words the domain uses for them. The gate is the same single one: the user corrects that reading and agrees to it.
 
+Files written by hand are where a file in another encoding turns up. Mojibake instead of Cyrillic in one means its content never reached you: do not read the application off it, do not edit it or write it back, and do not convert it — tell the user to re-save `<path>` as UTF-8, wait, re-read it, then continue.
+
 What the reading cannot recover is exactly what these two files are for. The declarations give the entities and their kinds; they do not give the purpose, the customer's vocabulary, the boundaries, or why anything was decided that way. Those come from the user, and asking for them is the whole conversation.
 
 Then Phase 2, **steps 5 and 6 only** — `CLAUDE.md` and `DOMAIN.md`. Phase 3 is skipped: the application already runs, and deploying is a task of its own, on request.
@@ -48,7 +50,7 @@ Propose the **application name** here as well: it becomes the folder, the projec
 
 No further questions. In this order — and `examples/warehouse/` is what the result looks like when it is done: one declaration file per folder, nothing else.
 
-1. **Shell.** Copy `scaffold/` into the project directory (`MainApp/`, `WebApp/`, `AppName.slnx`). Rename the solution file to `<AppName>.slnx`. Replace `{{AppName}}` in every copied file (`WebApp/appsettings.json`) and `{{Year}}` with the current year. The scaffold is already a metaapplication — the host carries the `A2v10.Metadata` and `A2v10.Metadata.Xaml` packages and registers `UseAppMetadata().UseAppMetadataXaml()`; nothing else is needed to make `metadataEnabled` true. Without `UseAppMetadataXaml()` data is served, and every generated page is refused (version >= 8671).
+1. **Shell.** Copy `scaffold/` into the project directory — the directory itself (`cp -r scaffold/. <dest>`), since a bash `*` glob skips the dotfiles: `MainApp/`, `WebApp/`, `Tests/`, `AppName.slnx`, and `.gitattributes`, `.editorconfig` — LF line endings, UTF-8 without BOM. Rename the solution file to `<AppName>.slnx`. Replace `{{AppName}}` in every copied file (`WebApp/appsettings.json`) and `{{Year}}` with the current year. The scaffold is already a metaapplication — the host carries the `A2v10.Metadata` and `A2v10.Metadata.Xaml` packages and registers `UseAppMetadata().UseAppMetadataXaml()`; nothing else is needed to make `metadataEnabled` true. Without `UseAppMetadataXaml()` data is served, and every generated page is refused (version >= 8671).
 
    **`{{BlobPath}}` — the folder for files** (`BlobStorage:Path` in `WebApp/appsettings.json`): images and attachments the users upload; tables keep only their ids. Choose it by these rules, without asking:
    - an absolute path, forward slashes: a relative one resolves against whatever folder the host process starts in;

@@ -30,6 +30,8 @@ A read-only CLI named **`a2`** inspects a project for you — its config (`a2 ap
 
 **`a2` is required — check `a2 --version` before any work, new project or existing.** Missing → install it from NuGet ([A2v10.CLI](https://www.nuget.org/packages/A2v10.CLI)); can't install → stop and tell the user. Never proceed without it. Commands and output shapes → `references/cli.md`.
 
+**Windows: PowerShell 7+ (`pwsh`) is required — check `$PSVersionTable.PSVersion` before any work.** Below 7 → stop and tell the user to install it.
+
 ## 3. Model — how the engine works (syntax)
 
 A **model** is a business entity the engine processes as one unit — a single logical whole, backed by one or more related tables.
@@ -99,7 +101,6 @@ These are things the engine *allows* and the model is *naturally pulled toward*.
 
 - **Clone-and-mutate: copied is guilty until verified.** The workflow is donor → clone → mutate. **The donor is the closest existing page or endpoint of the same shape — in this project first, else `examples/`.** The trap is carrying the donor's names into the new entity. After cloning, sweep **every** inherited name — markers, TVP columns, d.ts properties, XAML bindings, proc body, comments — against the new entity. Cross-layer names must agree (§4); a clone is exactly where they silently stop.
 - **Mojibake instead of Cyrillic means the file is not UTF-8 — its content never reached you.** `Ð¿Ñ€Ð¸`, `?????`, `���` where words belong: the bytes were decoded wrong, and the text is unrecoverable from what you hold. **Do not edit that file and do not write it back** — saving makes the corruption permanent. Tell the user to re-save `<path>` as UTF-8, wait, **re-read it**, then continue. Never convert it yourself.
-- **Every platform file you write from scratch starts with `U+FEFF` — that character is the BOM.** `.sql`, `.vxaml`, `.ts`, `.json`, `.cs`, localization `.txt`. **`.md` files carry no BOM** (`CLAUDE.md`, `DOMAIN.md`, READMEs) — parsers that expect a leading marker, YAML frontmatter first of all, break on it. The split is by file kind, so there is never a per-file question.
 - **Comments are load-bearing — true-or-delete.** A stale comment is cloned with the code and propagates, so fix or cut it, never leave a wrong one. Site-local invariants and "don't do X here" → a comment at the site; cross-cutting meaning → the project docs — `CLAUDE.md` (skeleton) or `DOMAIN.md` (per-entity), per `semantic.md`. A comment on a seam is part of the contract, not optional prose.
 - **Don't invent platform surface.** Not in the references or an existing example → it does not exist. The surface is small and names are free — which tempts confabulated keys, markers, attributes. Not in the donor or nearby → the docs (https://docs-llm.a2v10.com) or ask; never invent. **Recalling what a doc page says is inventing too — open the page, or don't cite it** — with `curl`, never WebFetch: it hands back a summary, not the page.
 - **Don't carry framework priors.** A2v10 is not MVC/ORM. Resist the pull toward ad-hoc SQL, an ORM, migrations — data is **only** through procedures, files interpreted live. What you "know" from Rails/Django/EF is wrong here.

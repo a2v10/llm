@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+# the sql.json bundles: collapsed in PR views; no -diff: the bundle is checked by eye
+**/_sqlscripts/*.sql linguist-generated

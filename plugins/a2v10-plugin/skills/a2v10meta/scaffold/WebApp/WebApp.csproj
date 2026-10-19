@@ -14,7 +14,7 @@
 		<PackageReference Include="A2v10.Metadata" Version="10.1.8671" />
 		<PackageReference Include="A2v10.Metadata.Xaml" Version="10.1.8671" />
 		<PackageReference Include="A2v10.BlobStorage.FileSystem" Version="10.1.8671" />
-		<PackageReference Include="A2v10.Sql.MSBuild" Version="10.1.8220" />
+		<PackageReference Include="A2v10.Sql.MSBuild" Version="10.1.8222" />
 	</ItemGroup>
 
 	<ItemGroup>

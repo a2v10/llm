@@ -12,7 +12,7 @@
 		<PackageReference Include="A2v10.Web.Assets" Version="10.1.8671" />
 		<PackageReference Include="A2v10.ReportEngine.Pdf" Version="10.1.8671" />
 		<PackageReference Include="A2v10.BlobStorage.FileSystem" Version="10.1.8671" />
-		<PackageReference Include="A2v10.Sql.MSBuild" Version="10.1.8220" />
+		<PackageReference Include="A2v10.Sql.MSBuild" Version="10.1.8222" />
 	</ItemGroup>
 
 	<ItemGroup>

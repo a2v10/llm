@@ -29,6 +29,8 @@ The engine does not distinguish endpoint types: the distinction is ours, and it 
 
 One CLI, **`a2`**, in the form `a2 <object> <action>`: it reads the project and applies metadata to the database. Whether an application is metadata-driven at all is its answer too, not a file in the repository. → `references/cli.md`
 
+**Windows: PowerShell 7+ (`pwsh`) is required — check `$PSVersionTable.PSVersion` before any work.** Below 7 → stop and tell the user to install it.
+
 ## 3. Mechanics
 
 An endpoint is **one model** — one business entity the engine processes as a single unit, backed by one or more related tables. A document with its rows is one endpoint, not two; that is why addressing stops at the endpoint and never reaches inside.
@@ -59,6 +61,7 @@ An endpoint is **one model** — one business entity the engine processes as a s
 - **An endpoint with no files of its own is finished, not unfinished.** Every scaffolder you have ever seen generates once and lets go, so a folder holding only a `metadata.json` reads as a draft and invites XAML or SQL "so that something is there". A file exists **only** because that artifact was ejected on purpose; a file with nothing behind it is an error, not a spare. → `references/materialize.md`
 - **Declared is not reachable.** The rule above is about the files inside the folder; this one is about the application around it. An endpoint no `menu.json` item names loses its **own entrance**, not its existence — a catalog still opens in a Ref lookup, and records are still created there — but nothing leads the user to its register, and nothing says so: deploy succeeds, validation passes, the URL works when typed by hand. Every endpoint you declare, you also place → `references/menu.md`.
 - **A document over `storage` does not describe its entity completely, and must not try.** Every file you have seen elsewhere is self-contained, so repeating `fields` from the table's owner will feel like completeness. Those keys are read by nobody and reported by nothing: the endpoint works, and the copy quietly rots next to the original.
+- **Mojibake instead of Cyrillic means the file is not UTF-8 — its content never reached you.** `Ð¿Ñ€Ð¸`, `?????`, `���` where words belong: the bytes were decoded wrong, and the text is unrecoverable from what you hold. **Do not edit that file and do not write it back** — saving makes the corruption permanent. Tell the user to re-save `<path>` as UTF-8, wait, **re-read it**, then continue. Never convert it yourself.
 - **Do not carry priors from 1C, Frappe or an ORM.** This format splits what they merge, and the merged reading drifts back under pressure.
 
 ## 6. Workflow
