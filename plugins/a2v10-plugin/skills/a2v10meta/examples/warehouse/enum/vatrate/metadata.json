@@ -3,9 +3,14 @@
   "table": "VatRates",
   "model": "VatRate",
 
+  "fields": {
+    "Rate": { "type": "percent" }
+  },
+
   "values": [
-    { "id": "20", "name": "20%" },
-    { "id": "7",  "name": "7%" },
-    { "id": "0",  "name": "Без ПДВ" }
+    { "id": "20",  "name": "20%",     "Rate": 20 },
+    { "id": "7",   "name": "7%",      "Rate": 7 },
+    { "id": "0",   "name": "0%",      "Rate": 0 },
+    { "id": "903", "name": "Без ПДВ", "Rate": 0 }
   ]
 }
