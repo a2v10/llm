@@ -11,6 +11,7 @@ description: >
   already says classic: this skill asks whether metadata-driven or classic;
   classic then hands off to the a2v10 skill.
   Endpoint folder without metadata.json: a2v10 skill.
+  Platform build 8673.
 ---
 
 # A2v10 Metadata-Driven Skill
@@ -39,7 +40,7 @@ An endpoint is **one model** — one business entity the engine processes as a s
 - **`$<module>`** (optional) relocates the path's root — a `$`-prefixed segment is the one thing the runtime interprets. Modules and their roots come from `a2 app config`.
 - **`<kind>/<endpoint>`** locates the folder. For a raw endpoint both segments are opaque — free names the runtime does not read. **For us the first one is neither free nor opaque**: `kind` is the parent folder name (`catalog/agent/` → `catalog`), it comes from a fixed set, and it is **interpreted** — it decides what gets generated. → `references/kinds.md`. A kind may also have **aliases** — more folders of it, named in `app.json` (`"aliases": { "document": ["sale"] }`): `sale/invoice/` is of kind `document` and is addressed `/sale/invoice`, never `/document/invoice`. Other first segments are possible in an application; they are not ours — pay them no attention.
 - **Endpoint** = a `<kind>/` subfolder. → `references/metadata.md`
-- **`<action>` and `<id>` are never authored.** For a raw endpoint an action is an element name, freely declared. For a metaendpoint the set is **fixed and interpreted** by the runtime (`index`, `edit`, …) and declared nowhere — you will not find it in `metadata.json`, and there is nothing to add there. The names surface in exactly one place: `model.json`, and only for an artifact that has been materialized → `references/materialize.md`. **What you ever write is `/<kind>/<endpoint>`** — in the menu, in a link, everywhere.
+- **`<action>` and `<id>` are never authored.** For a raw endpoint an action is an element name, freely declared. For a metaendpoint the set is **fixed and interpreted** by the runtime (`index`, `edit`, …) and declared nowhere — you will not find it in `metadata.json`, and there is nothing to add there. The names surface in exactly one place: `model.json`, and only for an artifact that has been materialized → `references/materialize.md`. **What you write in `target` and in the `endpoint` key of `menu.json` (version >= 8673) is `/<kind>/<endpoint>`.** Only the menu completes it; a page address anywhere else is full — a `Navigate` in a materialized or classic view is `/<kind>/<endpoint>/index/0`, and one with no action is an error.
 
 ## 4. Must — break it and it does not work
 
@@ -99,6 +100,7 @@ Unsure → ask; never guess.
 | apply metadata to the database, plan a migration | `references/deploy_and_migrations.md` |
 | wire app navigation | `references/menu.md` |
 | restrict access — declare roles, grant verbs, hide a menu item | `references/permissions.md` — roles, `grants`, the menu filter and the gate in the SQL work (`useGrants`); 🚧 the boundary (which store) and the toolbar flags do not: read it before promising either |
+| manage users — create one, set a password, assign roles, block | `references/permissions.md` → `/admin/user`: the platform's own screen; the application writes only its menu item |
 | add or change localization keys | `references/localization.md` |
 | check metadata before deploying | `references/validate.md` — `a2 meta validate <endpoint>`, one endpoint at a time |
 | check that the application does what was asked — write a scenario | `references/tests.md` |

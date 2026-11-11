@@ -1,4 +1,4 @@
-﻿// Copyright © 2024-2026 Oleksandr Kukhtin. All rights reserved.
+// Copyright © 2024-2026 Oleksandr Kukhtin. All rights reserved.
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,26 +12,26 @@ namespace WebApp;
 
 public class Startup(IConfiguration configuration)
 {
-    public IConfiguration Configuration { get; } = configuration;
+	public IConfiguration Configuration { get; } = configuration;
 
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.UsePlatform(Configuration);
+	public void ConfigureServices(IServiceCollection services)
+	{
+		services.UsePlatform(Configuration);
 
-        services.AddReportEngines(factory =>
-        {
-            factory.RegisterEngine<PdfReportEngine>("pdf");
-        });
+		services.AddReportEngines(factory =>
+		{
+			factory.RegisterEngine<PdfReportEngine>("pdf");
+		});
 
-        // files of the "blobs" sections; the provider and its folder - "BlobStorage" in appsettings.json
-        services.AddBlobStorages(factory =>
-        {
-            factory.RegisterStorage<FileSystemBlobStorage>("FileSystem");
-        });
-    }
+		// files of the "blobs" sections; the provider and its folder - "BlobStorage" in appsettings.json
+		services.AddBlobStorages(factory =>
+		{
+			factory.RegisterStorage<FileSystemBlobStorage>("FileSystem");
+		});
+	}
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        app.ConfigurePlatform(env, Configuration);
-    }
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+	{
+		app.ConfigurePlatform(env, Configuration);
+	}
 }

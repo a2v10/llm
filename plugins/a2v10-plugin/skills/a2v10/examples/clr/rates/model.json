@@ -1,4 +1,4 @@
-﻿{
+{
 	"$schema": "../../@schemas/model-json-schema.json#",
 	"description": "clr.rates",
 	"schema": "cat",

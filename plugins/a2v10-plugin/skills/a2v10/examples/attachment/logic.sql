@@ -1,4 +1,4 @@
-﻿-- Attachment: one endpoint for the whole application; the owner is addressed by base (its endpoint URL) + Id.
+-- Attachment: one endpoint for the whole application; the owner is addressed by base (its endpoint URL) + Id.
 -- No tables of its own: links live in the platform's a2blob.BlobLinks, files in a2blob.Blobs.
 ------------------------------------------------
 create or alter procedure cat.[Attachment.Index]

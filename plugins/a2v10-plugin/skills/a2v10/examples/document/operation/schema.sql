@@ -1,4 +1,4 @@
-﻿------------------------------------------------
+------------------------------------------------
 -- Stub reference catalog (FK target for doc.DocDetails.Item).
 -- Minimal by design: in a real project it is a full catalog of its own.
 ------------------------------------------------

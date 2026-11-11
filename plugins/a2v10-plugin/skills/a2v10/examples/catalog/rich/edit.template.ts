@@ -1,11 +1,11 @@
-﻿import { TRoot, TAgent, TTagArray } from "./edit";
+import { TRoot, TAgent, TTagArray } from "./edit";
 
 const template: Template = {
 	properties: {
 		'TRoot.$$Tab': String
 	},
 	validators: {
-		'Agent.Name': "@[Error.Required]"
+		'Agent.Name': `@[Error.Required]`
 	},
 	delegates: {
 		tagSettings

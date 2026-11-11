@@ -9,24 +9,24 @@
         {
           "title": "Документи",
           "items": [
-            { "title": "Прибуткові накладні", "url": "/document/waybillin" },
-            { "title": "Видаткові накладні",  "url": "/document/waybillout" },
-            { "title": "Повернення від покупців", "url": "/document/waybillreturn" },
-            { "title": "Переміщення",         "url": "/document/waybillmove" },
-            { "title": "Журнал запасів",         "url": "/journal/stock" }
+            { "title": "Прибуткові накладні", "endpoint": "/document/waybillin" },
+            { "title": "Видаткові накладні",  "endpoint": "/document/waybillout" },
+            { "title": "Повернення від покупців", "endpoint": "/document/waybillreturn" },
+            { "title": "Переміщення",         "endpoint": "/document/waybillmove" },
+            { "title": "Журнал запасів",         "endpoint": "/journal/stock" }
           ]
         },
         {
           "title": "Довідники",
           "items": [
-            { "title": "Контрагенти", "url": "/catalog/agent" },
-            { "title": "Товари",      "url": "/catalog/item" },
-            { "title": "Склади",      "url": "/catalog/store" },
+            { "title": "Контрагенти", "endpoint": "/catalog/agent" },
+            { "title": "Товари",      "endpoint": "/catalog/item" },
+            { "title": "Склади",      "endpoint": "/catalog/store" },
             {
               "title": "Інші довідники",
               "id": "misc",
               "items": [
-                { "title": "Одиниці виміру", "url": "/catalog/unit", "category": "Загальні" }
+                { "title": "Одиниці виміру", "endpoint": "/catalog/unit", "category": "Загальні" }
               ]
             }
           ]
@@ -34,7 +34,7 @@
         {
           "title": "Звіти",
           "items": [
-            { "title": "Оборотка по складу", "url": "/report/stockturnover" }
+            { "title": "Оборотка по складу", "endpoint": "/report/stockturnover" }
           ]
         }
       ]

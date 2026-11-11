@@ -7,6 +7,7 @@ description: >
   A2v10 endpoint, or files matching the A2v10 layout — including when it merely asks what A2v10
   is, what can be built with it, or how to start. Do NOT use for generic
   SQL, XAML, or TypeScript unrelated to A2v10.
+  Platform build 8673.
 ---
 
 # A2v10 Platform Skill

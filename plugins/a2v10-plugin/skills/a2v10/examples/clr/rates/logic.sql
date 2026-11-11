@@ -1,4 +1,4 @@
-﻿-- Currency rates: list for the page, merge for the clr handler
+-- Currency rates: list for the page, merge for the clr handler
 ------------------------------------------------
 create or alter procedure cat.[CurrencyRate.Index]
 @UserId bigint

@@ -1,4 +1,4 @@
-﻿<!-- Invoice — printed form (A2v10.Xaml.Report, not the view dialect) -->
+<!-- Invoice — printed form (A2v10.Xaml.Report, not the view dialect) -->
 <Page xmlns="clr-namespace:A2v10.Xaml.Report;assembly=A2v10.Xaml.Report"
 		Title="Рахунок {Document.No}">
 	<Column>

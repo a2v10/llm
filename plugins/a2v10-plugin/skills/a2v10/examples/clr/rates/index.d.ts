@@ -1,4 +1,4 @@
-﻿export interface TRate extends IArrayElement {
+export interface TRate extends IArrayElement {
 	readonly Id: number;
 	readonly Code: string;
 	readonly Name: string;

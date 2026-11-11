@@ -1,4 +1,4 @@
-﻿-- SCHEMAS
+-- SCHEMAS
 --
 -- Runs first in the bundle (see sql.json), before every /**/schema.sql — so tables always
 -- find their schema. `create schema` must be the FIRST statement in its batch, which is why

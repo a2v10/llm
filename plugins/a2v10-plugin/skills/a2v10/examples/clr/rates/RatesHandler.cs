@@ -1,4 +1,4 @@
-﻿// Currency rates: the clr command declared as "load" in model.json.
+// Currency rates: the clr command declared as "load" in model.json.
 // Fetches the official NBU rates and writes them in ONE call.
 
 using System;

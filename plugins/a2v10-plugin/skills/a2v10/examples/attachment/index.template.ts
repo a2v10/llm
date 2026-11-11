@@ -1,4 +1,4 @@
-﻿import { TRoot, TAttachment } from "./index";
+import { TRoot, TAttachment } from "./index";
 
 const template: Template = {
 	commands: {

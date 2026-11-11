@@ -1,4 +1,4 @@
-﻿<!-- Invoice — printed form preview -->
+<!-- Invoice — printed form preview -->
 <Page xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
 		Title="{Bind Document.No, Format='Рахунок {0}'}">
 	<Page.Toolbar>

@@ -1,8 +1,8 @@
-﻿import { TRoot, TSample } from "./edit";
+import { TRoot, TSample } from "./edit";
 
 const template: Template = {
 	validators: {
-		'Sample.Name': "@[Error.Required]"
+		'Sample.Name': `@[Error.Required]`
 	}
 }
 

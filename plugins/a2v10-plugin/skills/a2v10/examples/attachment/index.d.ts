@@ -1,4 +1,4 @@
-﻿// A file of the platform storage — always these four fields.
+// A file of the platform storage — always these four fields.
 export interface TBlob extends IElement {
 	readonly Id: number;
 	Name: string;

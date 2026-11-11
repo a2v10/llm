@@ -1,4 +1,4 @@
-﻿[
+[
 	{
 		"$schema": "../MainApp/@schemas/sql-json-schema.json#",
 		"outputFile": "_sqlscripts/full.sql",

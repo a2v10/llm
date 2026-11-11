@@ -1,4 +1,4 @@
-﻿import { TRate, TRateArray, TRoot } from "./index"
+import { TRate, TRateArray, TRoot } from "./index"
 
 const template: Template = {
 	commands: {

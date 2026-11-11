@@ -1,4 +1,4 @@
-﻿<!-- Attachments of any record — opened as /attachment/index?base=<owner endpoint>, Argument = the owner -->
+<!-- Attachments of any record — opened as /attachment/index?base=<owner endpoint>, Argument = the owner -->
 <Dialog xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml"
 		Title="@[Attachments]" Width="60rem" Height="30rem">
 	<Dialog.Buttons>

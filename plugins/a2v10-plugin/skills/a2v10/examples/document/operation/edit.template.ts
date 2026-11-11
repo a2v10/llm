@@ -1,4 +1,4 @@
-﻿import { TDocument, TRow, TRoot } from "./edit";
+import { TDocument, TRow, TRoot } from "./edit";
 
 const utils: Utils = require('std:utils');
 
@@ -9,8 +9,8 @@ const template: Template = {
 		'TDocument.Sum'(this: TDocument): number { return this.Rows.$sum(r => r.Sum); }
 	},
 	validators: {
-		'Document.No': "@[Error.Required]",
-		'Document.Date': "@[Error.Required]"
+		'Document.No': `@[Error.Required]`,
+		'Document.Date': `@[Error.Required]`
 	},
 	defaults: {
 		'Document.Date'() { return utils.date.today(); }

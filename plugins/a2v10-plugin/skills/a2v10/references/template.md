@@ -52,7 +52,7 @@ The qualifier differs by map — by tree **location** for validators/defaults/ev
 
 ### validators
 
-Value forms — localized `'@[Error.Key]'` (→ localization reference), a `StdValidator` name, a function, or an object (async / conditional). Forms → [validators](https://docs-llm.a2v10.com/template/validators.md).
+Value forms — localized `` `@[Error.Key]` `` (→ localization reference), a `StdValidator` name, a function, or an object (async / conditional). Forms → [validators](https://docs-llm.a2v10.com/template/validators.md).
 
 ### events — taxonomy
 
@@ -92,7 +92,7 @@ const base = require('<path>/base.template');
 const utils: Utils = require('std:utils');
 
 const template: Template = {
-    validators: { 'Sample.ExtraField': '@[Error.Required]' }   // only what differs from base
+    validators: { 'Sample.ExtraField': `@[Error.Required]` }   // only what differs from base
 }
 export default utils.mergeTemplate(base, template);
 ```
