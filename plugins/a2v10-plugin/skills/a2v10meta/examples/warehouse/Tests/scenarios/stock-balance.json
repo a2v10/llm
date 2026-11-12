@@ -1,0 +1,42 @@
+{
+	"requirement": "Прихід 10 яблук по 5 на головний склад і переміщення 3 у магазин: на головному лишається 7 на 35, у магазині 3 на 15; розпроведене переміщення повертає все на головний.",
+	"records": {
+		"pcs":    { "at": "/catalog/unit",  "data": { "Name": "Штука", "Short": "шт" } },
+		"apple":  { "at": "/catalog/item",  "data": { "Name": "Яблука", "Article": "A-003", "Unit": { "ref": "pcs" } } },
+		"main":   { "at": "/catalog/store", "data": { "Name": "Головний склад" } },
+		"shop":   { "at": "/catalog/store", "data": { "Name": "Магазин" } },
+		"vendor": { "at": "/catalog/agent", "data": { "Name": "Постачальник" } }
+	},
+	"steps": [
+		{
+			"do": "save", "name": "in1", "at": "/document/waybillin",
+			"data": {
+				"Date": "2026-09-01", "Agent": { "ref": "vendor" }, "StoreTo": { "ref": "main" },
+				"Rows": [ { "Item": { "ref": "apple" }, "Qty": 10, "Price": 5, "Sum": 50 } ]
+			}
+		},
+		{ "do": "post", "name": "in1" },
+		{
+			"do": "save", "name": "mv1", "at": "/document/waybillmove",
+			"data": {
+				"Date": "2026-09-02", "StoreFrom": { "ref": "main" }, "StoreTo": { "ref": "shop" },
+				"Rows": [ { "Item": { "ref": "apple" }, "Qty": 3, "Price": 5, "Sum": 15 } ]
+			}
+		},
+		{ "do": "post", "name": "mv1" },
+		{
+			"do": "expect", "report": "/report/stockturnover", "groupBy": [ "Store", "Item" ],
+			"rows": [
+				{ "Store": { "ref": "main" }, "Item": { "ref": "apple" }, "EndQty": 7, "EndSum": 35 },
+				{ "Store": { "ref": "shop" }, "Item": { "ref": "apple" }, "EndQty": 3, "EndSum": 15 }
+			]
+		},
+		{ "do": "unpost", "name": "mv1" },
+		{
+			"do": "expect", "report": "/report/stockturnover", "groupBy": [ "Store", "Item" ],
+			"rows": [
+				{ "Store": { "ref": "main" }, "Item": { "ref": "apple" }, "EndQty": 10, "EndSum": 50 }
+			]
+		}
+	]
+}

@@ -1,0 +1,4 @@
+Stock accounting of one company: goods are received, shipped, returned by customers and moved between stores.
+Records are in Ukrainian.
+To learn what it holds, call domain_info.
+A customer return is created on basis of the shipment it returns.

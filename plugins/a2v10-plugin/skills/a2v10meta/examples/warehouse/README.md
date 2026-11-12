@@ -18,7 +18,7 @@
 `target` → тека довідника, `storage` → корінь `document/metadata.json`, `post.journal` →
 виміри й міри журналу, `autonum` → ключ у мапі `autonums`, `surface` звіту → той самий
 журнал, `printForms.path` → файл бланка, `menu.json` → кожен endpoint, який має
-власний вхід. Порядок написання —
+власний вхід, `mcp.json` → кожен каталог, документ і звіт меню ([mcp.md](../../references/mcp.md)). Порядок написання —
 той самий, що в [onboarding.md](../../references/onboarding.md): enum → довідники →
 журнал → autonum → корінь спільної таблиці → документи над нею → звіт.
 

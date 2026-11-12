@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using A2v10.Metadata;
 using A2v10.ReportEngine.Pdf;
 using A2v10.BlobStorage.FileSystem;
 
@@ -20,6 +21,11 @@ public class Startup(IConfiguration configuration)
             .UseAppMetadataXaml();
 
         services.UsePlatform(Configuration);
+
+        // /mcp for the user's model: the entities of MainApp/mcp.json, the text of MainApp/mcp-instructions.txt
+        services.UseMcp(Configuration, mcp => mcp
+            .AddProvider<MetadataMcpToolProvider>()
+            .Instructions<MetadataMcpInstructions>());
 
         services.AddReportEngines(factory =>
         {

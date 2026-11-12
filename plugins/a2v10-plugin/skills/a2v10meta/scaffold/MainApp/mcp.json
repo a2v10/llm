@@ -1,0 +1,4 @@
+{
+	"$schema": "@schemas/mcp-json-schema.json#",
+	"endpoints": []
+}

@@ -45,6 +45,9 @@
 @Operation.waybillreturn=Повернення від покупця
 @Operation.waybillmove=Переміщення
 
+; Reports
+@Reports.stockturnover=Залишки й рух товарів
+
 ; Browse
 @Agent.Browse=Вибір контрагента
 @Item.Browse=Вибір товару

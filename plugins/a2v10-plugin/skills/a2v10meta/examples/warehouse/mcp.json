@@ -1,0 +1,14 @@
+{
+  "$schema": "@schemas/mcp-json-schema.json#",
+  "endpoints": [
+    "/catalog/agent",
+    "/catalog/item",
+    "/catalog/store",
+    "/catalog/unit",
+    "/document/waybillin",
+    "/document/waybillout",
+    "/document/waybillreturn",
+    "/document/waybillmove",
+    "/report/stockturnover"
+  ]
+}

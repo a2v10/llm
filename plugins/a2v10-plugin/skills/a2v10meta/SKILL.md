@@ -11,7 +11,7 @@ description: >
   already says classic: this skill asks whether metadata-driven or classic;
   classic then hands off to the a2v10 skill.
   Endpoint folder without metadata.json: a2v10 skill.
-  Platform build 8673.
+  Platform build 8674.
 ---
 
 # A2v10 Metadata-Driven Skill
@@ -99,6 +99,7 @@ Unsure → ask; never guess.
 | the application has classic folders (`model.json` with procedures) — live beside them, reference one, move one onto metadata | `references/classic.md` |
 | apply metadata to the database, plan a migration | `references/deploy_and_migrations.md` |
 | wire app navigation | `references/menu.md` |
+| open the application to the user's model (MCP) — which entities it sees, what it is told, how to connect | `references/mcp.md` |
 | restrict access — declare roles, grant verbs, hide a menu item | `references/permissions.md` — roles, `grants`, the menu filter and the gate in the SQL work (`useGrants`); 🚧 the boundary (which store) and the toolbar flags do not: read it before promising either |
 | manage users — create one, set a password, assign roles, block | `references/permissions.md` → `/admin/user`: the platform's own screen; the application writes only its menu item |
 | add or change localization keys | `references/localization.md` |
@@ -106,7 +107,7 @@ Unsure → ask; never guess.
 | check that the application does what was asked — write a scenario | `references/tests.md` |
 | build the application and bring up its database | `references/onboarding.md` → Phase 3 |
 | call the CLI, read its output | `references/cli.md` |
-| update the platform — CLI and package pins; the build's `A2V0001` warning | the `a2v10` skill's update-platform procedure, with **this** skill's `scaffold/` as the reference: it pins `A2v10.Metadata` and `A2v10.Metadata.Xaml`, which that skill's scaffold does not. Crossing 8671, the application also takes from the scaffold `UseAppMetadataXaml()` in `Startup.cs` and `MainApp/_sql/platformid.sql` first in `WebApp/sql.json`, with the type of its `app.json` `platformid` |
+| update the platform — CLI and package pins; the build's `A2V0001` warning | the `a2v10` skill's update-platform procedure, with **this** skill's `scaffold/` as the reference: it pins `A2v10.Metadata`, `A2v10.Metadata.Xaml` and `A2v10.Mcp`, which that skill's scaffold does not. An application without `A2v10.Mcp` does not get it with an update: opening `/mcp` is its own task (`references/mcp.md`). Crossing 8671, the application also takes from the scaffold `UseAppMetadataXaml()` in `Startup.cs` and `MainApp/_sql/platformid.sql` first in `WebApp/sql.json`, with the type of its `app.json` `platformid` |
 
 **No row matches?** Do not force-fit. Route by what you are declaring: the shape of a record → `references/metadata.md`; a rule tying its fields together, or a value computed from them → `references/rules.md`; what it looks like on screen → `references/forms.md`. Still unclear → ask.
 

@@ -2,6 +2,7 @@
   "$schema": "../../@schemas/metadata-report-json-schema.json#",
   "type":    "turnover",
   "surface": "/journal/stock",
+  "mcp": { "measures": { "Sum": "Собівартість" } },
 
   "groups":  [ "Store", "Item" ],
   "filters": [ "Store", "Item" ],
